@@ -167,6 +167,7 @@ void motorControl(void* param) {
     bool last_blue = false;
     bool last_red = false;
     bool last_yours = false;
+    bool reversing = false;
     if (teamColor == 1){
         last_red=true;
     }
@@ -204,13 +205,19 @@ void motorControl(void* param) {
                 
            
             if(!last_yours){
+                if (reversing){
+                    five_motor.move(127);
+                    pros::delay(100);
+                    five_motor.move_velocity(0);
+                    reversing = false;
+                }  
                 onetwo_motor.move(-127);
-                five_motor.move(0);
                 six_motor.move(-127);
             } else if (last_yours){
                 five_motor.move(-127);
-                onetwo_motor.move(0);
-                six_motor.move(0);
+                onetwo_motor.move_velocity(0);
+                six_motor.move_velocity(0);
+                reversing=true;
             }
             pros::lcd::set_text(2, last_red ? "Red Detected" : "No Red");
             pros::lcd::set_text(3, last_blue ? "Blue Detected" : "No Blue");
