@@ -1,16 +1,10 @@
 //10-19-2025
 
-
-
-
 #include "lemlib/api.hpp" // IWYU pragma: keep
 #include "main.h"
 #define RED_SIG 1
 #define BLUE_SIG 2
 #define VISION_PORT 20
-
-
-
 
 pros::Motor onetwo_motor(4, pros::MotorGearset::green);
 pros::Motor threefour_motor(5, pros::MotorGearset::green);
@@ -37,8 +31,6 @@ lemlib::Drivetrain drivetrain(&left_motors, // left motor group
 );
 
 
-
-
 lemlib::TrackingWheel vertical_wheel(&vertical, lemlib::Omniwheel::NEW_2, 2.5);
 
 
@@ -48,11 +40,6 @@ lemlib::OdomSensors sensors(&vertical_wheel, // vertical tracking wheel 1, set t
                             nullptr, // horizontal tracking wheel 2, set to nullptr as we don't have a second one
                             &imu // inertial sensor
 );
-
-
-
-
-
 
 
 
@@ -87,22 +74,11 @@ lemlib::ExpoDriveCurve throttle_curve(20, // joystick deadband out of 127
 );
 
 
-
-
-
-
-
-
 // input curve for steer input during driver control
 lemlib::ExpoDriveCurve steer_curve(20, // joystick deadband out of 127
                                   20, // minimum output where drivetrain will move out of 127
                                   1.048 // expo curve gain
 );
-
-
-
-
-
 
 
 lemlib::Chassis chassis(drivetrain,
@@ -112,9 +88,6 @@ lemlib::Chassis chassis(drivetrain,
                         &throttle_curve,
                         &steer_curve
 );
-
-
-
 
 static bool detect_signature (pros:: Vision& vision, std::uint8_t sig_id, int min_w = 6, int min_h = 6) {
     pros::vision_object_s_t objs[1];
@@ -542,16 +515,12 @@ void convAuton(void* param) {
 
 */
 
-
-
-
 void initialize() {
     pros::lcd::initialize();
     chassis.calibrate(); // Start calibration
-
-    
-
 }
+
+
 void opcontrol(){
 
     pros::lcd::initialize();
@@ -594,9 +563,9 @@ onetwo_motor.move(0);
     int a = -1;
     int b = -1;
     pros::Task convTask (convAuton, NULL, "Conveyor Task");
-/*
 
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+    /*
     chassis.setPose(a*62, b*17, 90);
 
     pros::delay(500);
@@ -628,11 +597,131 @@ onetwo_motor.move(0);
     chassis.waitUntilDone();
     convState(1, 1);
     pros::delay(3000);
-    */
+
     convState(0, 2);
     convTask.remove(); // Stop conveyor task
+*/
 
+//skills
 
+    chassis.setPose(a*50, b*17, 180);
+    chassis.turnToPoint(a*50, b*47, 200);
+    pros::delay(200);
+    chassis.moveToPoint(a*50, b*47, 1000);
+    pros::delay(700);
+    chassis.turnToPoint(a*56.5, b*47, 500);
+    pros::delay(200);
+    scraper.set_value(true);
+    chassis.moveToPoint(a*56.5, b*47, 700);
+    pros::delay(200);
+    convState(0, 0); //intake 3 red 3 blue
+    pros::delay(2700);
+    convState(0, -1); //stop motors
+    chassis.turnToPoint(a*23.7, b*33, 700); //trying to push away the double blocks
+    pros::delay(200);
+    scraper.set_value(false);
+
+    chassis.moveToPoint(a*23.7, b*33, 1000);
+    pros::delay(200);
+    chassis.turnToPoint(a*23.7, b*24.2, 500);
+    pros::delay(200);
+    chassis.moveToPoint(a*23.7, b*24.2, 500);  //push away double blocks
+    pros::delay(200);
+    chassis.turnToPoint(a*13.5, b*13.7, 1000);
+    convState(1, 1); //outtake center lower from bottom basket which has red
+    pros::delay(2000);
+    convState(0, -1); //stop motors
+
+    chassis.turnToPoint(a*-47.8, b*47, 400);
+    pros::delay(200);
+    chassis.moveToPoint(a*-47.8, b*47, 4000);
+    pros::delay(3500);
+    scraper.set_value(true);
+    chassis.turnToPoint(a*-56.5, b*47, 400);
+    pros::delay(200);
+    chassis.moveToPoint(a*-56.5, b*47, 600);
+    pros::delay(300);
+    convState(0,0); //intake 3 red 3 blue from the loader
+    pros::delay(2700);
+    convState(0,-1); //stop motors
+    chassis.turnToPoint(a*-23.7, b*33, 200);
+    pros::delay(200);
+    scraper.set_value(false);
+    chassis.moveToPoint(a*-23.7, b*33, 2000);
+    pros::delay(1500);
+    chassis.turnToPoint(a*-23.7, b*24.2, 200);
+    pros::delay(200);
+    chassis.moveToPoint(a*-23.7, b*24.2, 500);
+    pros::delay(500);
+    chassis.turnToPoint(a*-13.5, b*13.8, 500);
+    pros::delay(200);
+    chassis.moveToPoint(a*-13.5, b*13.8, 700);
+    pros::delay(700);
+    convState(2, 2); //outtake from top basket to center upper 6 blue
+    pros::delay(2700);
+    convState(0,-1); //stop motors
+
+    chassis.turnToPoint(a*-38.7, b*-8.4, 500);
+    pros::delay(200);
+    chassis.moveToPoint(a*-38.7, b*-8.4, 2000);
+    pros::delay(3000);
+    chassis.turnToPoint(a*-31.8, b*-15.4, 300);
+    pros::delay(200);
+    chassis.moveToPoint(a*-31.8, b*-15.4, 1000, {.maxSpeed = 60});
+    pros::delay(700);
+    convState(0, 0); //intake one blue block
+    pros::delay(700);
+    convState(0, -1); //stop motors
+    chassis.turnToPoint(a*-23.7, b*-23.5, 500);
+    pros::delay(200);
+    chassis.moveToPoint(a*-23.7, b*-23.5, 500);
+    pros::delay(500);
+    chassis.turnToPoint(a*-13.8, b*-13.6, 500);
+    pros::delay(200);
+    chassis.moveToPoint(a*-13.8, b*-13.6, 700);
+    pros::delay(700);
+    convState(1, 1); //outtake 3 red blocks from bottom to center lower 
+    pros::delay(1500);
+    convState(0, -1);
+
+    chassis.turnToPoint(a*0, b*-26.7, 500);
+    pros::delay(200);
+    chassis.moveToPoint(a*0, b*-26.7, 700);
+    pros::delay(700);
+    chassis.turnToPoint(a*17.2, b*-17.2, 500);
+    pros::delay(200);
+    chassis.moveToPoint(a*17.2, b*-17.2, 700);
+    pros::delay(800);
+    chassis.turnToPoint(a*13.8, b*-13.6, 500);
+    pros::delay(200);
+    chassis.moveToPoint(a*13.8, b*-13.6, 600);
+    pros::delay(600);
+    convState(2,2); //outtake one top blue to center upper, center filled
+    pros::delay(1500);
+    convState(0,-1); //stop motors
+    chassis.turnToPoint(a*50, b*-47, 500);
+    pros::delay(200);
+    chassis.moveToPoint(a*50, b*-47, 2500);
+    pros::delay(2000);
+    chassis.turnToPoint(a*56.5, b*-47, 500);
+    pros::delay(200);
+    scraper.set_value(true);
+    chassis.moveToPoint(a*56.5, b*-47, 700);
+    pros::delay(800);
+    convState(0,0); //intake 3 red 3 blue
+    pros::delay(2700);
+    convState(0,-1); //stop motors
+    chassis.turnToPoint(a*32.6, b*-47, 500);
+    pros::delay(200);
+    scraper.set_value(false);
+    chassis.moveToPoint(a*32.6, b*-47, 1000);
+    pros::delay(1000);
+    convState(1,3); //outtake 3 red from bottom to long goal
+    pros::delay(2000);
+    convState(2,3); //outtake 3 blue from top to long goal
+    pros::delay(2000);
+
+    //parking undecided
 
 
     while (true){
