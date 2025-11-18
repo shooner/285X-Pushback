@@ -39,7 +39,7 @@ lemlib::Drivetrain drivetrain(&left_motors, // left motor group
 
 
 
-lemlib::TrackingWheel vertical_wheel(&vertical, lemlib::Omniwheel::NEW_2, 1.5);
+lemlib::TrackingWheel vertical_wheel(&vertical, lemlib::Omniwheel::NEW_2, 2.5);
 
 
 lemlib::OdomSensors sensors(&vertical_wheel, // vertical tracking wheel 1, set to null
