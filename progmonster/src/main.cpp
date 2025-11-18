@@ -40,12 +40,11 @@ lemlib::Drivetrain drivetrain(&left_motors, // left motor group
 
 
 lemlib::TrackingWheel vertical_wheel(&vertical, lemlib::Omniwheel::NEW_2, 1.5);
-lemlib::TrackingWheel horizontal_wheel(&horizontal, lemlib::Omniwheel::NEW_2, -2.5);
 
 
 lemlib::OdomSensors sensors(&vertical_wheel, // vertical tracking wheel 1, set to null
                             nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
-                            &horizontal_wheel, // horizontal tracking wheel 1
+                            nullptr, // horizontal tracking wheel 1
                             nullptr, // horizontal tracking wheel 2, set to nullptr as we don't have a second one
                             &imu // inertial sensor
 );
