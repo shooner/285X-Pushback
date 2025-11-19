@@ -449,6 +449,8 @@ void autonomous() {
 
     // --- AUTON ROUTE (kept from original) ---
     // (I left your commented-out sequences unchanged; below is your skills route rewritten to rely on autonRunning)
+
+    //skills
     chassis.setPose(a*50, b*17, 180);
     chassis.turnToPoint(a*50, b*47, 200);
     pros::delay(200);
@@ -459,25 +461,28 @@ void autonomous() {
     scraper.set_value(true);
     chassis.moveToPoint(a*56.5, b*47, 700);
     pros::delay(200);
-    convState(0, 0); // intake
+    convState(0, 0); //intake 3 red 3 blue
     pros::delay(2700);
-    convState(0, -1); // stop
-    chassis.turnToPoint(a*23.7, b*33, 700);
+    convState(0, -1); //stop motors
+    chassis.moveToPoint(a*56.5, b*47, 500, {.forwards=false});
+    pros::delay(300);
+    chassis.turnToPoint(a*23.7, b*33, 700); //trying to push away the double blocks
     pros::delay(200);
     scraper.set_value(false);
+
+
     chassis.moveToPoint(a*23.7, b*33, 1000);
     pros::delay(200);
     chassis.turnToPoint(a*23.7, b*24.2, 500);
     pros::delay(200);
-    chassis.moveToPoint(a*23.7, b*24.2, 500);
+    chassis.moveToPoint(a*23.7, b*24.2, 500);  //push away double blocks
     pros::delay(200);
     chassis.turnToPoint(a*13.5, b*13.7, 1000);
-    convState(1, 1);
+    convState(1, 1); //outtake center lower from bottom basket which has red
     pros::delay(2000);
-    convState(0, -1);
+    convState(0, -1); //stop motors
 
-    // the rest of your original auton sequence...
-    // (kept unchanged to preserve logic; they already use convState to control convAuton)
+
     chassis.turnToPoint(a*-47.8, b*47, 400);
     pros::delay(200);
     chassis.moveToPoint(a*-47.8, b*47, 4000);
@@ -487,9 +492,11 @@ void autonomous() {
     pros::delay(200);
     chassis.moveToPoint(a*-56.5, b*47, 600);
     pros::delay(300);
-    convState(0,0);
+    convState(0,0); //intake 3 red 3 blue from the loader
     pros::delay(2700);
-    convState(0,-1);
+    convState(0,-1); //stop motors
+    chassis.moveToPoint(a*-47.8, b*47, 500, {.forwards=false});
+    pros::delay(300);
     chassis.turnToPoint(a*-23.7, b*33, 200);
     pros::delay(200);
     scraper.set_value(false);
@@ -503,9 +510,10 @@ void autonomous() {
     pros::delay(200);
     chassis.moveToPoint(a*-13.5, b*13.8, 700);
     pros::delay(700);
-    convState(2, 2);
+    convState(2, 2); //outtake from top basket to center upper 6 blue
     pros::delay(2700);
-    convState(0, -1);
+    convState(0,-1); //stop motors
+
 
     chassis.turnToPoint(a*-38.7, b*-8.4, 500);
     pros::delay(200);
@@ -515,9 +523,9 @@ void autonomous() {
     pros::delay(200);
     chassis.moveToPoint(a*-31.8, b*-15.4, 1000, {.maxSpeed = 60});
     pros::delay(700);
-    convState(0, 0);
+    convState(0, 0); //intake one blue block
     pros::delay(700);
-    convState(0, -1);
+    convState(0, -1); //stop motors
     chassis.turnToPoint(a*-23.7, b*-23.5, 500);
     pros::delay(200);
     chassis.moveToPoint(a*-23.7, b*-23.5, 500);
@@ -526,9 +534,10 @@ void autonomous() {
     pros::delay(200);
     chassis.moveToPoint(a*-13.8, b*-13.6, 700);
     pros::delay(700);
-    convState(1, 1);
+    convState(1, 1); //outtake 3 red blocks from bottom to center lower
     pros::delay(1500);
     convState(0, -1);
+
 
     chassis.turnToPoint(a*0, b*-26.7, 500);
     pros::delay(200);
@@ -542,10 +551,9 @@ void autonomous() {
     pros::delay(200);
     chassis.moveToPoint(a*13.8, b*-13.6, 600);
     pros::delay(600);
-    convState(2,2);
+    convState(2,2); //outtake one top blue to center upper, center filled
     pros::delay(1500);
-    convState(0,-1);
-
+    convState(0,-1); //stop motors
     chassis.turnToPoint(a*50, b*-47, 500);
     pros::delay(200);
     chassis.moveToPoint(a*50, b*-47, 2500);
@@ -555,18 +563,32 @@ void autonomous() {
     scraper.set_value(true);
     chassis.moveToPoint(a*56.5, b*-47, 700);
     pros::delay(800);
-    convState(0,0);
+    convState(0,0); //intake 3 red 3 blue
     pros::delay(2700);
-    convState(0,-1);
+    convState(0,-1); //stop motors
+    chassis.moveToPoint(a*50, b*-47, 500, {.forwards=false});
+    pros::delay(300);
     chassis.turnToPoint(a*32.6, b*-47, 500);
     pros::delay(200);
     scraper.set_value(false);
     chassis.moveToPoint(a*32.6, b*-47, 1000);
     pros::delay(1000);
-    convState(1,3);
+    convState(1,3); //outtake 3 red from bottom to long goal
     pros::delay(2000);
-    convState(2,3);
+    convState(2,3); //outtake 3 blue from top to long goal
     pros::delay(2000);
+    convState(0,-1); //stop motors
+
+
+    //parking
+    chassis.turnToPoint(a*59.6, b*-28.6, 500);
+    pros::delay(700);
+    chassis.moveToPoint(a*59.6, b*-28.6, 1000);
+    pros::delay(1500);
+    chassis.turnToPoint(a*60.7, b*-1, 400);
+    pros::delay(500);
+    chassis.moveToPoint(a*60.7, b*-1, 800);
+    pros::delay(700);
 
     // End of autonomous routine: stop conveyor task and mark auton finished
     autonRunning = false;
