@@ -604,6 +604,35 @@ void autonomous() {
     threefour_motor.move(0);
     five_motor.move(0);
 
+/*
+    // Auton maxxing auton auton not skills autonomous
+    chassis.setPose(a*50, b*17, 180);
+    chassis.turnToPoint(a*50, b*47, 500);
+    chassis.moveToPoint(a*50, b*47, 1000);
+
+    chassis.turnToPoint(a*56.5, b*47, 500);
+    scraper.set_value(true);
+    chassis.moveToPoint(a*56.5, b*47, 700);
+    convState(0, 0); //intake 3 red 3 blue
+    pros::delay(2700);
+    convState(0, -1); //stop motors
+    chassis.moveToPoint(a*56.5, b*47, 500, {.forwards=false});
+
+    chassis.turnToPoint(a*31.3, b*11.8, 700); //trying to intake the corner stack
+    convState(0,0); //intake the 3 red corner blocks
+    chassis.moveToPoint(a*31.3, b*11.8, 1000);
+
+    chassis.turnToPoint(a*23, b*22.7, 1000);
+    chassis.moveToPoint(a*23, b*22.7, 700);
+
+    chassis.turnToPoint(a*13.7, b*13.5, 1000);
+    chassis.moveToPoint(a*13.7, b*13.5, 700);
+
+    pros::delay(2000);
+    convState(1,1); //outtake center lower from bottom basket which has red
+*/
+
+
     // hold here (typical auton ends and does not return)
     while (true) {
         pros::delay(50);
