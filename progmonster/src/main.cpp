@@ -450,6 +450,7 @@ void autonomous() {
     // --- AUTON ROUTE (kept from original) ---
     // (I left your commented-out sequences unchanged; below is your skills route rewritten to rely on autonRunning)
 
+    /*
     //skills
     chassis.setPose(a*50, b*17, 180);
     chassis.turnToPoint(a*50, b*47, 200);
@@ -604,7 +605,8 @@ void autonomous() {
     threefour_motor.move(0);
     five_motor.move(0);
 
-/*
+    */
+
     // Auton maxxing auton auton not skills autonomous
     chassis.setPose(a*50, b*17, 180);
     chassis.turnToPoint(a*50, b*47, 500);
@@ -630,7 +632,7 @@ void autonomous() {
 
     pros::delay(2000);
     convState(1,1); //outtake center lower from bottom basket which has red
-*/
+
 
     // hold here (typical auton ends and does not return)
     while (true) {
