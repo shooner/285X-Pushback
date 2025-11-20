@@ -8,30 +8,6 @@
 #define BLUE_SIG 2
 #define VISION_PORT 20
 
-//PID (Angular, Lateral) controller settings
-lemlib::ControllerSettings angular_controller(1, // proportional gain (kP)
-                                              0, // integral gain (kI)
-                                              1, // derivative gain (kD)
-                                              0, // anti windup
-                                              0, // small error range, in inches
-                                              0, // small error range timeout, in milliseconds
-                                              0, // large error range, in inches
-                                              0, // large error range timeout, in milliseconds
-                                              0 // maximum acceleration (slew)
-);
-
-
-lemlib::ControllerSettings lateral_controller(1, // proportional gain (kP)
-                                              0, // integral gain (kI)
-                                              1, // derivative gain (kD)
-                                              0, // anti windup
-                                              0, // small error range, in inches
-                                              0, // small error range timeout, in milliseconds
-                                              0, // large error range, in inches
-                                              0, // large error range timeout, in milliseconds
-                                              0 // maximum acceleration (slew)
-);
-
 // ---------- Hardware ----------
 pros::Motor onetwo_motor(4, pros::MotorGearset::green);
 pros::Motor threefour_motor(5, pros::MotorGearset::green);
@@ -44,8 +20,6 @@ pros::Vision vision_sensor (VISION_PORT);
 // MotorGroup: negative numbers are okay here to indicate reversed motors inside the group
 pros::MotorGroup left_motors({-16, 12, -13}, pros::MotorGearset::blue);
 pros::MotorGroup right_motors({6, -7, 8}, pros::MotorGearset::blue);
-
-
 
 // Rotations / IMU
 pros::Rotation vertical(14);
@@ -615,12 +589,24 @@ void autonomous() {
     pros::delay(500);
     chassis.moveToPoint(a*60.7, b*-1, 800);
     pros::delay(700);
-    */
-    
-    
 
     
-    /*
+    // End of autonomous routine: stop conveyor task and mark auton finished
+    autonRunning = false;
+    if (convTaskPtr) {
+        convTaskPtr->remove();
+        delete convTaskPtr;
+        convTaskPtr = nullptr;
+    }
+
+    // final safe stop
+    six_motor.move(0);
+    onetwo_motor.move(0);
+    threefour_motor.move(0);
+    five_motor.move(0);
+
+    */
+
     // Auton maxxing auton auton not skills autonomous
     chassis.setPose(a*50, b*17, 180);
     chassis.turnToPoint(a*50, b*47, 500);
@@ -646,21 +632,7 @@ void autonomous() {
 
     pros::delay(2000);
     convState(1,1); //outtake center lower from bottom basket which has red
-    */
-    
-    // End of autonomous routine: stop conveyor task and mark auton finished
-    autonRunning = false;
-    if (convTaskPtr) {
-        convTaskPtr->remove();
-        delete convTaskPtr;
-        convTaskPtr = nullptr;
-    }
 
-    // final safe stop
-    six_motor.move(0);
-    onetwo_motor.move(0);
-    threefour_motor.move(0);
-    five_motor.move(0);
 
     // hold here (typical auton ends and does not return)
     while (true) {
