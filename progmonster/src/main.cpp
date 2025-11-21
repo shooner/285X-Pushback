@@ -14,7 +14,8 @@ pros::Motor threefour_motor(5, pros::MotorGearset::green);
 pros::Motor five_motor(3, pros::MotorGearset::green);
 pros::Motor six_motor(2, pros::MotorGearset::green);
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
-pros::adi::Port scraper('A', pros::E_ADI_DIGITAL_OUT);pros::Vision vision_sensor (VISION_PORT);
+pros::ADIPort scraper('A', pros::E_ADI_DIGITAL_OUT);
+pros::Vision vision_sensor (VISION_PORT);
 
 // MotorGroup: negative numbers are okay here to indicate reversed motors inside the group
 pros::MotorGroup left_motors({-16, 12, -13}, pros::MotorGearset::blue);
@@ -60,8 +61,8 @@ lemlib::OdomSensors sensors(&vertical_wheel,
                             nullptr,
                             &imu);
 
-lemlib::ControllerSettings lateral_controller(2, 0, 3, 0, 0, 0, 0, 0, 0);
-lemlib::ControllerSettings angular_controller(2, 0, 3, 0, 0, 0, 0, 0, 0);
+lemlib::ControllerSettings lateral_controller(10, 0, 3, 3, 1, 100, 3, 500, 20);
+lemlib::ControllerSettings angular_controller(2, 0, 10, 3, 1, 100, 3, 500, 0);
 
 lemlib::ExpoDriveCurve throttle_curve(20, 20, 1.038);
 lemlib::ExpoDriveCurve steer_curve(20, 20, 1.048);
@@ -588,12 +589,24 @@ void autonomous() {
     pros::delay(500);
     chassis.moveToPoint(a*60.7, b*-1, 800);
     pros::delay(700);
-    */
-    
-    
 
     
-    /*
+    // End of autonomous routine: stop conveyor task and mark auton finished
+    autonRunning = false;
+    if (convTaskPtr) {
+        convTaskPtr->remove();
+        delete convTaskPtr;
+        convTaskPtr = nullptr;
+    }
+
+    // final safe stop
+    six_motor.move(0);
+    onetwo_motor.move(0);
+    threefour_motor.move(0);
+    five_motor.move(0);
+
+    */
+
     // Auton maxxing auton auton not skills autonomous
     chassis.setPose(a*50, b*17, 180);
     chassis.turnToPoint(a*50, b*47, 500);
@@ -619,21 +632,7 @@ void autonomous() {
 
     pros::delay(2000);
     convState(1,1); //outtake center lower from bottom basket which has red
-    */
-    
-    // End of autonomous routine: stop conveyor task and mark auton finished
-    autonRunning = false;
-    if (convTaskPtr) {
-        convTaskPtr->remove();
-        delete convTaskPtr;
-        convTaskPtr = nullptr;
-    }
 
-    // final safe stop
-    six_motor.move(0);
-    onetwo_motor.move(0);
-    threefour_motor.move(0);
-    five_motor.move(0);
 
     // hold here (typical auton ends and does not return)
     while (true) {
