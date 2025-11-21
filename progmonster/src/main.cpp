@@ -592,7 +592,7 @@ void autonomous() {
     
     
 
-    
+    /*
     // End of autonomous routine: stop conveyor task and mark auton finished
     autonRunning = false;
     if (convTaskPtr) {
