@@ -22,7 +22,7 @@ pros::MotorGroup left_motors({-16, 12, -13}, pros::MotorGearset::blue);
 pros::MotorGroup right_motors({6, -7, 8}, pros::MotorGearset::blue);
 
 // Rotations / IMU
-pros::Rotation vertical(14);
+pros::Rotation vertical(-14);
 // Replace negative port by positive with reversed flag
 pros::Rotation horizontal(15);
 
@@ -590,7 +590,7 @@ void autonomous() {
     chassis.moveToPoint(a*60.7, b*-1, 800);
     pros::delay(700);
 
-    
+    */
     // End of autonomous routine: stop conveyor task and mark auton finished
     autonRunning = false;
     if (convTaskPtr) {
@@ -598,23 +598,23 @@ void autonomous() {
         delete convTaskPtr;
         convTaskPtr = nullptr;
     }
-
+    
     // final safe stop
     six_motor.move(0);
     onetwo_motor.move(0);
     threefour_motor.move(0);
     five_motor.move(0);
 
-    */
+    
 
     // Auton maxxing auton auton not skills autonomous
     chassis.setPose(a*50, b*17, 180);
-    chassis.turnToPoint(a*50, b*47, 500);
+    chassis.turnToPoint(a*50, b*47, 1500);
     chassis.moveToPoint(a*50, b*47, 1000);
 
-    chassis.turnToPoint(a*56.5, b*47, 500);
+    chassis.turnToPoint(a*56.5, b*47, 1500);
     scraper.set_value(true);
-    chassis.moveToPoint(a*56.5, b*47, 700);
+    chassis.moveToPoint(a*56.5, b*47, 1000);
     convState(0, 0); //intake 3 red 3 blue
     pros::delay(2700);
     convState(0, -1); //stop motors
