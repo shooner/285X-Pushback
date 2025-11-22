@@ -133,8 +133,8 @@ void toggleScraper(void* param) {
         }
         pros::delay(20);
     }
-    // on exit, retract scraper for safety
-    scraper.set_value(false);
+    // on exit, retract scraper to up position for safety
+    scraper.set_value(true);
 }
 
 void motorControl(void* param) {
@@ -378,6 +378,9 @@ void initialize() {
 
     // Start LEMLib calibration (may be blocking). Make sure it has time to finish
     chassis.calibrate();
+
+    // Set scraper to up (default)
+    scraper.set_value(true);
 
     // Give sensors and libraries time to settle (important — don't remove)
     pros::delay(1500);
@@ -646,7 +649,7 @@ void autonomous() {
     */
 
     // End of autonomous routine: stop conveyor task and mark auton finished
-
+    /*
     chassis.setPose(a*50, b*17, 180);
     scraper.set_value(true);
     chassis.turnToPoint(a*50, b*47, 1500);
@@ -667,8 +670,27 @@ void autonomous() {
     chassis.turnToPoint(a*14, b*13, 700);
     chassis.moveToPoint(a*14, b*13, 4000, {.maxSpeed = 40});
     pros::delay(5000);
-
+    */
+    convState(0, -1); //stop motors
+    pros::delay(150);
     convState(1, 1); //outtake center lower from bottom basket which has red
+    pros::delay(150);
+    convState(0, -1); //stop motors
+    pros::delay(150);
+    convState(1, 1); //outtake center lower from bottom basket which has red
+    pros::delay(150);
+    convState(0, -1); //stop motors
+    pros::delay(150);
+    convState(1, 1); //outtake center lower from bottom basket which has red
+    pros::delay(150);
+    convState(0, -1); //stop motors
+    pros::delay(150);
+    convState(1, 1); //outtake center lower from bottom basket which has red
+    pros::delay(150);
+    convState(0, -1); //stop motors
+    pros::delay(150);
+    convState(1, 1); //outtake center lower from bottom basket which has red
+
     pros::delay(3000);
     convState(0, -1); //stop motors
 
