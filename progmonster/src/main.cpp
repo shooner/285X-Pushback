@@ -447,10 +447,6 @@ void autonomous() {
     // ensure auton flag and stop any op tasks (safety)
     autonRunning = true;
 
-    // small motion to settle (mirrors your old auton start)
-    onetwo_motor.move(-67);
-    onetwo_motor.move(0);
-
     // ensure chassis braking for auton
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
 
@@ -468,7 +464,7 @@ void autonomous() {
     chassis.setPose(0, 0, 0);
     
     // turn to face heading 180 with a long timeout
-    chassis.turnToHeading(90, 100000);
+    chassis.moveToPoint(0, 48, 100000);
 
     // --- AUTON ROUTE (kept from original) ---
     // (I left your commented-out sequences unchanged; below is your skills route rewritten to rely on autonRunning)
@@ -615,56 +611,41 @@ void autonomous() {
     pros::delay(700);
     */
     
-    
-
-    /*
-    // End of autonomous routine: stop conveyor task and mark auton finished
-    autonRunning = false;
-    if (convTaskPtr) {
-        convTaskPtr->remove();
-        delete convTaskPtr;
-        convTaskPtr = nullptr;
-    }
-    
-    // final safe stop
-    six_motor.move(0);
-    onetwo_motor.move(0);
-    threefour_motor.move(0);
-    five_motor.move(0);
-
-    
-*/
+/*
     // Auton maxxing auton auton not skills autonomous
     chassis.setPose(a*50, b*17, 180);
-    scraper.set_value(false);
+    scraper.set_value(true);
     chassis.turnToPoint(a*50, b*47, 1500);
     chassis.moveToPoint(a*50, b*47, 1000);
 
-    chassis.turnToPoint(a*56.5, b*47, 1500);
-    scraper.set_value(true);
-    chassis.moveToPoint(a*56.5, b*47, 1000);
+    chassis.turnToHeading(270, 600);
+    scraper.set_value(false);
+    chassis.moveToPoint(a*60, b*47, 1000, {.maxSpeed = 127, .minSpeed = 60});
     convState(0, 0); //intake 3 red 3 blue
     pros::delay(2700);
+    
     convState(0, -1); //stop motors
-    chassis.moveToPoint(a*56.5, b*47, 500, {.forwards=false});
+    chassis.moveToPoint(a*50, b*47, 500, {.forwards=false});
+    scraper.set_value(true);
+
 
     chassis.turnToPoint(a*31.3, b*11.8, 700); //trying to intake the corner stack
-    convState(0,0); //intake the 3 red corner blocks
     chassis.moveToPoint(a*31.3, b*11.8, 1000);
 
     chassis.turnToPoint(a*23, b*22.7, 1000);
-    chassis.moveToPoint(a*23, b*22.7, 700);
+    convState(0, 0); //try to intake the three reds
+    chassis.moveToPoint(a*23, b*22.7, 700, {.maxSpeed = 60});
 
-    chassis.turnToPoint(a*13.7, b*13.5, 1000);
-    chassis.moveToPoint(a*13.7, b*13.5, 700);
+    chassis.turnToPoint(a*14, b*13.3, 1000);
+    convState(0,-1); //stop motors for fun i guess
+    chassis.moveToPoint(a*14, b*13.3, 700);
 
-    pros::delay(2000);
     convState(1,1); //outtake center lower from bottom basket which has red
-    
+    pros::delay(2000);
+    convState(0,-1); //stop motors
+    */
+
     // End of autonomous routine: stop conveyor task and mark auton finished
-
-    
-
 
     autonRunning = false;
     if (convTaskPtr) {
