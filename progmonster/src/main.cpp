@@ -31,7 +31,7 @@ pros::Imu imu(19);
 int basket = 1; // 1 bottom, 2 top
 int aut_height = 0; // conveyor command for auton thread
 int aut_basket = 0;
-int teamColor = 2; // 1 = RED, 2 = BLUE
+int teamColor = 1; // 1 = RED, 2 = BLUE
 
 // Flags used to coordinate tasks and safe shutdown between modes
 volatile bool opRunning = false;
@@ -192,28 +192,28 @@ void motorControl(void* param) {
         // Outtake center lower (L1)
         else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
             if(basket==1){
-                threefour_motor.move(-127);
-                five_motor.move(127);
+                threefour_motor.move(-70);
+                five_motor.move(70);
                 onetwo_motor.move(0);
                 six_motor.move(0);
             } else {
-                six_motor.move(127);
-                onetwo_motor.move(127);
-                threefour_motor.move(-127);
+                six_motor.move(70);
+                onetwo_motor.move(70);
+                threefour_motor.move(-70);
                 five_motor.move(0);
             }
         }
         // Outtake center upper (R1)
         else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
             if(basket==1){
-                five_motor.move(127);
-                threefour_motor.move(127);
-                onetwo_motor.move(127);
+                five_motor.move(70);
+                threefour_motor.move(70);
+                onetwo_motor.move(70);
                 six_motor.move(0);
             } else {
-                six_motor.move(127);
-                threefour_motor.move(127);
-                onetwo_motor.move(127);
+                six_motor.move(70);
+                threefour_motor.move(70);
+                onetwo_motor.move(70);
                 five_motor.move(0);
             }
         }
@@ -307,14 +307,14 @@ void convAuton(void* param) {
         else if (aut_height == 1){
             // Outtake center lower
             if(aut_basket==1){
-                threefour_motor.move(-70);
-                five_motor.move(70);
+                threefour_motor.move(-50);
+                five_motor.move(50);
                 onetwo_motor.move(0);
                 six_motor.move(0);
             } else {
-                six_motor.move(60);
-                onetwo_motor.move(60);
-                threefour_motor.move(60);
+                six_motor.move(50);
+                onetwo_motor.move(50);
+                threefour_motor.move(50);
                 five_motor.move(0);
             }
         }
@@ -467,55 +467,9 @@ void autonomous() {
     // --- AUTON ROUTE (kept from original) ---
     // (I left your commented-out sequences unchanged; below is your skills route rewritten to rely on autonRunning)
 
-    
     //skills
-
     /*
-    chassis.turnToPoint(a*60, b*51, 700);
-    scraper.set_value(true);
-    pros::delay(900);
-    chassis.moveToPoint(a*60, b*51, 1000);
-    convState(0, 0); //intake 3 red 3 blue
-    chassis.moveToPoint(a*80, b*51, 500, {.maxSpeed = 60,.minSpeed = 60});
-    convState(0,-1);
-
-    chassis.moveToPoint(a*50, b*47, 500, {.forwards=false});
-    scraper.set_value(false);
-    convState(0,0);
-
-    chassis.turnToPoint(a*15.5, b*15.5, 700);
-    chassis.moveToPoint(a*15.5, b*15.5, 4000, {.maxSpeed = 50});
-    pros::delay(3000);
-
-
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);    
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(50);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-
-    pros::delay(1000);
-    convState(0, -1); //stop motors
-    */
-///////
-
-    /*chassis.setPose(a*50, b*17, 180);
+    chassis.setPose(a*50, b*17, 180);
     scraper.set_value(false);
     chassis.turnToPoint(a*50, b*47, 1500);
     chassis.moveToPoint(a*50, b*47, 1000);
@@ -524,66 +478,34 @@ void autonomous() {
     scraper.set_value(true);
     pros::delay(900);
     chassis.moveToPoint(a*60, b*51, 1000);
-    convState(0, 0); //intake 3 red
-    chassis.moveToPoint(a*80, b*51, 2000, {.maxSpeed = 40});
-    pros::delay(2000);
+    convState(0, 0); //intake 3 red 3 blue
+    chassis.moveToPoint(a*60, b*51, 2000, {.maxSpeed = 40});
+    pros::delay(2700);
     convState(0,-1); //stop motors
-
-
-    chassis.moveToPoint(a*50, b*47, 700, {.forwards=false});
-    chassis.moveToPoint(a*60, b*51, 700);
-    convState(0, 0); //intake 3 blue
-    chassis.moveToPoint(a*80, b*51, 2000, {.maxSpeed = 40});
-    pros::delay(2000);
-    convState(0,-1); //stop motors
-
 
     chassis.moveToPoint(a*50, b*47, 500, {.forwards=false});
+
     chassis.turnToPoint(a*23.7, b*33, 700); //trying to push away the double blocks
     scraper.set_value(false);
-
 
     chassis.moveToPoint(a*23.7, b*33, 1000, {.maxSpeed = 60});
     chassis.turnToPoint(a*22.5, b*25.2, 500);
     chassis.moveToPoint(a*22.5, b*25.2, 500, {.maxSpeed = 60});  //push away double blocks
-
 
     chassis.turnToPoint(a*14, b*13.3, 1000);
     pros::delay(600);
     chassis.moveToPoint(a*14, b*13.3, 700);
     pros::delay(700);
     convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(150);
+    pros::delay(2000);
     convState(0, -1); //stop motors
-    pros::delay(150);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(150);
-    convState(0, -1); //stop motors
-    pros::delay(150);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(150);
-    convState(0, -1); //stop motors
-    pros::delay(150);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(150);
-    convState(0, -1); //stop motors
-    pros::delay(150);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(150);
-    convState(0, -1); //stop motors
-    chassis.moveToPoint(a*23, b*23.7, 500, {.forwards=false});
-    chassis.turnToPoint(a*62, b*23.7, 700);
-    chassis.moveToPoint(a*62, b*23.7, 2000);
-    chassis.turnToPoint(a*62, b*2, 700);
-    chassis.moveToPoint(a*62, b*2, 2500, {.minSpeed = 127});
-*/
 
-/*
+
     chassis.turnToPoint(a*-47.8, b*47, 400);
     pros::delay(200);
     chassis.moveToPoint(a*-47.8, b*47, 4000);
     pros::delay(3500);
-    scraper.set_value(false);
+    scraper.set_value(true);
     chassis.turnToPoint(a*-56.5, b*47, 400);
     pros::delay(200);
     chassis.moveToPoint(a*-56.5, b*47, 600);
@@ -595,7 +517,7 @@ void autonomous() {
     pros::delay(300);
     chassis.turnToPoint(a*-23.7, b*33, 200);
     pros::delay(200);
-    scraper.set_value(true);
+    scraper.set_value(false);
     chassis.moveToPoint(a*-23.7, b*33, 2000);
     pros::delay(1500);
     chassis.turnToPoint(a*-23.7, b*24.2, 200);
@@ -609,7 +531,6 @@ void autonomous() {
     convState(2, 2); //outtake from top basket to center upper 6 blue
     pros::delay(2700);
     convState(0,-1); //stop motors
-
 
     chassis.turnToPoint(a*-38.7, b*-8.4, 500);
     pros::delay(200);
@@ -656,7 +577,7 @@ void autonomous() {
     pros::delay(2000);
     chassis.turnToPoint(a*56.5, b*-47, 500);
     pros::delay(200);
-    scraper.set_value(false);
+    scraper.set_value(true);
     chassis.moveToPoint(a*56.5, b*-47, 700);
     pros::delay(800);
     convState(0,0); //intake 3 red 3 blue
@@ -666,7 +587,7 @@ void autonomous() {
     pros::delay(300);
     chassis.turnToPoint(a*32.6, b*-47, 500);
     pros::delay(200);
-    scraper.set_value(true);
+    scraper.set_value(false);
     chassis.moveToPoint(a*32.6, b*-47, 1000);
     pros::delay(1000);
     convState(1,3); //outtake 3 red from bottom to long goal
@@ -684,9 +605,8 @@ void autonomous() {
     pros::delay(500);
     chassis.moveToPoint(a*60.7, b*-1, 800);
     pros::delay(700);
-    
     */
-   
+
 /*
     // Auton maxxing auton auton not skills autonomous
     chassis.setPose(a*50, b*17, 180);
@@ -721,15 +641,12 @@ void autonomous() {
     convState(0,-1); //stop motors
     */
 
-    
-
     // End of autonomous routine: stop conveyor task and mark auton finished
     
     chassis.setPose(a*50, b*17, 180);
     scraper.set_value(false);
     chassis.turnToPoint(a*50, b*47, 1500);
     chassis.moveToPoint(a*50, b*47, 1000);
-
 
     chassis.turnToPoint(a*60, b*51, 700);
     scraper.set_value(true);
@@ -753,7 +670,7 @@ void autonomous() {
     convState(0, -1); //stop motors
     pros::delay(100);
     convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(50);
+    pros::delay(500);
     convState(0, -1); //stop motors
     pros::delay(100);
     convState(1, 1); //outtake center lower from bottom basket which has red
@@ -773,6 +690,7 @@ void autonomous() {
     pros::delay(1000);
     convState(0, -1); //stop motors
 
+
     autonRunning = false;
     if (convTaskPtr) {
         convTaskPtr->remove();
@@ -785,6 +703,7 @@ void autonomous() {
     onetwo_motor.move(0);
     threefour_motor.move(0);
     five_motor.move(0);
+
 
     // hold here (typical auton ends and does not return)
     while (true) {
