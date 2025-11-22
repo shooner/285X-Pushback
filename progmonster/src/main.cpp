@@ -487,6 +487,7 @@ void autonomous() {
 
     chassis.turnToPoint(a*23.7, b*33, 700); //trying to push away the double blocks
     scraper.set_value(false);
+    //ADS
 
     chassis.moveToPoint(a*23.7, b*33, 1000, {.maxSpeed = 60});
     chassis.turnToPoint(a*22.5, b*25.2, 500);
