@@ -307,8 +307,8 @@ void convAuton(void* param) {
         else if (aut_height == 1){
             // Outtake center lower
             if(aut_basket==1){
-                threefour_motor.move(-60);
-                five_motor.move(60);
+                threefour_motor.move(-100);
+                five_motor.move(100);
                 onetwo_motor.move(0);
                 six_motor.move(0);
             } else {
@@ -380,7 +380,7 @@ void initialize() {
     chassis.calibrate();
 
     // Give sensors and libraries time to settle (important — don't remove)
-    pros::delay(500);
+    pros::delay(1500);
 }
 
 void opcontrol(){
@@ -658,32 +658,18 @@ void autonomous() {
     pros::delay(900);
     chassis.moveToPoint(a*60, b*51, 1000);
     convState(0, 0); //intake 3 red 3 blue
-    chassis.moveToPoint(a*80, b*51, 750, {.maxSpeed = 40});
+    chassis.moveToPoint(a*80, b*51, 750, {.maxSpeed = 60,.minSpeed = 60});
     pros::delay(750);
-    convState(0,-1); //stop motors
 
     chassis.moveToPoint(a*50, b*47, 500, {.forwards=false});
     scraper.set_value(true);
 
-    chassis.turnToPoint(a*26.94, b*7.761, 700);
-    pros::delay(300);
-    chassis.moveToPoint(a*26.94, b*7.761, 1000);
+    chassis.turnToPoint(a*14, b*13, 700);
+    chassis.moveToPoint(a*14, b*13, 4000, {.maxSpeed = 40});
+    pros::delay(5000);
 
-    chassis.turnToPoint(a*19.639,b*32.256, 700);
-    convState(0, 0); //try to intake the three reds
-    chassis.moveToPoint(a*19.639, b*32.256, 700, {.maxSpeed = 30, .minSpeed = 30});
-
-    convState(0,-1); //stop motors for fun i guess
-    chassis.turnToPoint(a*23.1, b*20.85, 700);
-    chassis.moveToPoint(a*23.1, b*20.85, 700, {.forwards=false, .maxSpeed = 80});
-
-    
-
-
-    chassis.turnToPoint(a*13.978, b*13.023, 700);
-    chassis.moveToPoint(a*13.978, b*13.023, 1000);
     convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(2000);
+    pros::delay(3000);
     convState(0, -1); //stop motors
 
     autonRunning = false;
