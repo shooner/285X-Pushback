@@ -14,15 +14,14 @@ pros::Motor threefour_motor(5, pros::MotorGearset::green);
 pros::Motor five_motor(3, pros::MotorGearset::green);
 pros::Motor six_motor(2, pros::MotorGearset::green);
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
-pros::ADIPort scraper('A', pros::E_ADI_DIGITAL_OUT);
-pros::Vision vision_sensor (VISION_PORT);
+pros::adi::Port scraper('A', pros::E_ADI_DIGITAL_OUT);pros::Vision vision_sensor (VISION_PORT);
 
 // MotorGroup: negative numbers are okay here to indicate reversed motors inside the group
 pros::MotorGroup left_motors({-16, 12, -13}, pros::MotorGearset::blue);
 pros::MotorGroup right_motors({6, -7, 8}, pros::MotorGearset::blue);
 
 // Rotations / IMU
-pros::Rotation vertical(14);
+pros::Rotation vertical(-14);
 // Replace negative port by positive with reversed flag
 pros::Rotation horizontal(15);
 
@@ -61,9 +60,27 @@ lemlib::OdomSensors sensors(&vertical_wheel,
                             nullptr,
                             &imu);
 
-lemlib::ControllerSettings lateral_controller(10, 0, 3, 3, 1, 100, 3, 500, 20);
-lemlib::ControllerSettings angular_controller(2, 0, 10, 3, 1, 100, 3, 500, 0);
 
+lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
+                                              0, // integral gain (kI)
+                                              3, // derivative gain (kD)
+                                              3, // anti windup
+                                              1, // small error range, in inches
+                                              100, // small error range timeout, in milliseconds
+                                              3, // large error range, in inches
+                                              500, // large error range timeout, in milliseconds
+                                              20 // maximum acceleration (slew)
+);
+lemlib::ControllerSettings angular_controller(10, // proportional gain (kP)
+                                              0, // integral gain (kI)
+                                              120, // derivative gain (kD)
+                                              0, // anti windup
+                                              0, // small error range, in inches
+                                              0, // small error range timeout, in milliseconds
+                                              0, // large error range, in inches
+                                              0, // large error range timeout, in milliseconds
+                                              0 // maximum acceleration (slew)
+);
 lemlib::ExpoDriveCurve throttle_curve(20, 20, 1.038);
 lemlib::ExpoDriveCurve steer_curve(20, 20, 1.048);
 
@@ -432,26 +449,34 @@ void autonomous() {
 
     // small motion to settle (mirrors your old auton start)
     onetwo_motor.move(-67);
-    pros::delay(1000);
     onetwo_motor.move(0);
 
     // ensure chassis braking for auton
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
 
-    // convAuton task handles conveyor while autonRunning is true
-    convTaskPtr = new pros::Task(convAuton, NULL, "Conveyor Task");
-
-    // Set initial auton state
-    aut_height = 0;
+    // Set initial auton state BEFORE starting conveyor task
+    aut_height = -1;  // stop conveyor initially
     aut_basket = 1;
     int a = -1;
     int b = -1;
 
+    // convAuton task handles conveyor while autonRunning is true
+    // This starts after we've set the initial state
+    convTaskPtr = new pros::Task(convAuton, NULL, "Conveyor Task");
+
+    // set position to x:0, y:0, heading:0
+    chassis.setPose(0, 0, 0);
+    
+    // turn to face heading 180 with a long timeout
+    chassis.turnToHeading(90, 100000);
+
     // --- AUTON ROUTE (kept from original) ---
     // (I left your commented-out sequences unchanged; below is your skills route rewritten to rely on autonRunning)
 
+    /*
     //skills
     chassis.setPose(a*50, b*17, 180);
+    scraper.set_value(false);
     chassis.turnToPoint(a*50, b*47, 200);
     pros::delay(200);
     chassis.moveToPoint(a*50, b*47, 1000);
@@ -588,8 +613,11 @@ void autonomous() {
     pros::delay(500);
     chassis.moveToPoint(a*60.7, b*-1, 800);
     pros::delay(700);
-
+    */
     
+    
+
+    /*
     // End of autonomous routine: stop conveyor task and mark auton finished
     autonRunning = false;
     if (convTaskPtr) {
@@ -597,22 +625,24 @@ void autonomous() {
         delete convTaskPtr;
         convTaskPtr = nullptr;
     }
-
+    
     // final safe stop
     six_motor.move(0);
     onetwo_motor.move(0);
     threefour_motor.move(0);
     five_motor.move(0);
 
-/*
+    
+*/
     // Auton maxxing auton auton not skills autonomous
     chassis.setPose(a*50, b*17, 180);
-    chassis.turnToPoint(a*50, b*47, 500);
+    scraper.set_value(false);
+    chassis.turnToPoint(a*50, b*47, 1500);
     chassis.moveToPoint(a*50, b*47, 1000);
 
-    chassis.turnToPoint(a*56.5, b*47, 500);
+    chassis.turnToPoint(a*56.5, b*47, 1500);
     scraper.set_value(true);
-    chassis.moveToPoint(a*56.5, b*47, 700);
+    chassis.moveToPoint(a*56.5, b*47, 1000);
     convState(0, 0); //intake 3 red 3 blue
     pros::delay(2700);
     convState(0, -1); //stop motors
@@ -630,7 +660,25 @@ void autonomous() {
 
     pros::delay(2000);
     convState(1,1); //outtake center lower from bottom basket which has red
-*/
+    
+    
+    // End of autonomous routine: stop conveyor task and mark auton finished
+
+    
+
+
+    autonRunning = false;
+    if (convTaskPtr) {
+        convTaskPtr->remove();
+        delete convTaskPtr;
+        convTaskPtr = nullptr;
+    }
+
+    // final safe stop
+    six_motor.move(0);
+    onetwo_motor.move(0);
+    threefour_motor.move(0);
+    five_motor.move(0);
 
     // hold here (typical auton ends and does not return)
     while (true) {
