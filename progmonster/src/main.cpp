@@ -661,7 +661,6 @@ void autonomous() {
     pros::delay(2000);
     convState(1,1); //outtake center lower from bottom basket which has red
     
-    
     // End of autonomous routine: stop conveyor task and mark auton finished
 
     
