@@ -380,7 +380,7 @@ void initialize() {
     chassis.calibrate();
 
     // Give sensors and libraries time to settle (important — don't remove)
-    pros::delay(1500);
+    pros::delay(500);
 }
 
 void opcontrol(){
@@ -658,27 +658,30 @@ void autonomous() {
     pros::delay(900);
     chassis.moveToPoint(a*60, b*51, 1000);
     convState(0, 0); //intake 3 red 3 blue
-    chassis.moveToPoint(a*80, b*51, 1350, {.maxSpeed = 60});
-    //pros::delay(2700);
+    chassis.moveToPoint(a*80, b*51, 750, {.maxSpeed = 40});
+    pros::delay(750);
     convState(0,-1); //stop motors
 
     chassis.moveToPoint(a*50, b*47, 500, {.forwards=false});
     scraper.set_value(true);
 
-    chassis.turnToPoint(a*31.3, b*11.8,700);
-    chassis.moveToPoint(a*31.3, b*11.8,1000);
+    chassis.turnToPoint(a*26.94, b*7.761, 700);
+    pros::delay(300);
+    chassis.moveToPoint(a*26.94, b*7.761, 1000);
 
-    chassis.turnToPoint(a*18, b*35, 1000);
+    chassis.turnToPoint(a*19.639,b*32.256, 700);
     convState(0, 0); //try to intake the three reds
-    chassis.moveToPoint(a*18, b*35, 4000, {.maxSpeed = 45});
+    chassis.moveToPoint(a*19.639, b*32.256, 700, {.maxSpeed = 30, .minSpeed = 30});
 
-    chassis.turnToPoint(a*15,b*20, 1000);
     convState(0,-1); //stop motors for fun i guess
+    chassis.turnToPoint(a*23.1, b*20.85, 700);
+    chassis.moveToPoint(a*23.1, b*20.85, 700, {.forwards=false, .maxSpeed = 80});
 
-    chassis.turnToPoint(a*14, b*13.3, 1000);
-    pros::delay(600);
-    chassis.moveToPoint(a*14, b*13.3, 700);
-    pros::delay(700);
+    
+
+
+    chassis.turnToPoint(a*13.978, b*13.023, 700);
+    chassis.moveToPoint(a*13.978, b*13.023, 1000);
     convState(1, 1); //outtake center lower from bottom basket which has red
     pros::delay(2000);
     convState(0, -1); //stop motors
