@@ -60,9 +60,27 @@ lemlib::OdomSensors sensors(&vertical_wheel,
                             nullptr,
                             &imu);
 
-lemlib::ControllerSettings lateral_controller(2, 0, 3, 0, 0, 0, 0, 0, 0);
-lemlib::ControllerSettings angular_controller(2, 0, 3, 0, 0, 0, 0, 0, 0);
 
+lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
+                                              0, // integral gain (kI)
+                                              3, // derivative gain (kD)
+                                              3, // anti windup
+                                              1, // small error range, in inches
+                                              100, // small error range timeout, in milliseconds
+                                              3, // large error range, in inches
+                                              500, // large error range timeout, in milliseconds
+                                              20 // maximum acceleration (slew)
+);
+lemlib::ControllerSettings angular_controller(10, // proportional gain (kP)
+                                              0, // integral gain (kI)
+                                              120, // derivative gain (kD)
+                                              0, // anti windup
+                                              0, // small error range, in inches
+                                              0, // small error range timeout, in milliseconds
+                                              0, // large error range, in inches
+                                              0, // large error range timeout, in milliseconds
+                                              0 // maximum acceleration (slew)
+);
 lemlib::ExpoDriveCurve throttle_curve(20, 20, 1.038);
 lemlib::ExpoDriveCurve steer_curve(20, 20, 1.048);
 
@@ -431,20 +449,26 @@ void autonomous() {
 
     // small motion to settle (mirrors your old auton start)
     onetwo_motor.move(-67);
-    pros::delay(1000);
     onetwo_motor.move(0);
 
     // ensure chassis braking for auton
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
 
-    // convAuton task handles conveyor while autonRunning is true
-    convTaskPtr = new pros::Task(convAuton, NULL, "Conveyor Task");
-
-    // Set initial auton state
-    aut_height = 0;
+    // Set initial auton state BEFORE starting conveyor task
+    aut_height = -1;  // stop conveyor initially
     aut_basket = 1;
     int a = -1;
     int b = -1;
+
+    // convAuton task handles conveyor while autonRunning is true
+    // This starts after we've set the initial state
+    convTaskPtr = new pros::Task(convAuton, NULL, "Conveyor Task");
+
+    // set position to x:0, y:0, heading:0
+    chassis.setPose(0, 0, 0);
+    
+    // turn to face heading 180 with a long timeout
+    chassis.turnToHeading(90, 100000);
 
     // --- AUTON ROUTE (kept from original) ---
     // (I left your commented-out sequences unchanged; below is your skills route rewritten to rely on autonRunning)
@@ -637,6 +661,10 @@ void autonomous() {
     */
     
     // End of autonomous routine: stop conveyor task and mark auton finished
+
+    
+
+
     autonRunning = false;
     if (convTaskPtr) {
         convTaskPtr->remove();
