@@ -463,7 +463,7 @@ void autonomous() {
     // set position to x:0, y:0, heading:0
     chassis.setPose(0, 0, 0);
     // turn to face heading 180 with a long timeout
-    chassis.turnToHeading(90, 3000);
+    chassis.moveToPoint(0, 10, 10000);
     // --- AUTON ROUTE (kept from original) ---
     // (I left your commented-out sequences unchanged; below is your skills route rewritten to rely on autonRunning)
 
