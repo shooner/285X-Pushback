@@ -461,9 +461,9 @@ void autonomous() {
     convTaskPtr = new pros::Task(convAuton, NULL, "Conveyor Task");
 
     // set position to x:0, y:0, heading:0
-    
+    chassis.setPose(0, 0, 0);
     // turn to face heading 180 with a long timeout
-
+    chassis.turnToHeading(90, 3000);
     // --- AUTON ROUTE (kept from original) ---
     // (I left your commented-out sequences unchanged; below is your skills route rewritten to rely on autonRunning)
 
@@ -644,6 +644,8 @@ void autonomous() {
 
     // End of autonomous routine: stop conveyor task and mark auton finished
     
+/*
+    //REAL AUTON LOVERS GRAHHH
     chassis.setPose(a*50, b*17, 180);
     scraper.set_value(false);
     chassis.turnToPoint(a*50, b*47, 1500);
@@ -690,8 +692,8 @@ void autonomous() {
 
     pros::delay(1000);
     convState(0, -1); //stop motors
-
-
+    //////REAL AUTON LOVERS GRAHHH
+    */
     autonRunning = false;
     if (convTaskPtr) {
         convTaskPtr->remove();
