@@ -461,9 +461,8 @@ void autonomous() {
     convTaskPtr = new pros::Task(convAuton, NULL, "Conveyor Task");
 
     // set position to x:0, y:0, heading:0
-    chassis.setPose(0, 0, 0);
+    //chassis.setPose(0, 0, 0);
     // turn to face heading 180 with a long timeout
-    chassis.moveToPoint(0, 10, 10000);
     // --- AUTON ROUTE (kept from original) ---
     // (I left your commented-out sequences unchanged; below is your skills route rewritten to rely on autonRunning)
 
@@ -608,43 +607,9 @@ void autonomous() {
     pros::delay(700);
     */
 
-/*
-    // Auton maxxing auton auton not skills autonomous
-    chassis.setPose(a*50, b*17, 180);
-    scraper.set_value(true);
-    chassis.turnToPoint(a*50, b*47, 1500);
-    chassis.moveToPoint(a*50, b*47, 1000);
 
-    chassis.turnToHeading(270, 600);
-    scraper.set_value(false);
-    chassis.moveToPoint(a*60, b*47, 1000, {.maxSpeed = 127, .minSpeed = 60});
-    convState(0, 0); //intake 3 red 3 blue
-    pros::delay(2700);
     
-    convState(0, -1); //stop motors
-    chassis.moveToPoint(a*50, b*47, 500, {.forwards=false});
-    scraper.set_value(true);
 
-
-    chassis.turnToPoint(a*31.3, b*11.8, 700); //trying to intake the corner stack
-    chassis.moveToPoint(a*31.3, b*11.8, 1000);
-
-    chassis.turnToPoint(a*23, b*22.7, 1000);
-    convState(0, 0); //try to intake the three reds
-    chassis.moveToPoint(a*23, b*22.7, 700, {.maxSpeed = 60});
-
-    chassis.turnToPoint(a*14, b*13.3, 1000);
-    convState(0,-1); //stop motors for fun i guess
-    chassis.moveToPoint(a*14, b*13.3, 700);
-
-    convState(1,1); //outtake center lower from bottom basket which has red
-    pros::delay(2000);
-    convState(0,-1); //stop motors
-    */
-
-    // End of autonomous routine: stop conveyor task and mark auton finished
-    
-/*
     //REAL AUTON LOVERS GRAHHH
     chassis.setPose(a*50, b*17, 180);
     scraper.set_value(false);
@@ -656,15 +621,15 @@ void autonomous() {
     pros::delay(900);
     chassis.moveToPoint(a*60, b*51, 1000);
     convState(0, 0); //intake 3 red 3 blue
-    chassis.moveToPoint(a*80, b*51, 500, {.maxSpeed = 60,.minSpeed = 60});
+    chassis.moveToPoint(a*80, b*51, 1250, {.maxSpeed = 60,.minSpeed = 60});
     convState(0,-1);
 
     chassis.moveToPoint(a*50, b*47, 500, {.forwards=false});
     scraper.set_value(false);
     convState(0,0);
 
-    chassis.turnToPoint(a*15.5, b*15.5, 700);
-    chassis.moveToPoint(a*15.5, b*15.5, 4000, {.maxSpeed = 50});
+    chassis.turnToPoint(a*16.5, b*14, 700);
+    chassis.moveToPoint(a*16.5, b*14, 4000, {.maxSpeed = 50});
     pros::delay(3000);
 
 
@@ -693,7 +658,7 @@ void autonomous() {
     pros::delay(1000);
     convState(0, -1); //stop motors
     //////REAL AUTON LOVERS GRAHHH
-    */
+    
     autonRunning = false;
     if (convTaskPtr) {
         convTaskPtr->remove();
