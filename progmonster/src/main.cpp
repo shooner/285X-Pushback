@@ -731,9 +731,8 @@ void autonomous() {
     pros::delay(700);
 
 
-*/
     
-/*
+
     //REAL AUTON LOVERS GRAHHH
     chassis.setPose(a*50, b*17, 180);
     scraper.set_value(false);
@@ -783,7 +782,7 @@ void autonomous() {
     convState(0, -1); //stop motors
     //////REAL AUTON LOVERS GRAHHH
     */
-    autonRunning = true;
+    autonRunning = false;
     if (convTaskPtr) {
         convTaskPtr->remove();
         delete convTaskPtr;
