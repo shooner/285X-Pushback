@@ -82,8 +82,8 @@ lemlib::ControllerSettings angular_controller(10, // proportional gain (kP)
                                               0, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
-lemlib::ExpoDriveCurve throttle_curve(20, 20, 1.038);
-lemlib::ExpoDriveCurve steer_curve(20, 20, 1.048);
+lemlib::ExpoDriveCurve throttle_curve(3, 10, 1.019);
+lemlib::ExpoDriveCurve steer_curve(3, 10, 1.019);
 
 lemlib::Chassis chassis(drivetrain,
                         lateral_controller,
