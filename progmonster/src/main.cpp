@@ -376,9 +376,9 @@ void initialize() {
     // set vision signatures once at startup
     horizontal.set_reversed(true);
     pros::vision_signature_s_t BLUE_SIGNATURE =
-        pros::Vision::signature_from_utility (BLUE_SIG, -3461, -2881, -3172, 5123, 6215, 5668, 3.0, 0);
+        pros::Vision::signature_from_utility (BLUE_SIG, -3805, -2769, -3288, 3585, 4999, 4292, 3.0, 0);
     pros::vision_signature_s_t RED_SIGNATURE =
-        pros::Vision::signature_from_utility(RED_SIG, 9843, 12289, 11066, -1681, -891, -1286, 3.0, 0);
+        pros::Vision::signature_from_utility(RED_SIG, 4357, 5521, 4940, -2035, -305, -1170, 3.0, 0);
     vision_sensor.set_signature (BLUE_SIG, &BLUE_SIGNATURE);
     vision_sensor.set_signature (RED_SIG, &RED_SIGNATURE);
 
