@@ -14,7 +14,8 @@ pros::Motor threefour_motor(5, pros::MotorGearset::green);
 pros::Motor five_motor(3, pros::MotorGearset::green);
 pros::Motor six_motor(2, pros::MotorGearset::green);
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
-pros::adi::Port scraper('A', pros::E_ADI_DIGITAL_OUT);pros::Vision vision_sensor (VISION_PORT);
+pros::adi::Port scraper('A', pros::E_ADI_DIGITAL_OUT);\
+pros::Vision vision_sensor (VISION_PORT);
 
 // MotorGroup: negative numbers are okay here to indicate reversed motors inside the group
 pros::MotorGroup left_motors({-16, 12, -13}, pros::MotorGearset::blue);
@@ -549,6 +550,80 @@ void autonomous() {
     pros::delay(1000);
     convState(0,-1);
 
+    chassis.turnToPoint(a*50, b*-47, 700);
+    chassis.moveToPoint(a*50, b*-47, 1000);
+    chassis.turnToPoint(a*60, b*-47, 700);
+    scraper.set_value(true);
+    pros::delay(900);
+    chassis.moveToPoint(a*60, b*-47, 1000);
+    convState(0, 0); //intake 3 red
+    pros::delay(1500);
+    convState(0,-1); //stop motors
+    chassis.moveToPoint(a*50, b*-47, 500, {.forwards=false});
+    chassis.moveToPoint(a*60, b*-47, 1000);
+    convState(0, 0); //intake 3 blue
+    pros::delay(1500);
+    convState(0,-1); //stop motors
+    chassis.moveToPoint(a*50, b*-47, 500, {.forwards=false});
+    scraper.set_value(false);
+
+    chassis.turnToPoint(a*14.4, b*-12.7, 700);
+    chassis.moveToPoint(a*14.4, b*-12.7, 1500);
+    convState(2, 2); //outtake center upper from top basket which has blue
+    pros::delay(600);
+    convState(0, -1); //stop motors
+    pros::delay(100);
+    convState(2, 2); //outtake center upper from top basket which has blue
+    pros::delay(600);
+    convState(0, -1); //stop motors
+    pros::delay(100);
+    convState(2, 2); //outtake center upper from top basket which has blue
+    pros::delay(600);
+    convState(0, -1); //stop motors
+    pros::delay(100);
+    convState(2, 2); //outtake center upper from top basket which has blue
+    pros::delay(600);
+    convState(0, -1); //stop motors
+    pros::delay(100);
+    convState(2,2); //outtake center upper from top basket which has blue
+    pros::delay(1000);
+    convState(0,-1);
+
+    chassis.turnToPoint(a*40.7, b*14.5, 700);
+    chassis.moveToPoint(a*40.7, b*14.5, 2000);
+    chassis.turnToPoint(a*25.2, b*28.2, 700);
+    chassis.moveToPoint(a*25.2, b*28.2, 1500);
+    chassis.turnToPoint(a*13.1, b*14, 700);
+    chassis.moveToPoint(a*13.1, b*14, 1000);
+
+    convState(1, 1); //outtake center lower from bottom basket which has red
+    pros::delay(600);    
+    convState(0, -1); //stop
+    pros::delay(100);
+    convState(1, 1); //outtake center lower from bottom basket which has red
+    pros::delay(600);
+    convState(0, -1); //stop
+    pros::delay(100);
+    convState(1, 1); //outtake center lower from bottom basket which has red
+    pros::delay(600);
+    convState(0, -1); //stop
+    pros::delay(100);
+    convState(1, 1); //outtake center lower from bottom basket which has red
+    pros::delay(600);
+    convState(0, -1); //stop motors
+    pros::delay(100);
+    convState(1,1); //outtake center lower from bottom basket which has red
+    pros::delay(1000);
+    convState(0, -1); //stop motors
+
+    chassis.turnToPoint(a*43.4, b*27.8, 700);
+    chassis.moveToPoint(a*43.4, b*27.8, 1500);
+    chassis.turnToPoint(a*61.8, b*28, 700);
+    chassis.moveToPoint(a*61.8, b*28, 1500);
+    chassis.turnToPoint(a*62.1, b*-4.9, 700);
+    chassis.moveToPoint(a*62.1, b*-4.9, 5000);
+
+
 /*
     chassis.turnToPoint(a*-47.8, b*47, 400);
     pros::delay(200);
@@ -708,7 +783,7 @@ void autonomous() {
     convState(0, -1); //stop motors
     //////REAL AUTON LOVERS GRAHHH
     */
-    autonRunning = false;
+    autonRunning = true;
     if (convTaskPtr) {
         convTaskPtr->remove();
         delete convTaskPtr;
