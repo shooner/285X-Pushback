@@ -550,8 +550,8 @@ void autonomous() {
     pros::delay(1000);
     convState(0,-1);
 
-    chassis.turnToPoint(a*50, b*-47, 700);
-    chassis.moveToPoint(a*50, b*-47, 1000);
+    chassis.turnToPoint(a*50, b*-45, 700);
+    chassis.moveToPoint(a*50, b*-45, 1000);
     chassis.turnToPoint(a*60, b*-47, 700);
     scraper.set_value(true);
     pros::delay(900);
