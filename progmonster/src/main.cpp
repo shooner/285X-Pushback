@@ -3,10 +3,7 @@
 #include "lemlib/api.hpp" // IWYU pragma: keep
 #include "main.h"
 
-// Vision signature ids
-#define RED_SIG 1
-#define BLUE_SIG 2
-#define VISION_PORT 20
+#define OPTICAL_PORT 20
 
 // ---------- Hardware ----------
 pros::Motor onetwo_motor(4, pros::MotorGearset::green);
@@ -15,7 +12,7 @@ pros::Motor five_motor(3, pros::MotorGearset::green);
 pros::Motor six_motor(2, pros::MotorGearset::green);
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 pros::adi::Port scraper('A', pros::E_ADI_DIGITAL_OUT);\
-pros::Vision vision_sensor (VISION_PORT);
+pros::Optical optical_sensor(OPTICAL_PORT);
 
 // MotorGroup: negative numbers are okay here to indicate reversed motors inside the group
 pros::MotorGroup left_motors({-16, 12, -13}, pros::MotorGearset::blue);
@@ -33,6 +30,7 @@ int basket = 1; // 1 bottom, 2 top
 int aut_height = 0; // conveyor command for auton thread
 int aut_basket = 0;
 int teamColor = 1; // 1 = RED, 2 = BLUE
+int colorAssignment = 1; // 1 = RED to bottom/BLUE to top, 2 = BLUE to bottom/RED to top
 
 // Flags used to coordinate tasks and safe shutdown between modes
 volatile bool opRunning = false;
@@ -93,17 +91,29 @@ lemlib::Chassis chassis(drivetrain,
                         &steer_curve);
 
 // ---------- Utility ----------
-static bool detect_signature (pros:: Vision& vision, std::uint8_t sig_id, int min_w = 6, int min_h = 6) {
-    pros::vision_object_s_t objs[1];
-    int32_t copied = vision.read_by_sig(0, sig_id, 1, objs);
-    (void) copied;
-    const auto& obj = objs[0];
-    if (obj.signature == VISION_OBJECT_ERR_SIG) return false;
-    if (obj.signature != sig_id) return false;
-    // Filter out noise by requiring minimum size
-    return (obj.width >= min_w && obj.height >= min_h);
+static bool detect_red_optical() {
+    double hue = optical_sensor.get_hue();
+    return (hue >= 0 && hue <= 15) || (hue >= 345 && hue <= 360);
 }
 
+static bool detect_blue_optical() {
+    double hue = optical_sensor.get_hue();
+    return (hue >= 190 && hue <= 260);
+}
+
+// Return destination for last-detected color based on colorAssignment
+// returns 0 => bottom, 1 => top
+static int get_color_destination(bool last_red, bool last_blue) {
+    if (colorAssignment == 2) {
+        if (last_red) return 0;
+        if (last_blue) return 1;
+        return 0;
+    } else {
+        if (last_blue) return 0;
+        if (last_red) return 1;
+        return 0;
+    }
+}
 // ---------- Tasks (safe: check opRunning / autonRunning) ----------
 void toggleBasket(void* param){
     // Task toggles basket with X button, runs only in opcontrol
@@ -138,23 +148,32 @@ void toggleScraper(void* param) {
     scraper.set_value(false);
 }
 
+void toggleColorAssignment(void* param) {
+    while (opRunning) {
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
+            if (colorAssignment == 1) {
+                colorAssignment = 2;
+            } else {
+                colorAssignment = 1;
+            }
+            pros::delay(150);
+        }
+        pros::delay(20);
+    }
+}
+
 void motorControl(void* param) {
     bool last_blue = false;
     bool last_red = false;
-    bool last_yours = false;
     bool reversing = false;
-
-    // Initialize last_* according to team color
-    if (teamColor == 1) last_red = true;
-    if (teamColor == 2) last_blue = true;
 
     while (opRunning) {
         // INTAKE / sorting while R2 held
         if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-            // small delay to let vision update
+            // small delay to let optical sensor update
             pros::delay(20);
-            bool blue_present = detect_signature(vision_sensor, BLUE_SIG);
-            bool red_present = detect_signature(vision_sensor, RED_SIG);
+            bool blue_present = detect_blue_optical();
+            bool red_present = detect_red_optical();
 
             // always intake
             threefour_motor.move(127);
@@ -168,10 +187,10 @@ void motorControl(void* param) {
                 last_red = false;
             }
 
-            last_yours = (teamColor == 1) ? last_red : last_blue;
+            int destination = get_color_destination(last_red, last_blue);
 
-            if(!last_yours){
-                // eject non-team color
+            if(destination == 0){
+                // Send to bottom basket
                 if (reversing){
                     five_motor.move(127);
                     pros::delay(100);
@@ -181,6 +200,7 @@ void motorControl(void* param) {
                 onetwo_motor.move(-127);
                 six_motor.move(-127);
             } else {
+                // Send to top basket
                 five_motor.move(-127);
                 onetwo_motor.move_velocity(0);
                 six_motor.move_velocity(0);
@@ -272,15 +292,11 @@ void convState(int b, int h){
 void convAuton(void* param) {
     bool last_red=false;
     bool last_blue=false;
-    bool last_yours = false;
-
-    if (teamColor == 1) last_red = true;
-    if (teamColor == 2) last_blue = true;
 
     while (autonRunning) {
         if (aut_height == 0){
-            bool blue_present = detect_signature(vision_sensor, BLUE_SIG);
-            bool red_present = detect_signature(vision_sensor, RED_SIG);
+            bool blue_present = detect_blue_optical();
+            bool red_present = detect_red_optical();
 
             threefour_motor.move(127);  // Always intake
 
@@ -293,9 +309,9 @@ void convAuton(void* param) {
                 last_red = false;
             }
 
-            last_yours = (teamColor == 1) ? last_red : last_blue;
+            int destination = get_color_destination(last_red, last_blue);
 
-            if(!last_yours){
+            if(destination == 0){
                 onetwo_motor.move(-127);
                 five_motor.move(0);
                 six_motor.move(-127);
@@ -373,14 +389,9 @@ void convAuton(void* param) {
 void initialize() {
     pros::lcd::initialize();
 
-    // set vision signatures once at startup
+    // Initialize optical sensor
     horizontal.set_reversed(true);
-    pros::vision_signature_s_t BLUE_SIGNATURE =
-        pros::Vision::signature_from_utility (BLUE_SIG, -3805, -2769, -3288, 3585, 4999, 4292, 3.0, 0);
-    pros::vision_signature_s_t RED_SIGNATURE =
-        pros::Vision::signature_from_utility(RED_SIG, 4357, 5521, 4940, -2035, -305, -1170, 3.0, 0);
-    vision_sensor.set_signature (BLUE_SIG, &BLUE_SIGNATURE);
-    vision_sensor.set_signature (RED_SIG, &RED_SIGNATURE);
+    optical_sensor.set_led_pwm(100);  // Set LED brightness for better detection
 
     // Start LEMLib calibration (may be blocking). Make sure it has time to finish
     chassis.calibrate();
