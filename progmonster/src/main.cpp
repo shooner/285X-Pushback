@@ -486,7 +486,7 @@ void autonomous() {
     convState(0, 0); //intake 3 red 
     pros::delay(1500);
     convState(0,-1); //stop motors
-    chassis.moveToPoint(a*50, b*47, 500, {.forwards=false});
+    chassis.moveToPoint(a*50, b*51, 500, {.forwards=false});
     chassis.moveToPoint(a*60, b*51, 1000);
 
     convState(0, 0); //intake 3 blue
@@ -567,8 +567,8 @@ void autonomous() {
     chassis.moveToPoint(a*50, b*-47, 500, {.forwards=false});
     scraper.set_value(false);
 
-    chassis.turnToPoint(a*14.4, b*-12.7, 700);
-    chassis.moveToPoint(a*14.4, b*-12.7, 1500);
+    chassis.turnToPoint(a*13, b*-15, 700);
+    chassis.moveToPoint(a*13, b*-15, 1500);
     convState(2, 2); //outtake center upper from top basket which has blue
     pros::delay(600);
     convState(0, -1); //stop motors
