@@ -494,51 +494,50 @@ void autonomous() {
     scraper.set_value(true);
     pros::delay(900);
     chassis.moveToPoint(a*60, b*51, 1000);
-    convState(0, 0); //intake 3 red 
-    pros::delay(1500);
-    convState(0,-1); //stop motors
-    chassis.moveToPoint(a*50, b*51, 500, {.forwards=false});
-    chassis.moveToPoint(a*60, b*51, 1000);
-
-    convState(0, 0); //intake 3 blue
-    pros::delay(1500);
-    convState(0,-1); //stop motors
+    convState(0, 0); //intake 3 red 3 blue
+    pros::delay(3500);
+    convState(0,-1);
 
     chassis.moveToPoint(a*50, b*47, 500, {.forwards=false});
     scraper.set_value(false);
     convState(0,0);
 
-    chassis.turnToPoint(a*17, b*12, 700);
-    chassis.moveToPoint(a*17, b*12, 4000, {.maxSpeed = 50});
+    chassis.turnToPoint(a*16.5, b*14, 700);
+    chassis.moveToPoint(a*16.5, b*14, 4000, {.maxSpeed = 50});
     pros::delay(3000);
 
+
     convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(600);    
-    convState(0, -1); //stop
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(600);
-    convState(0, -1); //stop
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(600);
-    convState(0, -1); //stop
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(600);
+    pros::delay(500);    
     convState(0, -1); //stop motors
     pros::delay(100);
-    convState(1,1); //outtake center lower from bottom basket which has red
+    convState(1, 1); //outtake center lower from bottom basket which has red
+    pros::delay(500);
+    convState(0, -1); //stop motors
+    pros::delay(100);
+    convState(1, 1); //outtake center lower from bottom basket which has red
+    pros::delay(500);
+    convState(0, -1); //stop motors
+    pros::delay(100);
+    convState(1, 1); //outtake center lower from bottom basket which has red
+    pros::delay(500);
+    convState(0, -1); //stop motors
+    pros::delay(100);
+    convState(1, 1); //outtake center lower from bottom basket which has red
+    pros::delay(500);
+    convState(0, -1); //stop motors
+    pros::delay(100);
+    convState(1, 1); //outtake center lower from bottom basket which has red
     pros::delay(1000);
-    convState(0, -1); //stop motors
+    convState(0,-1);
 
     convState(0,6); //run six motor
     chassis.turnToPoint(a*40.1, b*-10.7, 700);
     chassis.moveToPoint(a*40.1, b*-10.7, 1500);
     chassis.turnToPoint(a*23.5, b*-23.8, 700);
     chassis.moveToPoint(a*23.5, b*-23.8, 1500, {.maxSpeed = 60});
-    chassis.turnToPoint(a*13, b*-18, 700);
-    chassis.moveToPoint(a*13, b*-18, 1000);
+    chassis.turnToPoint(a*14, b*-13, 700);
+    chassis.moveToPoint(a*14, b*-13, 1000);
     convState(0,-1); //stop six motor
 
     convState(2, 2); //outtake center upper from top basket which has blue
@@ -627,12 +626,12 @@ void autonomous() {
     pros::delay(1000);
     convState(0, -1); //stop motors
 
-    chassis.turnToPoint(a*43.4, b*27.8, 700);
-    chassis.moveToPoint(a*43.4, b*27.8, 1500);
-    chassis.turnToPoint(a*61.8, b*28, 700);
-    chassis.moveToPoint(a*61.8, b*28, 1500);
-    chassis.turnToPoint(a*62.1, b*-4.9, 700);
-    chassis.moveToPoint(a*62.1, b*-4.9, 5000);
+    chassis.turnToPoint(a*40.6, b*0, 700);
+    chassis.moveToPoint(a*40.6, b*0, 1500);
+    convState(0,0);
+    chassis.turnToPoint(a*70, b*0, 700);
+    chassis.moveToPoint(a*70, b*0, 1500);
+    convState(0,-1);
 
 
 /*
