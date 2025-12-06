@@ -178,13 +178,30 @@ void motorControl(void* param) {
             // always intake
             threefour_motor.move(127);
 
-            if (red_present){
-                last_red = true;
-                last_blue = false;
+            // Prepare new detection state but only switch after a short confirmation delay
+            bool new_last_red = last_red;
+            bool new_last_blue = last_blue;
+            if (red_present) {
+                new_last_red = true;
+                new_last_blue = false;
             }
-            if (blue_present){
-                last_blue = true;
-                last_red = false;
+            if (blue_present) {
+                new_last_blue = true;
+                new_last_red = false;
+            }
+
+            // If a change was detected, wait 250ms and re-check before committing the switch
+            if (new_last_red != last_red || new_last_blue != last_blue) {
+                bool blue_confirm = detect_blue_optical();
+                bool red_confirm = detect_red_optical();
+                if (red_confirm) {
+                    last_red = true;
+                    last_blue = false;
+                } else if (blue_confirm) {
+                    last_blue = true;
+                    last_red = false;
+                }
+                // If neither confirms, keep previous state
             }
 
             int destination = get_color_destination(last_red, last_blue);
@@ -300,13 +317,27 @@ void convAuton(void* param) {
 
             threefour_motor.move(127);  // Always intake
 
+            bool new_last_red = last_red;
+            bool new_last_blue = last_blue;
             if (red_present) {
-                last_red = true;
-                last_blue = false;
+                new_last_red = true;
+                new_last_blue = false;
             }
             if (blue_present) {
-                last_blue = true;
-                last_red = false;
+                new_last_blue = true;
+                new_last_red = false;
+            }
+
+            if (new_last_red != last_red || new_last_blue != last_blue) {
+                bool blue_confirm = detect_blue_optical();
+                bool red_confirm = detect_red_optical();
+                if (red_confirm) {
+                    last_red = true;
+                    last_blue = false;
+                } else if (blue_confirm) {
+                    last_blue = true;
+                    last_red = false;
+                }
             }
 
             int destination = get_color_destination(last_red, last_blue);
@@ -485,7 +516,7 @@ void autonomous() {
 
     //skills
 
-    chassis.setPose(a*50, b*17, 180);
+    /*chassis.setPose(a*50, b*17, 180);
     scraper.set_value(false);
     chassis.turnToPoint(a*50, b*47, 1500);
     chassis.moveToPoint(a*50, b*47, 1000);
@@ -494,109 +525,80 @@ void autonomous() {
     scraper.set_value(true);
     pros::delay(900);
     chassis.moveToPoint(a*60, b*51, 1000);
-    convState(0, 0); //intake 3 red 3 blue
-    pros::delay(3500);
-    convState(0,-1);
+    convState(0, 0); //intake 3 red
+    pros::delay(2500);
+    convState(0,-1); //stop motors
+    chassis.moveToPoint(a*50, b*47, 500, {.forwards=false});
+    chassis.moveToPoint(a*60, b*51, 1000);
+
+    convState(0, 0); //intake 3 blue
+    pros::delay(1500);
+    convState(0,-1); //stop motors
 
     chassis.moveToPoint(a*50, b*47, 500, {.forwards=false});
     scraper.set_value(false);
     convState(0,0);
+    chassis.turnToPoint(a*33.4, b*29.4, 700);
+    chassis.moveToPoint(a*33.4, b*29.4, 2500, {.maxSpeed = 30});
+    chassis.moveToPoint(a*39.3, b*35.4, 1500, {.forwards=false});
 
-    chassis.turnToPoint(a*16.5, b*14, 700);
-    chassis.moveToPoint(a*16.5, b*14, 4000, {.maxSpeed = 50});
+    chassis.turnToPoint(a*33.3, b*17.1, 700);
+    chassis.moveToPoint(a*33.3, b*17.1, 1500);
+    chassis.turnToPoint(a*24.5, b*22.6, 700);
+    chassis.moveToPoint(a*24.5, b*22.6, 1500);
+    chassis.turnToPoint(a*15.7, b*12.4, 700);
+    chassis.moveToPoint(a*15.7, b*12.4, 2000, {.maxSpeed = 30});
+    pros::delay(1000);
+
+    convState(1, 1); //outtake center lower from bottom basket which has red
     pros::delay(3000);
+    convState(0,-1);
+*/
+    chassis.setPose(a*15.7, b*12.4, 40);
+    chassis.moveToPoint(a*23, b*20.2, 1500, {.forwards=false});
+    chassis.turnToPoint(a*60.6, b*-27.8, 700);
+    chassis.moveToPoint(a*60.6, b*-27.8, 3000);
+    chassis.turnToPoint(a*57.5, b*-33.3, 700);
+    chassis.moveToPoint(a*57.5, b*-33.3, 1500);
+    chassis.turnToPoint(a*35, b*-29.4, 700);
+    convState(0,0);
+    chassis.moveToPoint(a*35, b*-29.4, 3000, {.maxSpeed = 30});
+    chassis.turnToPoint(a*18.2, b*-32.3, 700);
+    chassis.moveToPoint(a*18.2, b*-32.3, 700);
+    convState(0,-1);
+    chassis.turnToPoint(a*25.9, b*-19.9, 700);
+    chassis.moveToPoint(a*25.9, b*-19.9, 1500);
 
+    chassis.turnToPoint(a*17, b*-19, 700);
+    chassis.moveToPoint(a*17, b*-19, 1000);
 
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);    
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(1000);
+    convState(2, 2); //outtake center upper from top basket which has blue
+    pros::delay(3500);
     convState(0,-1);
 
-    convState(0,6); //run six motor
-    chassis.turnToPoint(a*40.1, b*-10.7, 700);
-    chassis.moveToPoint(a*40.1, b*-10.7, 1500);
-    chassis.turnToPoint(a*23.5, b*-23.8, 700);
-    chassis.moveToPoint(a*23.5, b*-23.8, 1500, {.maxSpeed = 60});
-    chassis.turnToPoint(a*14, b*-13, 700);
-    chassis.moveToPoint(a*14, b*-13, 1000);
-    convState(0,-1); //stop six motor
+    chassis.moveToPoint(a*22.9, b*-28.5, 1500, {.forwards=false});
 
-    convState(2, 2); //outtake center upper from top basket which has blue
-    pros::delay(600);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(2, 2); //outtake center upper from top basket which has blue
-    pros::delay(600);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(2, 2); //outtake center upper from top basket which has blue
-    pros::delay(600);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(2, 2); //outtake center upper from top basket which has blue
-    pros::delay(600);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(2,2); //outtake center upper from top basket which has blue
-    pros::delay(1000);
-    convState(0,-1);
-
-    chassis.turnToPoint(a*50, b*-47, 700);
-    chassis.moveToPoint(a*50, b*-47, 1000);
-    chassis.turnToPoint(a*60, b*-47, 700);
+    chassis.turnToPoint(a*51, b*-39.7, 700);
+    chassis.moveToPoint(a*51, b*-39.7, 1000);
+    chassis.turnToPoint(a*70, b*-37, 700);
     scraper.set_value(true);
     pros::delay(900);
-    chassis.moveToPoint(a*60, b*-47, 1000);
+    chassis.moveToPoint(a*70, b*-37, 1000);
     convState(0, 0); //intake 3 red
-    pros::delay(1500);
+    pros::delay(2500);
     convState(0,-1); //stop motors
-    chassis.moveToPoint(a*50, b*-47, 500, {.forwards=false});
-    chassis.moveToPoint(a*60, b*-47, 1000);
+    chassis.moveToPoint(a*51, b*-39.7, 500, {.forwards=false});
+    chassis.moveToPoint(a*70, b*-37, 1000);
     convState(0, 0); //intake 3 blue
     pros::delay(1500);
     convState(0,-1); //stop motors
-    chassis.moveToPoint(a*50, b*-47, 500, {.forwards=false});
+    chassis.moveToPoint(a*51, b*-39.7, 500, {.forwards=false});
     scraper.set_value(false);
 
-    chassis.turnToPoint(a*13, b*-15, 700);
-    chassis.moveToPoint(a*13, b*-15, 1500);
+    chassis.turnToPoint(a*14.2, b*-17.7, 700);
+    chassis.moveToPoint(a*14.2, b*-17.7, 1500);
     convState(2, 2); //outtake center upper from top basket which has blue
-    pros::delay(600);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(2, 2); //outtake center upper from top basket which has blue
-    pros::delay(600);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(2, 2); //outtake center upper from top basket which has blue
-    pros::delay(600);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(2, 2); //outtake center upper from top basket which has blue
-    pros::delay(600);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(2,2); //outtake center upper from top basket which has blue
-    pros::delay(1000);
+    pros::delay(3500);
     convState(0,-1);
 
     chassis.turnToPoint(a*40.7, b*14.5, 700);
@@ -607,32 +609,18 @@ void autonomous() {
     chassis.moveToPoint(a*13.1, b*14, 1000);
 
     convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(600);    
-    convState(0, -1); //stop
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(600);
-    convState(0, -1); //stop
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(600);
-    convState(0, -1); //stop
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(600);
+    pros::delay(3500);    
     convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1,1); //outtake center lower from bottom basket which has red
-    pros::delay(1000);
-    convState(0, -1); //stop motors
-
+/*
     chassis.turnToPoint(a*40.6, b*0, 700);
     chassis.moveToPoint(a*40.6, b*0, 1500);
     convState(0,0);
     chassis.turnToPoint(a*70, b*0, 700);
-    chassis.moveToPoint(a*70, b*0, 1500);
+    chassis.moveToPoint(a*30, 0, 1500, {.forwards = false});
+    chassis.setPose(a*30, 0, 270);
+    chassis.moveToPoint(a*70, b*0, 4000);
     convState(0,-1);
-
+*/
 
 /*
     chassis.turnToPoint(a*-47.8, b*47, 400);
