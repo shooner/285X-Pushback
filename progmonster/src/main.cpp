@@ -554,6 +554,8 @@ void autonomous() {
     pros::delay(3000);
     convState(0,-1);
 */
+
+/*
     chassis.setPose(a*15.7, b*12.4, 40);
     chassis.moveToPoint(a*23, b*20.2, 1500, {.forwards=false});
     chassis.turnToPoint(a*60.6, b*-27.8, 700);
@@ -611,7 +613,7 @@ void autonomous() {
     convState(1, 1); //outtake center lower from bottom basket which has red
     pros::delay(3500);    
     convState(0, -1); //stop motors
-/*
+
     chassis.turnToPoint(a*40.6, b*0, 700);
     chassis.moveToPoint(a*40.6, b*0, 1500);
     convState(0,0);
@@ -727,7 +729,7 @@ void autonomous() {
     pros::delay(500);
     chassis.moveToPoint(a*60.7, b*-1, 800);
     pros::delay(700);
-
+*/
 
     
 
@@ -779,7 +781,7 @@ void autonomous() {
     pros::delay(1000);
     convState(0, -1); //stop motors
     //////REAL AUTON LOVERS GRAHHH
-    */
+    
     autonRunning = false;
     if (convTaskPtr) {
         convTaskPtr->remove();
