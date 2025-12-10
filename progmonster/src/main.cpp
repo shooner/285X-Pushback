@@ -623,116 +623,7 @@ void autonomous() {
     chassis.moveToPoint(a*70, b*0, 4000);
     convState(0,-1);
 */
-
-/*
-    chassis.turnToPoint(a*-47.8, b*47, 400);
-    pros::delay(200);
-    chassis.moveToPoint(a*-47.8, b*47, 4000);
-    pros::delay(3500);
-    scraper.set_value(true);
-    chassis.turnToPoint(a*-56.5, b*47, 400);
-    pros::delay(200);
-    chassis.moveToPoint(a*-56.5, b*47, 600);
-    pros::delay(300);
-    convState(0,0); //intake 3 red 3 blue from the loader
-    pros::delay(2700);
-    convState(0,-1); //stop motors
-    chassis.moveToPoint(a*-47.8, b*47, 500, {.forwards=false});
-    pros::delay(300);
-    chassis.turnToPoint(a*-23.7, b*33, 200);
-    pros::delay(200);
-    scraper.set_value(false);
-    chassis.moveToPoint(a*-23.7, b*33, 2000);
-    pros::delay(1500);
-    chassis.turnToPoint(a*-23.7, b*24.2, 200);
-    pros::delay(200);
-    chassis.moveToPoint(a*-23.7, b*24.2, 500);
-    pros::delay(500);
-    chassis.turnToPoint(a*-13.5, b*13.8, 500);
-    pros::delay(200);
-    chassis.moveToPoint(a*-13.5, b*13.8, 700);
-    pros::delay(700);
-    convState(2, 2); //outtake from top basket to center upper 6 blue
-    pros::delay(2700);
-    convState(0,-1); //stop motors
-
-    chassis.turnToPoint(a*-38.7, b*-8.4, 500);
-    pros::delay(200);
-    chassis.moveToPoint(a*-38.7, b*-8.4, 2000);
-    pros::delay(3000);
-    chassis.turnToPoint(a*-31.8, b*-15.4, 300);
-    pros::delay(200);
-    chassis.moveToPoint(a*-31.8, b*-15.4, 1000, {.maxSpeed = 60});
-    pros::delay(700);
-    convState(0, 0); //intake one blue block
-    pros::delay(700);
-    convState(0, -1); //stop motors
-    chassis.turnToPoint(a*-23.7, b*-23.5, 500);
-    pros::delay(200);
-    chassis.moveToPoint(a*-23.7, b*-23.5, 500);
-    pros::delay(500);
-    chassis.turnToPoint(a*-13.8, b*-13.6, 500);
-    pros::delay(200);
-    chassis.moveToPoint(a*-13.8, b*-13.6, 700);
-    pros::delay(700);
-    convState(1, 1); //outtake 3 red blocks from bottom to center lower
-    pros::delay(1500);
-    convState(0, -1);
-
-
-    chassis.turnToPoint(a*0, b*-26.7, 500);
-    pros::delay(200);
-    chassis.moveToPoint(a*0, b*-26.7, 700);
-    pros::delay(700);
-    chassis.turnToPoint(a*17.2, b*-17.2, 500);
-    pros::delay(200);
-    chassis.moveToPoint(a*17.2, b*-17.2, 700);
-    pros::delay(800);
-    chassis.turnToPoint(a*13.8, b*-13.6, 500);
-    pros::delay(200);
-    chassis.moveToPoint(a*13.8, b*-13.6, 600);
-    pros::delay(600);
-    convState(2,2); //outtake one top blue to center upper, center filled
-    pros::delay(1500);
-    convState(0,-1); //stop motors
-    chassis.turnToPoint(a*50, b*-47, 500);
-    pros::delay(200);
-    chassis.moveToPoint(a*50, b*-47, 2500);
-    pros::delay(2000);
-    chassis.turnToPoint(a*56.5, b*-47, 500);
-    pros::delay(200);
-    scraper.set_value(true);
-    chassis.moveToPoint(a*56.5, b*-47, 700);
-    pros::delay(800);
-    convState(0,0); //intake 3 red 3 blue
-    pros::delay(2700);
-    convState(0,-1); //stop motors
-    chassis.moveToPoint(a*50, b*-47, 500, {.forwards=false});
-    pros::delay(300);
-    chassis.turnToPoint(a*32.6, b*-47, 500);
-    pros::delay(200);
-    scraper.set_value(false);
-    chassis.moveToPoint(a*32.6, b*-47, 1000);
-    pros::delay(1000);
-    convState(1,3); //outtake 3 red from bottom to long goal
-    pros::delay(2000);
-    convState(2,3); //outtake 3 blue from top to long goal
-    pros::delay(2000);
-    convState(0,-1); //stop motors
-
-    //parking
-    chassis.turnToPoint(a*59.6, b*-28.6, 500);
-    pros::delay(700);
-    chassis.moveToPoint(a*59.6, b*-28.6, 1000);
-    pros::delay(1500);
-    chassis.turnToPoint(a*60.7, b*-1, 400);
-    pros::delay(500);
-    chassis.moveToPoint(a*60.7, b*-1, 800);
-    pros::delay(700);
-*/
-
-    
-
+    /*
     //REAL AUTON LOVERS GRAHHH
     chassis.setPose(a*50, b*17, 180);
     scraper.set_value(false);
@@ -781,6 +672,11 @@ void autonomous() {
     pros::delay(1000);
     convState(0, -1); //stop motors
     //////REAL AUTON LOVERS GRAHHH
+    */
+
+    chassis.setPose(a*55.6, b*17, 90);
+    chassis.moveToPose(a*48.7, b*47.4, 270, 4000, {.lead = 0.4, .maxSpeed = 30, .horizontalDrift = 2});
+
     
     autonRunning = false;
     if (convTaskPtr) {
