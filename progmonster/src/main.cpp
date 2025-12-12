@@ -675,9 +675,13 @@ void autonomous() {
     //////REAL AUTON LOVERS GRAHHH
     */
 
-    chassis.setPose(-50, -17, 180);
+    chassis.setPose(0, 0, 0);
+    /*
+    chassis.moveToPose(48, -24, 90, 2000, {.minSpeed=72, .earlyExitRange=8});
+    chassis.moveToPose(64, 3, 0, 2000);
+    */
 
-    chassis.follow(auton_txt, 15, 150000);
+    chassis.follow(auton_txt, 15, 15000);
 
     
     autonRunning = false;
