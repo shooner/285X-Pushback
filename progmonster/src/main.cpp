@@ -4,6 +4,7 @@
 #include "main.h"
 
 #define OPTICAL_PORT 20
+ASSET(auton_txt);
 
 // ---------- Hardware ----------
 pros::Motor onetwo_motor(4, pros::MotorGearset::green);
@@ -674,8 +675,9 @@ void autonomous() {
     //////REAL AUTON LOVERS GRAHHH
     */
 
-    chassis.setPose(a*55.6, b*17, 90);
-    chassis.moveToPose(a*48.7, b*47.4, 270, 4000, {.lead = 0.4, .maxSpeed = 30, .horizontalDrift = 2});
+    chassis.setPose(-50, -17, 180);
+
+    chassis.follow(auton_txt, 15, 150000);
 
     
     autonRunning = false;
