@@ -4,6 +4,7 @@
 #include "main.h"
 
 #define OPTICAL_PORT 20
+ASSET(auton_txt);
 
 // ---------- Hardware ----------
 pros::Motor onetwo_motor(4, pros::MotorGearset::green);
@@ -553,7 +554,6 @@ void autonomous() {
     convState(1, 1); //outtake center lower from bottom basket which has red
     pros::delay(3000);
     convState(0,-1);
-
     chassis.setPose(a*15.7, b*12.4, 40);
     chassis.moveToPoint(a*23, b*20.2, 1500, {.forwards=false});
     chassis.turnToPoint(a*60.6, b*-27.8, 700);
@@ -679,9 +679,15 @@ void autonomous() {
     chassis.moveToPoint(a*50, b*18, 500);
     */
 
-    chassis.setPose(a*53.3, b*17.5, 90);
-    chassis.moveToPose(a*50.7, b*50.3, 270, 4000, {.maxSpeed = 30});
+    chassis.setPose(0, 0, 0);
+    /*
+    chassis.moveToPose(48, -24, 90, 2000, {.minSpeed=72, .earlyExitRange=8});
+    chassis.moveToPose(64, 3, 0, 2000);
+    */
 
+    chassis.follow(auton_txt, 15, 15000);
+
+    
     autonRunning = false;
     if (convTaskPtr) {
         convTaskPtr->remove();
