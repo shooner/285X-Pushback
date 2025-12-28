@@ -87,6 +87,7 @@ lemlib::Chassis chassis(drivetrain,
                         &steer_curve);
 
 void motorControl(void* param){
+    while(opRunning){
     if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
         //intake
         intake_motor.move(127);
@@ -115,7 +116,33 @@ void motorControl(void* param){
     else {
         intake_motor.move(0);
         evil_motor.move(0);
-        top_motor.move(0);}
+        top_motor.move(0);
+    }
+    }
+}
+
+void drive(void* param) {
+    while (opRunning) {
+        double forward = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+        double turn = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+        // feed directly to chassis arcade (LEMLib handles scaling)
+        chassis.arcade(forward, turn);
+        pros::delay(20);
+    }
+    // stop chassis on exit
+    left_motors.move(0);
+    right_motors.move(0);
+}
+
+
+void opcontrol(){
+    pros::lcd::initialize();
+    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+    pros::delay(200);
+    opRunning = true;
+    driveTaskPtr = new pros::Task(drive, NULL, "Drive Task");
+    motorControlTaskPtr = new pros::Task(motorControl, NULL, "Motor Control Task");
+
 
 }
 
