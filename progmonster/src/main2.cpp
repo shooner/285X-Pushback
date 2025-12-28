@@ -7,9 +7,9 @@
 pros::MotorGroup left_motors({-21, 20, -16}, pros::MotorGearset::blue);
 pros::MotorGroup right_motors({4, -11, 7}, pros::MotorGearset::blue);
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
-pros::Motor intake_motor(1, pros::MotorGearset::green);
-pros::Motor evil_motor(2, pros::MotorGearset::blue);
-pros::Motor top_motor(3, pros::MotorGearset::blue);
+pros::Motor intake_motor(3, pros::MotorGearset::green);
+pros::Motor evil_motor(9, pros::MotorGearset::blue);
+pros::Motor top_motor(10, pros::MotorGearset::blue);
 
 // Rotations / IMU
 pros::Rotation vertical(-14);
