@@ -4,8 +4,12 @@
 #define OPTICAL_PORT 20
 
 // MotorGroup: negative numbers are okay here to indicate reversed motors inside the group
-pros::MotorGroup left_motors({-16, 12, -13}, pros::MotorGearset::blue);
-pros::MotorGroup right_motors({6, -7, 8}, pros::MotorGearset::blue);
+pros::MotorGroup left_motors({-21, 20, -16}, pros::MotorGearset::blue);
+pros::MotorGroup right_motors({4, -11, 7}, pros::MotorGearset::blue);
+pros::Controller controller(pros::E_CONTROLLER_MASTER);
+pros::Motor intake_motor(1, pros::MotorGearset::green);
+pros::Motor evil_motor(2, pros::MotorGearset::blue);
+pros::Motor top_motor(3, pros::MotorGearset::blue);
 
 // Rotations / IMU
 pros::Rotation vertical(-14);
@@ -82,6 +86,38 @@ lemlib::Chassis chassis(drivetrain,
                         &throttle_curve,
                         &steer_curve);
 
+void motorControl(void* param){
+    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+        //intake
+        intake_motor.move(127);
+        evil_motor.move(-127);
+        top_motor.move(127);
+}
+    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
+        //outtake center lower
+        evil_motor.move(127);
+        intake_motor.move(-127);
+        top_motor.move(-127);
+}
+    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
+        //outtake center upper
+        evil_motor.move(-127);
+        intake_motor.move(127);
+        top_motor.move(-127);
+}
+
+    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
+        //outtake long goal
+        intake_motor.move(-127);
+        evil_motor.move(127);
+        top_motor.move(-127);
+}
+    else {
+        intake_motor.move(0);
+        evil_motor.move(0);
+        top_motor.move(0);}
+
+}
 
 void autonomous(){
     chassis.setPose(-50, -17, 180);
