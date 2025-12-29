@@ -1,37 +1,41 @@
-// 10-19-2025 - REWRITTEN (fixed task/timing/auton stop issues)
-
 #include "lemlib/api.hpp" // IWYU pragma: keep
 #include "main.h"
 
-#define OPTICAL_PORT 20
-ASSET(auton_txt);
-
-// ---------- Hardware ----------
-pros::Motor onetwo_motor(4, pros::MotorGearset::green);
-pros::Motor threefour_motor(5, pros::MotorGearset::green);
-pros::Motor five_motor(3, pros::MotorGearset::green);
-pros::Motor six_motor(2, pros::MotorGearset::green);
-pros::Controller controller(pros::E_CONTROLLER_MASTER);
-pros::adi::Port scraper('A', pros::E_ADI_DIGITAL_OUT);
-pros::Optical optical_sensor(OPTICAL_PORT);
+#define OPTICAL_PORT 'E'
 
 // MotorGroup: negative numbers are okay here to indicate reversed motors inside the group
-pros::MotorGroup left_motors({-16, 12, -13}, pros::MotorGearset::blue);
-pros::MotorGroup right_motors({6, -7, 8}, pros::MotorGearset::blue);
+pros::MotorGroup left_motors({-21, 20, -16}, pros::MotorGearset::blue);
+pros::MotorGroup right_motors({4, -11, 7}, pros::MotorGearset::blue);
+pros::Controller controller(pros::E_CONTROLLER_MASTER);
+
+pros::Motor intake_motor(3, pros::MotorGearset::green);
+pros::Motor evil_motor(9, pros::MotorGearset::blue);
+pros::Motor top_motor(10, pros::MotorGearset::blue);
+
+pros::adi::Port trapdoor('A', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port bunny('B', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port scraper('C', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port park('D', pros::E_ADI_DIGITAL_OUT);
+
+pros::Optical optical_sensor(OPTICAL_PORT);
 
 // Rotations / IMU
 pros::Rotation vertical(-14);
 // Replace negative port by positive with reversed flag
 pros::Rotation horizontal(15);
-
 pros::Imu imu(19);
+ASSET(firstcurve_txt);
+ASSET(secondcurve_txt);
+ASSET(thirdcurve_txt);
+ASSET(fourthcurve_txt);
 
 // ---------- State ----------
 int basket = 1; // 1 bottom, 2 top
 int aut_height = 0; // conveyor command for auton thread
 int aut_basket = 0;
 int teamColor = 2; // 1 = RED, 2 = BLUE
-int colorAssignment = 2; // 1 = RED to bottom/BLUE to top, 2 = BLUE to bottom/RED to top
+int colorAssignment = 2; // 1 = RED, 2 = BLUE
+bool bunny_engaged = false;
 
 // Flags used to coordinate tasks and safe shutdown between modes
 volatile bool opRunning = false;
@@ -91,7 +95,7 @@ lemlib::Chassis chassis(drivetrain,
                         &throttle_curve,
                         &steer_curve);
 
-// ---------- Utility ----------
+//color stuff
 static bool detect_red_optical() {
     double hue = optical_sensor.get_hue();
     return (hue >= 0 && hue <= 15) || (hue >= 345 && hue <= 360);
@@ -102,8 +106,6 @@ static bool detect_blue_optical() {
     return (hue >= 190 && hue <= 260);
 }
 
-// Return destination for last-detected color based on colorAssignment
-// returns 0 => bottom, 1 => top
 static int get_color_destination(bool last_red, bool last_blue) {
     if (colorAssignment == 2) {
         if (last_red) return 0;
@@ -114,25 +116,6 @@ static int get_color_destination(bool last_red, bool last_blue) {
         if (last_red) return 1;
         return 0;
     }
-}
-// ---------- Tasks (safe: check opRunning / autonRunning) ----------
-void toggleBasket(void* param){
-    // Task toggles basket with X button, runs only in opcontrol
-    while (opRunning) {
-        if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
-            if(basket == 1){
-                basket = 2;
-                controller.print(0, 0, "Top Basket ");
-            } else {
-                basket = 1;
-                controller.print(0, 0, "Bottom Basket");
-            }
-            pros::delay(150); // debounce
-        }
-        pros::delay(20);
-    }
-    // ensure safe exit
-    pros::delay(10);
 }
 
 void toggleScraper(void* param) {
@@ -149,38 +132,89 @@ void toggleScraper(void* param) {
     scraper.set_value(false);
 }
 
-void toggleColorAssignment(void* param) {
-    while (opRunning) {
-        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
-            if (colorAssignment == 1) {
-                colorAssignment = 2;
-            } else {
-                colorAssignment = 1;
-            }
-            pros::delay(150);
+void toggleBunnyEars(void* param) {
+    while (opRunning){
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
+            bunny_engaged = !bunny_engaged;
+            bunny.set_value(bunny_engaged);
+            pros::delay(200);
         }
         pros::delay(20);
     }
+    // on exit, retract bunny ears for safety
+    bunny.set_value(false);
 }
 
-void motorControl(void* param) {
+void togglePark(void* param) {
+    bool park_engaged = false;
+    while (opRunning){
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
+            park_engaged = !park_engaged;
+            park.set_value(park_engaged);
+            pros::delay(200);
+        }
+        pros::delay(20);
+    }
+    // on exit, retract bunny ears for safety
+    park.set_value(false);
+}
+
+
+void motorControl(void* param){
+    bool intake = false;
+    bool outlow = false;
+    bool outmid = false;
+    bool outlong = false;
+
     bool last_blue = false;
     bool last_red = false;
-    bool reversing = false;
 
-    while (opRunning) {
-        // INTAKE / sorting while R2 held
-        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-            // small delay to let optical sensor update
-            pros::delay(20);
-            bool blue_present = detect_blue_optical();
-            bool red_present = detect_red_optical();
+    while(opRunning){
+    if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) {
+        //intake
+        intake = !intake;
+        bunny_engaged = true;
+        bunny.set_value(bunny_engaged);
+        outlow = false;
+        outmid = false;
+        outlong = false;
 
-            // always intake
-            threefour_motor.move(127);
+}
+    else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
+        //outtake center lower
+        outlow = !outlow;
+        intake = false;
+        outmid = false;
+        outlong = false;
 
-            // Prepare new detection state but only switch after a short confirmation delay
-            bool new_last_red = last_red;
+}
+    else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)){
+        //outtake center upper
+        outmid = !outmid;
+        intake = false;
+        outlow = false;
+        outlong = false;
+}
+
+    else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
+        //outtake long goal
+        outlong = !outlong;
+        bunny_engaged = false;
+        bunny.set_value(bunny_engaged);
+        intake = false;
+        outlow = false;
+        outmid = false;
+}
+
+    if(intake==true){
+        intake_motor.move(127);
+        evil_motor.move(-127);
+        top_motor.move(127);
+
+        bool blue_present = detect_blue_optical();
+        bool red_present = detect_red_optical();
+
+        bool new_last_red = last_red;
             bool new_last_blue = last_blue;
             if (red_present) {
                 new_last_red = true;
@@ -208,84 +242,43 @@ void motorControl(void* param) {
             int destination = get_color_destination(last_red, last_blue);
 
             if(destination == 0){
-                // Send to bottom basket
-                if (reversing){
-                    five_motor.move(127);
-                    pros::delay(100);
-                    five_motor.move_velocity(0);
-                    reversing = false;
-                }
-                onetwo_motor.move(-127);
-                six_motor.move(-127);
-            } else {
-                // Send to top basket
-                five_motor.move(-127);
-                onetwo_motor.move_velocity(0);
-                six_motor.move_velocity(0);
-                reversing=true;
+                trapdoor.set_value(true);
             }
-
-            pros::lcd::set_text(2, last_red ? "Red Detected " : "No Red");
-            pros::lcd::set_text(3, last_blue ? "Blue Detected" : "No Blue");
-        }
-        // Outtake center lower (L1)
-        else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
-            if(basket==1){
-                threefour_motor.move(-50);
-                five_motor.move(50);
-                onetwo_motor.move(0);
-                six_motor.move(0);
-            } else {
-                six_motor.move(50);
-                onetwo_motor.move(50);
-                threefour_motor.move(-50);
-                five_motor.move(0);
+            else{
+                trapdoor.set_value(false);
             }
-        }
-        // Outtake center upper (R1)
-        else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
-            if(basket==1){
-                five_motor.move(50);
-                threefour_motor.move(50);
-                onetwo_motor.move(50);
-                six_motor.move(0);
-            } else {
-                six_motor.move(50);
-                threefour_motor.move(50);
-                onetwo_motor.move(50);
-                five_motor.move(0);
-            }
-        }
-        // Outtake long goal (L2)
-        else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
-            if(basket==1){
-                five_motor.move(127);
-                threefour_motor.move(127);
-                onetwo_motor.move(-127);
-                six_motor.move(0);
-            } else {
-                six_motor.move(127);
-                onetwo_motor.move(-127);
-                threefour_motor.move(0);
-                five_motor.move(0);
-            }
-        }
-        else {
-            // stop all conveyor motors when no buttons pressed
-            six_motor.move(0);
-            onetwo_motor.move(0);
-            threefour_motor.move(0);
-            five_motor.move(0);
-        }
-
-        pros::delay(20);
     }
 
-    // ensure motors are stopped when task exits
-    six_motor.move(0);
-    onetwo_motor.move(0);
-    threefour_motor.move(0);
-    five_motor.move(0);
+    if(outlow==true){
+        evil_motor.move(127);
+        intake_motor.move(-127);
+        top_motor.move(-127);
+    }
+
+    if(outmid==true){
+        evil_motor.move(-127);
+        intake_motor.move(127);
+        top_motor.move(-127);
+    }
+
+    if(outlong==true){
+        intake_motor.move(-127);
+        evil_motor.move(127);
+        top_motor.move(-127);
+    }
+
+    if(outlong==false && intake==false && outlow==false && outmid==false){
+        intake_motor.move(0);
+        evil_motor.move(0);
+        top_motor.move(0);
+        bunny_engaged = false;
+        bunny.set_value(bunny_engaged);
+    }
+
+    pros::delay(20);
+
+    }
+    trapdoor.set_value(false);
 }
 
 void drive(void* param) {
@@ -302,409 +295,59 @@ void drive(void* param) {
 }
 
 
-void convState(int b, int h){
-    aut_height = h;
-    aut_basket = b;
-}
-
-// Conveyor/auton task — only runs while autonRunning is true
-void convAuton(void* param) {
-    bool last_red=false;
-    bool last_blue=false;
-
-    while (autonRunning) {
-        if (aut_height == 0){
-            bool blue_present = detect_blue_optical();
-            bool red_present = detect_red_optical();
-
-            threefour_motor.move(127);  // Always intake
-
-            bool new_last_red = last_red;
-            bool new_last_blue = last_blue;
-            if (red_present) {
-                new_last_red = true;
-                new_last_blue = false;
-            }
-            if (blue_present) {
-                new_last_blue = true;
-                new_last_red = false;
-            }
-
-            if (new_last_red != last_red || new_last_blue != last_blue) {
-                bool blue_confirm = detect_blue_optical();
-                bool red_confirm = detect_red_optical();
-                if (red_confirm) {
-                    last_red = true;
-                    last_blue = false;
-                } else if (blue_confirm) {
-                    last_blue = true;
-                    last_red = false;
-                }
-            }
-
-            int destination = get_color_destination(last_red, last_blue);
-
-            if(destination == 0){
-                onetwo_motor.move(-127);
-                five_motor.move(0);
-                six_motor.move(-127);
-            } else {
-                five_motor.move(-127);
-                onetwo_motor.move(0);
-                six_motor.move(0);
-            }
-        }
-        else if (aut_height == 1){
-            // Outtake center lower
-            if(aut_basket==1){
-                threefour_motor.move(-50);
-                five_motor.move(50);
-                onetwo_motor.move(0);
-                six_motor.move(0);
-            } else {
-                six_motor.move(50);
-                onetwo_motor.move(50);
-                threefour_motor.move(50);
-                five_motor.move(0);
-            }
-        }
-        else if (aut_height == 2){
-            // Outtake center upper
-            if(aut_basket==1){
-                five_motor.move(50);
-                threefour_motor.move(50);
-                onetwo_motor.move(50);
-                six_motor.move(0);
-            } else {
-                six_motor.move(50);
-                threefour_motor.move(50);
-                onetwo_motor.move(50);
-                five_motor.move(0);
-            }
-        }
-        else if (aut_height == 3){
-            // Outtake long goal
-            if(aut_basket==1){
-                five_motor.move(127);
-                threefour_motor.move(127);
-                onetwo_motor.move(-127);
-                six_motor.move(0);
-            } else {
-                six_motor.move(127);
-                onetwo_motor.move(-127);
-                threefour_motor.move(0);
-                five_motor.move(0);
-            }
-        }
-
-        else if(aut_height ==6){
-            six_motor.move(-127);
-        }
-
-        else if (aut_height == -1){
-            six_motor.move(0);
-            onetwo_motor.move(0);
-            threefour_motor.move(0);
-            five_motor.move(0);
-        }
-
-        pros::delay(20);
-    }
-
-    // on exit, ensure motors are stopped
-    six_motor.move(0);
-    onetwo_motor.move(0);
-    threefour_motor.move(0);
-    five_motor.move(0);
-}
-
-// ---------- Lifecycle functions ----------
-void initialize() {
-    pros::lcd::initialize();
-
-    // Initialize optical sensor
-    horizontal.set_reversed(true);
-    optical_sensor.set_led_pwm(100);  // Set LED brightness for better detection
-
-    // Start LEMLib calibration (may be blocking). Make sure it has time to finish
-    chassis.calibrate();
-
-    // Give sensors and libraries time to settle (important — don't remove)
-    pros::delay(500);
-}
-
 void opcontrol(){
-    // opcontrol runs forever while driver control is active
     pros::lcd::initialize();
-
-    // set chassis to coast for driver control
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
-
-    // small delay to let PROS scheduler settle after mode change
     pros::delay(200);
-
-    // turn on flag so tasks know they should run
     opRunning = true;
-
-    // create tasks (store pointers so we can remove later if needed)
-    motorControlTaskPtr = new pros::Task(motorControl, NULL, "Motor Control Task");
-    basketTaskPtr = new pros::Task(toggleBasket, NULL, "Basket Task");
-    scraperTaskPtr = new pros::Task(toggleScraper, NULL, "Scraper Task");
     driveTaskPtr = new pros::Task(drive, NULL, "Drive Task");
+    motorControlTaskPtr = new pros::Task(motorControl, NULL, "Motor Control Task");
 
-    // little delay so tasks get scheduled before entering opcontrol loop
-    pros::delay(200);
 
-    // main opcontrol loop
-    while (opRunning) {
-        // simple status on LCD showing whether tasks are running
-        if (motorControlTaskPtr && motorControlTaskPtr->get_state() == pros::E_TASK_STATE_RUNNING) {
-            pros::lcd::set_text(4, "MotorCtrl: RUN");
-        } else {
-            pros::lcd::set_text(4, "MotorCtrl: STOP");
-        }
-
-        // show basket state
-        controller.print(0, 0, basket == 1 ? "Basket: Bottom" : "Basket: Top   ");
-
-        pros::delay(100);
-    }
-
-    // If we ever leave opcontrol (shouldn't normally in comp), shut down tasks
-    if (motorControlTaskPtr) {
-        motorControlTaskPtr->remove();
-        delete motorControlTaskPtr;
-        motorControlTaskPtr = nullptr;
-    }
-    if (driveTaskPtr) {
-        driveTaskPtr->remove();
-        delete driveTaskPtr;
-        driveTaskPtr = nullptr;
-    }
-    if (basketTaskPtr) {
-        basketTaskPtr->remove();
-        delete basketTaskPtr;
-        basketTaskPtr = nullptr;
-    }
-    if (scraperTaskPtr) {
-        scraperTaskPtr->remove();
-        delete scraperTaskPtr;
-        scraperTaskPtr = nullptr;
-    }
 }
 
-void autonomous() {
-    // ensure auton flag and stop any op tasks (safety)
-    autonRunning = true;
+void autonomous(){
+    chassis.setPose(-50, -17, 180);
+    chassis.moveToPoint(-50, -47, 1500);
+    chassis.turnToHeading(270, 700);
+    //scraper down here
+    chassis.moveToPoint(-58, -47, 1000);
+    //intake all blocks here
+    chassis.moveToPoint(-50, -47, 500, {.forwards=false});
+    //scraper up here
+    chassis.turnToHeading(0,700);
+    chassis.follow(firstcurve_txt, 10, 4000);
+    chassis.setPose(40, -47, 180);
+    chassis.turnToHeading(90, 700);
+    chassis.moveToPoint(33, -47, 700, {.forwards=false});
+    //outtake all blocks here
+    //scraper down after
+    chassis.moveToPoint(58, -47, 800);
+    //intake all blocks here
+    chassis.moveToPoint(33, -47, 800, {.forwards=false});
+    //outtake all blocks here
+    //scraper up after
+    chassis.follow(secondcurve_txt, 10, 4000);
+    chassis.setPose(63, 19.7, 0);
+    chassis.turnToPoint(50, 47, 700);
+    chassis.moveToPoint(50, 47, 1000);
+    //scraper down here
+    chassis.turnToHeading(90, 700);
+    chassis.moveToPoint(58, 47, 800);
+    //intake all blocks here
+    chassis.moveToPoint(50, 47, 800, {.forwards=false});
+    chassis.turnToHeading(180, 700);
+    chassis.follow(thirdcurve_txt, 10, 4000);
+    chassis.setPose(-50, 47, 0);
+    chassis.turnToHeading(270, 700);
+    chassis.moveToPoint(-33, 47, 800, {.forwards=false});
+    //outtake all blocks here
+    //scraper down here
+    chassis.moveToPoint(-58, 47, 1000);
+    //intake all blocks here
+    chassis.moveToPoint(-33, 47, 700, {.forwards=false});
+    //outtake all blocks here
+    //scraper up after
+    chassis.follow(fourthcurve_txt, 10, 4000);
 
-    // ensure chassis braking for auton
-    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
-
-    // Set initial auton state BEFORE starting conveyor task
-    aut_height = -1;  // stop conveyor initially
-    aut_basket = 1;
-    int a = -1;
-    int b = -1;
-
-    // convAuton task handles conveyor while autonRunning is true
-    // This starts after we've set the initial state
-    convTaskPtr = new pros::Task(convAuton, NULL, "Conveyor Task");
-
-    // set position to x:0, y:0, heading:0
-    //chassis.setPose(0, 0, 0);
-    // turn to face heading 180 with a long timeout
-    // --- AUTON ROUTE (kept from original) ---
-    // (I left your commented-out sequences unchanged; below is your skills route rewritten to rely on autonRunning)
-
-    //skills
-
-    /*
-    chassis.setPose(a*50, b*17, 180);
-    scraper.set_value(false);
-    chassis.turnToPoint(a*50, b*47, 1500);
-    chassis.moveToPoint(a*50, b*47, 1000);
-
-    chassis.turnToPoint(a*60, b*51, 700);
-    scraper.set_value(true);
-    pros::delay(900);
-    chassis.moveToPoint(a*60, b*51, 1000);
-    convState(0, 0); //intake 3 red1
-    pros::delay(600);
-    convState(0,-1);
-    chassis.moveToPoint(a*50, b*47, 1000, {.forwards=false});
-    convState(0,0);
-    chassis.moveToPoint(a*60, b*51, 1000);
-    pros::delay(2000);
-
-    chassis.moveToPoint(a*50, b*47, 500, {.forwards=false});
-    convState(0,-1);
-    scraper.set_value(false);
-    convState(0,0);
-    chassis.turnToPoint(a*31.9, b*27.7, 700);
-    chassis.moveToPoint(a*31.9, b*27.7, 2500, {.maxSpeed = 30});
-    chassis.moveToPoint(a*39.3, b*35.4, 1500, {.forwards=false});
-
-    chassis.turnToPoint(a*33.3, b*17.1, 700);
-    chassis.moveToPoint(a*33.3, b*17.1, 1500);
-    chassis.turnToPoint(a*24.5, b*22.6, 700);
-    chassis.moveToPoint(a*24.5, b*22.6, 1500);
-    chassis.turnToPoint(a*15.7, b*12.4, 700);
-    chassis.moveToPoint(a*15.7, b*12.4, 2000, {.maxSpeed = 30});
-    pros::delay(1000);
-
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(3000);
-    convState(0,-1);
-    chassis.setPose(a*15.7, b*12.4, 40);
-    chassis.moveToPoint(a*23, b*20.2, 1500, {.forwards=false});
-    chassis.turnToPoint(a*60.6, b*-27.8, 700);
-    chassis.moveToPoint(a*60.6, b*-27.8, 3000);
-    chassis.turnToPoint(a*57.5, b*-33.3, 700);
-    chassis.moveToPoint(a*57.5, b*-33.3, 1500);
-    chassis.turnToPoint(a*35, b*-29.4, 700);
-    convState(0,0);
-    chassis.moveToPoint(a*35, b*-29.4, 3000, {.maxSpeed = 30});
-    pros::delay(700);
-    convState(0,-1);
-    chassis.turnToPoint(a*25.9, b*-19.9, 700);
-    chassis.moveToPoint(a*25.9, b*-19.9, 1500);
-
-    chassis.turnToPoint(a*17, b*-19, 700);
-    chassis.moveToPoint(a*17, b*-19, 1000);
-
-    convState(2, 2); //outtake center upper from top basket which has blue
-    pros::delay(3500);
-    convState(0,-1);
-
-    chassis.moveToPoint(a*22.9, b*-28.5, 1500, {.forwards=false});
-
-    chassis.turnToPoint(a*51, b*-39.7, 700);
-    chassis.moveToPoint(a*51, b*-39.7, 1000);
-    chassis.turnToPoint(a*70, b*-37, 700);
-    scraper.set_value(true);
-    pros::delay(900);
-    chassis.moveToPoint(a*70, b*-37, 1000);
-    convState(0, 0); //intake 3 red
-    pros::delay(2500);
-    convState(0,-1); //stop motors
-    chassis.moveToPoint(a*51, b*-39.7, 500, {.forwards=false});
-    chassis.moveToPoint(a*70, b*-37, 1000);
-    convState(0, 0); //intake 3 blue
-    pros::delay(1500);
-    convState(0,-1); //stop motors
-    chassis.moveToPoint(a*51, b*-39.7, 500, {.forwards=false});
-    scraper.set_value(false);
-
-    chassis.turnToPoint(a*14.2, b*-17.7, 700);
-    chassis.moveToPoint(a*14.2, b*-17.7, 1500);
-    convState(2, 2); //outtake center upper from top basket which has blue
-    pros::delay(3500);
-    convState(0,-1);
-
-    chassis.turnToPoint(a*40.7, b*14.5, 700);
-    chassis.moveToPoint(a*40.7, b*14.5, 2000);
-    chassis.turnToPoint(a*25.2, b*28.2, 700);
-    chassis.moveToPoint(a*25.2, b*28.2, 1500);
-    chassis.turnToPoint(a*13.1, b*14, 700);
-    chassis.moveToPoint(a*13.1, b*14, 1000);
-
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(3500);    
-    convState(0, -1); //stop motors
-
-    chassis.turnToPoint(a*40.6, b*0, 700);
-    chassis.moveToPoint(a*40.6, b*0, 1500);
-    convState(0,0);
-    chassis.turnToPoint(a*70, b*0, 700);
-    chassis.moveToPoint(a*30, 0, 1500, {.forwards = false});
-    chassis.setPose(a*30, 0, 270);
-    chassis.moveToPoint(a*70, b*0, 4000);
-    convState(0,-1);
-
-*/
-
-    
-/*
-    //REAL AUTON LOVERS GRAHHH
-    chassis.setPose(a*50, b*17, 180);
-    scraper.set_value(false);
-    chassis.turnToPoint(a*50, b*47, 1500);
-    chassis.moveToPoint(a*50, b*47, 1000);
-
-    chassis.turnToPoint(a*60, b*51, 700);
-    scraper.set_value(true);
-    pros::delay(900);
-    chassis.moveToPoint(a*60, b*51, 1000);
-    convState(0, 0); //intake 3 red 3 blue
-    chassis.moveToPoint(a*80, b*51, 800, {.maxSpeed = 60,.minSpeed = 60});
-    convState(0,-1);
-
-    chassis.moveToPoint(a*50, b*47, 500, {.forwards=false});
-    scraper.set_value(false);
-    convState(0,0);
-
-    chassis.turnToPoint(a*15, b*15, 700);
-    chassis.moveToPoint(a*15, b*15, 4000, {.maxSpeed = 50});
-    pros::delay(3000);
-
-
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);    
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-    pros::delay(500);
-    convState(0, -1); //stop motors
-    pros::delay(100);
-    convState(1, 1); //outtake center lower from bottom basket which has red
-
-    pros::delay(1000);
-    convState(0, -1); //stop motors
-    //////REAL AUTON LOVERS GRAHHH
-    
-/*
-    chassis.setPose(a*50, b*17, 180);
-    scraper.set_value(false);
-    chassis.moveToPoint(a*50, b*18, 500);
-    */
-
-    chassis.setPose(0, 0, 0);
-    /*
-    chassis.moveToPose(48, -24, 90, 2000, {.minSpeed=72, .earlyExitRange=8});
-    chassis.moveToPose(64, 3, 0, 2000);
-    */
-
-    chassis.follow(auton_txt, 15, 15000);
-
-    
-    autonRunning = false;
-    if (convTaskPtr) {
-        convTaskPtr->remove();
-        delete convTaskPtr;
-        convTaskPtr = nullptr;
-    }
-
-    // final safe stop
-    six_motor.move(0);
-    onetwo_motor.move(0);
-    threefour_motor.move(0);
-    five_motor.move(0);
-
-
-    // hold here (typical auton ends and does not return)
-    while (true) {
-        pros::delay(50);
-    }
 }
