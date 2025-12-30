@@ -12,10 +12,11 @@ pros::Motor intake_motor(3, pros::MotorGearset::green);
 pros::Motor evil_motor(9, pros::MotorGearset::blue);
 pros::Motor top_motor(10, pros::MotorGearset::blue);
 
-pros::adi::Port trapdoor('A', pros::E_ADI_DIGITAL_OUT);
-pros::adi::Port bunny('B', pros::E_ADI_DIGITAL_OUT);
-pros::adi::Port scraper('C', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port trapdoor('H', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port bunny('A', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port scraper('G', pros::E_ADI_DIGITAL_OUT);
 pros::adi::Port park('D', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port hood('F', pros::E_ADI_DIGITAL_OUT);
 
 pros::Optical optical_sensor(OPTICAL_PORT);
 
@@ -46,6 +47,10 @@ pros::Task* motorControlTaskPtr = nullptr;
 pros::Task* driveTaskPtr = nullptr;
 pros::Task* basketTaskPtr = nullptr;
 pros::Task* scraperTaskPtr = nullptr;
+pros::Task* bunnyTaskPtr = nullptr;
+pros::Task* parkTaskPtr = nullptr;
+pros::Task* hoodTaskPtr = nullptr;
+pros::Task* trapdoorTaskPtr = nullptr;
 pros::Task* convTaskPtr = nullptr;
 
 // ---------- LEMLib objects ----------
@@ -157,6 +162,20 @@ void togglePark(void* param) {
     }
     // on exit, retract bunny ears for safety
     park.set_value(false);
+}
+
+void toggleHood(void* param) {
+    bool hood_engaged = false;
+    while (opRunning){
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
+            hood_engaged = !hood_engaged;
+            hood.set_value(hood_engaged);
+            pros::delay(200);
+        }
+        pros::delay(20);
+    }
+    // on exit, retract bunny ears for safety
+    hood.set_value(false);
 }
 
 
@@ -302,7 +321,11 @@ void opcontrol(){
     opRunning = true;
     driveTaskPtr = new pros::Task(drive, NULL, "Drive Task");
     motorControlTaskPtr = new pros::Task(motorControl, NULL, "Motor Control Task");
-
+    scraperTaskPtr = new pros::Task(toggleScraper, NULL, "Scraper Task");
+    bunnyTaskPtr = new pros::Task(toggleBunnyEars, NULL, "Bunny Ears Task");
+    parkTaskPtr = new pros::Task(togglePark, NULL, "Park Task");
+    hoodTaskPtr = new pros::Task(toggleHood, NULL, "Hood Task");
+    trapdoorTaskPtr = new pros::Task(toggleHood, NULL, "Trapdoor Task");
 
 }
 
