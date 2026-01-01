@@ -1,7 +1,7 @@
 #include "lemlib/api.hpp" // IWYU pragma: keep
 #include "main.h"
 
-#define OPTICAL_PORT 'E'
+#define OPTICAL_PORT 19
 
 // MotorGroup: negative numbers are okay here to indicate reversed motors inside the group
 pros::MotorGroup left_motors({-21, 20, -16}, pros::MotorGearset::blue);
@@ -103,12 +103,21 @@ lemlib::Chassis chassis(drivetrain,
 //color stuff
 static bool detect_red_optical() {
     double hue = optical_sensor.get_hue();
-    return (hue >= 0 && hue <= 15) || (hue >= 345 && hue <= 360);
+    return (hue >= 0 && hue <= 15) /*|| (hue >= 345 && hue <= 360)*/;
 }
 
 static bool detect_blue_optical() {
     double hue = optical_sensor.get_hue();
     return (hue >= 190 && hue <= 260);
+}
+
+static bool detect_proximity(){
+    if (optical_sensor.get_proximity() > 50){
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 static int get_color_destination(bool last_red, bool last_blue) {
@@ -189,6 +198,8 @@ void motorControl(void* param){
     bool last_red = false;
 
     while(opRunning){
+        optical_sensor.set_led_pwm(100);
+        pros::lcd::print(2, "Proximity value: %ld \n", optical_sensor.get_proximity());
     if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) {
         //intake
         intake = !intake;
@@ -230,8 +241,8 @@ void motorControl(void* param){
         evil_motor.move(-127);
         top_motor.move(127);
 
-        bool blue_present = detect_blue_optical();
-        bool red_present = detect_red_optical();
+        bool blue_present = detect_blue_optical() && detect_proximity();
+        bool red_present = detect_red_optical() && detect_proximity();
 
         bool new_last_red = last_red;
             bool new_last_blue = last_blue;
@@ -325,8 +336,6 @@ void opcontrol(){
     bunnyTaskPtr = new pros::Task(toggleBunnyEars, NULL, "Bunny Ears Task");
     parkTaskPtr = new pros::Task(togglePark, NULL, "Park Task");
     hoodTaskPtr = new pros::Task(toggleHood, NULL, "Hood Task");
-    trapdoorTaskPtr = new pros::Task(toggleHood, NULL, "Trapdoor Task");
-
 }
 
 void autonomous(){
