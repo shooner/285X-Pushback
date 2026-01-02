@@ -2,6 +2,7 @@
 #include "main.h"
 
 #define OPTICAL_PORT 19
+#define DOUBLE_PARK_MACRO 15
 
 // MotorGroup: negative numbers are okay here to indicate reversed motors inside the group
 pros::MotorGroup left_motors({-21, 20, -16}, pros::MotorGearset::blue);
@@ -14,11 +15,12 @@ pros::Motor top_motor(10, pros::MotorGearset::blue);
 
 pros::adi::Port trapdoor('H', pros::E_ADI_DIGITAL_OUT);
 pros::adi::Port bunny('A', pros::E_ADI_DIGITAL_OUT);
-pros::adi::Port scraper('G', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port scraper('B', pros::E_ADI_DIGITAL_OUT);
 pros::adi::Port park('D', pros::E_ADI_DIGITAL_OUT);
-pros::adi::Port hood('F', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port hood('G', pros::E_ADI_DIGITAL_OUT);
 
 pros::Optical optical_sensor(OPTICAL_PORT);
+pros::Optical dp_sensor(DOUBLE_PARK_MACRO);
 
 // Rotations / IMU
 pros::Rotation vertical(-14);
@@ -37,6 +39,7 @@ int aut_basket = 0;
 int teamColor = 2; // 1 = RED, 2 = BLUE
 int colorAssignment = 2; // 1 = RED, 2 = BLUE
 bool bunny_engaged = false;
+bool dp_macro_active = false;
 
 // Flags used to coordinate tasks and safe shutdown between modes
 volatile bool opRunning = false;
@@ -52,6 +55,7 @@ pros::Task* parkTaskPtr = nullptr;
 pros::Task* hoodTaskPtr = nullptr;
 pros::Task* trapdoorTaskPtr = nullptr;
 pros::Task* convTaskPtr = nullptr;
+pros::Task* dpTaskPtr = nullptr;
 
 // ---------- LEMLib objects ----------
 lemlib::Drivetrain drivetrain(&left_motors,
@@ -132,10 +136,15 @@ static int get_color_destination(bool last_red, bool last_blue) {
     }
 }
 
+static bool detect_double_park_macro(){
+    double hue = dp_sensor.get_hue();
+    return (hue >= 0 && hue <= 360) && (dp_sensor.get_proximity() > 100);
+}
+
 void toggleScraper(void* param) {
     bool scraper_engaged = false;
     while (opRunning){
-        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
             scraper_engaged = !scraper_engaged;
             scraper.set_value(scraper_engaged);
             pros::delay(200);
@@ -176,7 +185,7 @@ void togglePark(void* param) {
 void toggleHood(void* param) {
     bool hood_engaged = false;
     while (opRunning){
-        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
             hood_engaged = !hood_engaged;
             hood.set_value(hood_engaged);
             pros::delay(200);
@@ -185,6 +194,31 @@ void toggleHood(void* param) {
     }
     // on exit, retract bunny ears for safety
     hood.set_value(false);
+}
+
+void toggleDoublePark(void* param) {
+    bool dp_engaged = false;
+    while (opRunning){
+        dp_sensor.set_led_pwm(100);
+        pros::lcd::print(3, "Proximity value: %ld \n", dp_sensor.get_proximity());
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
+            dp_macro_active = true;
+            evil_motor.move(127);
+            intake_motor.move(-80);
+            top_motor.move(-127);
+            while (!detect_double_park_macro()) {
+                pros::delay(20);
+            }
+            intake_motor.move(0);
+            evil_motor.move(0);
+            top_motor.move(0);
+            pros::delay(100);
+            park.set_value(true);
+            dp_macro_active = false;
+            pros::lcd::print(5, "Double Park Engaged");
+        }
+        pros::delay(20);
+    }
 }
 
 
@@ -196,8 +230,22 @@ void motorControl(void* param){
 
     bool last_blue = false;
     bool last_red = false;
+    bool was_macro_active = false;
 
     while(opRunning){
+        if (dp_macro_active) {
+            was_macro_active = true;
+            pros::delay(20);
+            continue;
+        }
+
+        if (was_macro_active) {
+            intake = false;
+            outlow = false;
+            outmid = false;
+            outlong = false;
+            was_macro_active = false;
+        }
         optical_sensor.set_led_pwm(100);
         pros::lcd::print(2, "Proximity value: %ld \n", optical_sensor.get_proximity());
     if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) {
@@ -237,6 +285,7 @@ void motorControl(void* param){
 }
 
     if(intake==true){
+        park.set_value(false);
         intake_motor.move(127);
         evil_motor.move(-127);
         top_motor.move(127);
@@ -336,6 +385,7 @@ void opcontrol(){
     bunnyTaskPtr = new pros::Task(toggleBunnyEars, NULL, "Bunny Ears Task");
     parkTaskPtr = new pros::Task(togglePark, NULL, "Park Task");
     hoodTaskPtr = new pros::Task(toggleHood, NULL, "Hood Task");
+    dpTaskPtr = new pros::Task(toggleDoublePark, NULL, "Double Park Task");
 }
 
 void autonomous(){
