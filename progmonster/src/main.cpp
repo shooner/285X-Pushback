@@ -1,8 +1,11 @@
 #include "lemlib/api.hpp" // IWYU pragma: keep
 #include "main.h"
 
+
 #define OPTICAL_PORT 19
 #define DOUBLE_PARK_MACRO 15
+#define POTENTIOMETER_PORT 1
+
 
 // MotorGroup: negative numbers are okay here to indicate reversed motors inside the group
 pros::MotorGroup left_motors({-21, 20, -16}, pros::MotorGearset::blue);
@@ -22,6 +25,8 @@ pros::adi::Port hood('G', pros::E_ADI_DIGITAL_OUT);
 pros::Optical optical_sensor(OPTICAL_PORT);
 pros::Optical dp_sensor(DOUBLE_PARK_MACRO);
 
+pros::ADIAnalogIn sensor (POTENTIOMETER_PORT);
+
 // Rotations / IMU
 pros::Rotation vertical(-14);
 // Replace negative port by positive with reversed flag
@@ -31,13 +36,12 @@ ASSET(firstcurve_txt);
 ASSET(secondcurve_txt);
 ASSET(thirdcurve_txt);
 ASSET(fourthcurve_txt);
+ASSET(secondcurve70_txt);
+ASSET(secondcurve48_txt);
 
 // ---------- State ----------
-int basket = 1; // 1 bottom, 2 top
-int aut_height = 0; // conveyor command for auton thread
-int aut_basket = 0;
+int aut_height = -1; // conveyor command for auton thread
 int teamColor = 2; // 1 = RED, 2 = BLUE
-int colorAssignment = 2; // 1 = RED, 2 = BLUE
 bool bunny_engaged = false;
 bool dp_macro_active = false;
 
@@ -125,7 +129,7 @@ static bool detect_proximity(){
 }
 
 static int get_color_destination(bool last_red, bool last_blue) {
-    if (colorAssignment == 2) {
+    if (teamColor == 2) {
         if (last_red) return 0;
         if (last_blue) return 1;
         return 0;
@@ -223,6 +227,7 @@ void toggleDoublePark(void* param) {
 
 
 void motorControl(void* param){
+
     bool intake = false;
     bool outlow = false;
     bool outmid = false;
@@ -373,6 +378,58 @@ void drive(void* param) {
     right_motors.move(0);
 }
 
+void convState(int state){
+    aut_height = state;
+    //-1 = idle
+    //0 = intake
+    //1 = center lower
+    //2 = center upper
+    //3 = long goal
+}
+
+void autonMotor(void* param){
+    while(autonRunning){
+        if(aut_height==0){ //intake
+            intake_motor.move(127);
+            evil_motor.move(-127);
+            top_motor.move(127);
+        }
+        else if(aut_height==1){ //outtake center lower
+            evil_motor.move(127);
+            intake_motor.move(-127);
+            top_motor.move(-127);
+        }
+        else if(aut_height ==2){ //outtake center upper
+            evil_motor.move(-127);
+            intake_motor.move(127);
+            top_motor.move(-127);
+        }
+        else if(aut_height==3){ //outtake long goal
+            intake_motor.move(-127);
+            evil_motor.move(127);
+            top_motor.move(-127);
+        }
+        else if(aut_height ==-1){ //idle
+            intake_motor.move(0);
+            evil_motor.move(0);
+            top_motor.move(0);
+        }
+    }
+}
+
+
+void initialize() {
+    pros::lcd::initialize();
+    chassis.calibrate();
+    // check angle of potentionmeter and assign team color. 
+    if(sensor.get_value()>=3700){
+        teamColor = 1; //Red
+    }
+    else{
+        teamColor = 2; //Blue
+    }
+    pros::delay(1500);
+}
 
 void opcontrol(){
     pros::lcd::initialize();
@@ -389,47 +446,161 @@ void opcontrol(){
 }
 
 void autonomous(){
-    chassis.setPose(-50, -17, 180);
+    autonRunning = true;
+    //80 skills
+    /*chassis.setPose(-50, -17, 180);
     chassis.moveToPoint(-50, -47, 1500);
     chassis.turnToHeading(270, 700);
-    //scraper down here
+    scraper.set_value(true);
     chassis.moveToPoint(-58, -47, 1000);
-    //intake all blocks here
+    convState(0);
+    pros::delay(2700); //intake all blocks
+    convState(-1);
     chassis.moveToPoint(-50, -47, 500, {.forwards=false});
-    //scraper up here
+    scraper.set_value(false);
     chassis.turnToHeading(0,700);
     chassis.follow(firstcurve_txt, 10, 4000);
     chassis.setPose(40, -47, 180);
     chassis.turnToHeading(90, 700);
     chassis.moveToPoint(33, -47, 700, {.forwards=false});
-    //outtake all blocks here
-    //scraper down after
+    convState(3);
+    pros::delay(2000); //outtake all long goal
+    convState(-1);
+    scraper.set_value(true);
     chassis.moveToPoint(58, -47, 800);
-    //intake all blocks here
+    convState(0);
+    pros::delay(2700); //intake all blocks
+    convState(-1);
     chassis.moveToPoint(33, -47, 800, {.forwards=false});
-    //outtake all blocks here
-    //scraper up after
+    convState(3);
+    pros::delay(2000); //outtake all long goal
+    convState(-1);
+    scraper.set_value(false);
     chassis.follow(secondcurve_txt, 10, 4000);
     chassis.setPose(63, 19.7, 0);
     chassis.turnToPoint(50, 47, 700);
     chassis.moveToPoint(50, 47, 1000);
-    //scraper down here
+    scraper.set_value(true);
     chassis.turnToHeading(90, 700);
     chassis.moveToPoint(58, 47, 800);
-    //intake all blocks here
+    convState(0);
+    pros::delay(2700); //intake all blocks
+    convState(-1);
     chassis.moveToPoint(50, 47, 800, {.forwards=false});
+    scraper.set_value(false);
     chassis.turnToHeading(180, 700);
     chassis.follow(thirdcurve_txt, 10, 4000);
     chassis.setPose(-50, 47, 0);
     chassis.turnToHeading(270, 700);
     chassis.moveToPoint(-33, 47, 800, {.forwards=false});
-    //outtake all blocks here
-    //scraper down here
+    convState(3);
+    pros::delay(2000); //outtake all long goal
+    convState(-1);
+    scraper.set_value(true);
     chassis.moveToPoint(-58, 47, 1000);
-    //intake all blocks here
+    convState(0);
+    pros::delay(2700); //intake all blocks
+    convState(-1);
     chassis.moveToPoint(-33, 47, 700, {.forwards=false});
-    //outtake all blocks here
-    //scraper up after
+    convState(3);
+    pros::delay(2000); //outtake all long goal
+    convState(-1);
+    scraper.set_value(false);
     chassis.follow(fourthcurve_txt, 10, 4000);
+*/
+
+    // 75 skills
+    /*chassis.setPose(-50, -17, 180);
+    chassis.moveToPoint(-50, -47, 1500);
+    chassis.turnToHeading(270, 700);
+    scraper.set_value(true);
+    chassis.moveToPoint(-58, -47, 1000);
+    convState(0);
+    pros::delay(2700); //intake all blocks
+    convState(-1);
+    chassis.moveToPoint(-50, -47, 500, {.forwards=false});
+    scraper.set_value(false);
+    chassis.turnToHeading(0,700);
+    chassis.follow(firstcurve_txt, 10, 4000);
+    chassis.setPose(40, -47, 180);
+    chassis.turnToHeading(90, 700);
+    chassis.moveToPoint(33, -47, 700, {.forwards=false});
+    convState(3);
+    pros::delay(2000); //outtake all long goal
+    convState(-1);
+    scraper.set_value(true);
+    chassis.moveToPoint(58, -47, 800);
+    convState(0);
+    pros::delay(2700); //intake all blocks
+    convState(-1);
+    chassis.moveToPoint(33, -47, 800, {.forwards=false});
+    convState(3);
+    pros::delay(2000); //outtake all long goal
+    convState(-1);
+    scraper.set_value(false);
+    chassis.turnToHeading(0,700);
+    chassis.follow(secondcurve70_txt, 10, 4000);
+    chassis.setPose(63, 19.7, 90);
+    chassis.turnToPoint(50, 47, 700);
+    chassis.moveToPoint(50, 47, 1000);
+    scraper.set_value(true);
+    chassis.turnToHeading(90, 700);
+    chassis.moveToPoint(58, 47, 800);
+    convState(0);
+    pros::delay(2700); //intake all blocks
+    convState(-1);
+    chassis.moveToPoint(50, 47, 800, {.forwards=false});
+    scraper.set_value(false);
+    chassis.turnToHeading(180, 700);
+    chassis.follow(thirdcurve_txt, 10, 4000);
+    chassis.setPose(-50, 47, 0);
+    chassis.turnToHeading(270, 700);
+    chassis.moveToPoint(-33, 47, 800, {.forwards=false});
+    convState(3);
+    pros::delay(2000); //outtake all long goal
+    convState(-1);
+    scraper.set_value(true);
+    chassis.moveToPoint(-58, 47, 1000);
+    convState(0);
+    pros::delay(2700); //intake all blocks
+    convState(-1);
+    chassis.moveToPoint(-33, 47, 700, {.forwards=false});
+    convState(3);
+    pros::delay(2000); //outtake all long goal
+    convState(-1);
+    scraper.set_value(false);
+    chassis.follow(fourthcurve_txt, 10, 4000);
+*/
+    // 48 skills
+    chassis.setPose(-50, -17, 180);
+    chassis.moveToPoint(-50, -47, 1500);
+    chassis.turnToHeading(270, 700);
+    scraper.set_value(true);
+    chassis.moveToPoint(-58, -47, 1000);
+    convState(0);
+    pros::delay(2700); //intake all blocks
+    convState(-1);
+    chassis.moveToPoint(-50, -47, 500, {.forwards=false});
+    scraper.set_value(false);
+    chassis.turnToHeading(0,700);
+    chassis.follow(firstcurve_txt, 10, 4000);
+    chassis.setPose(40, -47, 180);
+    chassis.turnToHeading(90, 700);
+    chassis.moveToPoint(33, -47, 700, {.forwards=false});
+    convState(3);
+    pros::delay(2000); //outtake all long goal
+    convState(-1);
+    scraper.set_value(true);
+    chassis.moveToPoint(58, -47, 800);
+    convState(0);
+    pros::delay(2700); //intake all blocks
+    convState(-1);
+    chassis.moveToPoint(33, -47, 800, {.forwards=false});
+    convState(3);
+    pros::delay(2000); //outtake all long goal
+    convState(-1);
+    scraper.set_value(false);
+    chassis.turnToHeading(0,700);
+    chassis.follow(secondcurve48_txt, 10, 4000);
 
 }
