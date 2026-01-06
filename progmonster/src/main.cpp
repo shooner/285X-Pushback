@@ -447,6 +447,29 @@ void opcontrol(){
 
 void autonomous(){
     autonRunning = true;
+
+    //ROUGH AWP
+    /*
+    chassis.setPose(a*55, b*17, 180);
+    chassis.turnToPoint(a*55, b*47, 1500);
+    chassis.moveToPoint(a*55, b*47, 1000);
+
+    chassis.turnToPoint(a*65, b*47, 700);
+    chassis.moveToPoint(a*65, b*47, 1000);
+
+    chassis.moveToPoint(a*26, b*47, 500, {.forwards=false});
+
+    chassis.follow(LongGoalManeuver1_txt, 15, 2000);
+
+    chassis.moveToPoint(a*65, b*47, 1000);
+    chassis.turnToPoint(a*47, b*-47, 700);
+    chassis.moveToPoint(a*10, b*-11, 1500, {.forwards=false});
+    chassis.moveToPoint(a*47, b*-47, 500);
+    chassis.moveToPoint(a*65, b*-47, 1000);
+    chassis.moveToPoint(a*26, b*-47, 1000, {.forwards=false});
+*/
+//ROUGH AWP
+
     //80 skills
     /*chassis.setPose(-50, -17, 180);
     chassis.moveToPoint(-50, -47, 1500);
