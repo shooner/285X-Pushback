@@ -603,4 +603,9 @@ void autonomous(){
     chassis.turnToHeading(0,700);
     chassis.follow(secondcurve48_txt, 10, 4000);
 
+    autonRunning = false;
+    while (true) {
+        pros::delay(50);
+    }
+
 }
