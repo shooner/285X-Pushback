@@ -4,7 +4,10 @@
 
 #define OPTICAL_PORT 19
 #define DOUBLE_PARK_MACRO 15
-#define POTENTIOMETER_PORT 1
+#define POTENTIOMETER_PORT 'E'
+// Potentiometer ADI raw range (adjust if your sensor reports a different span)
+#define POT_MIN_READING 0
+#define POT_MAX_READING 4095
 
 
 // MotorGroup: negative numbers are okay here to indicate reversed motors inside the group
@@ -28,10 +31,10 @@ pros::Optical dp_sensor(DOUBLE_PARK_MACRO);
 pros::ADIAnalogIn sensor (POTENTIOMETER_PORT);
 
 // Rotations / IMU
-pros::Rotation vertical(-14);
+pros::Rotation vertical(-13);
 // Replace negative port by positive with reversed flag
-pros::Rotation horizontal(15);
-pros::Imu imu(19);
+pros::Rotation horizontal(12);
+pros::Imu imu(17);
 ASSET(firstcurve_txt);
 ASSET(secondcurve_txt);
 ASSET(thirdcurve_txt);
@@ -44,6 +47,8 @@ int aut_height = -1; // conveyor command for auton thread
 int teamColor = 2; // 1 = RED, 2 = BLUE
 bool bunny_engaged = false;
 bool dp_macro_active = false;
+bool trapdoor_engaged = false;
+bool park_engaged = false;
 
 // Flags used to coordinate tasks and safe shutdown between modes
 volatile bool opRunning = false;
@@ -142,13 +147,13 @@ static int get_color_destination(bool last_red, bool last_blue) {
 
 static bool detect_double_park_macro(){
     double hue = dp_sensor.get_hue();
-    return (hue >= 0 && hue <= 360) && (dp_sensor.get_proximity() > 100);
+    return ((hue >= 0 && hue <= 15)||(hue>=190&&hue<=260)) && (dp_sensor.get_proximity() > 100);
 }
 
 void toggleScraper(void* param) {
     bool scraper_engaged = false;
     while (opRunning){
-        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
             scraper_engaged = !scraper_engaged;
             scraper.set_value(scraper_engaged);
             pros::delay(200);
@@ -161,7 +166,7 @@ void toggleScraper(void* param) {
 
 void toggleBunnyEars(void* param) {
     while (opRunning){
-        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
             bunny_engaged = !bunny_engaged;
             bunny.set_value(bunny_engaged);
             pros::delay(200);
@@ -173,9 +178,8 @@ void toggleBunnyEars(void* param) {
 }
 
 void togglePark(void* param) {
-    bool park_engaged = false;
     while (opRunning){
-        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
             park_engaged = !park_engaged;
             park.set_value(park_engaged);
             pros::delay(200);
@@ -200,12 +204,26 @@ void toggleHood(void* param) {
     hood.set_value(false);
 }
 
+void toggleTrapdoor(void* param) {
+    while (opRunning){
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
+            trapdoor_engaged = !trapdoor_engaged;
+            trapdoor.set_value(trapdoor_engaged);
+            pros::delay(200);
+        }
+        pros::delay(20);
+    }
+    // on exit, retract bunny ears for safety
+    trapdoor.set_value(false);
+}
+
+
 void toggleDoublePark(void* param) {
     bool dp_engaged = false;
     while (opRunning){
         dp_sensor.set_led_pwm(100);
         pros::lcd::print(3, "Proximity value: %ld \n", dp_sensor.get_proximity());
-        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
             dp_macro_active = true;
             evil_motor.move(127);
             intake_motor.move(-80);
@@ -218,13 +236,13 @@ void toggleDoublePark(void* param) {
             top_motor.move(0);
             pros::delay(100);
             park.set_value(true);
+            park_engaged = true;
             dp_macro_active = false;
             pros::lcd::print(5, "Double Park Engaged");
         }
         pros::delay(20);
     }
 }
-
 
 void motorControl(void* param){
 
@@ -240,6 +258,8 @@ void motorControl(void* param){
     while(opRunning){
         if (dp_macro_active) {
             was_macro_active = true;
+            trapdoor_engaged = false;
+            trapdoor.set_value(trapdoor_engaged);
             pros::delay(20);
             continue;
         }
@@ -261,25 +281,35 @@ void motorControl(void* param){
         outlow = false;
         outmid = false;
         outlong = false;
+        park.set_value(false);
+        park_engaged = false;
 
 }
-    else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
+    else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
         //outtake center lower
         outlow = !outlow;
         intake = false;
         outmid = false;
         outlong = false;
+        trapdoor_engaged = false;
+        trapdoor.set_value(trapdoor_engaged);
+        park_engaged = false;
+        park.set_value(park_engaged);
 
 }
-    else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)){
+    else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
         //outtake center upper
         outmid = !outmid;
         intake = false;
         outlow = false;
         outlong = false;
+        trapdoor_engaged = false;
+        trapdoor.set_value(trapdoor_engaged);
+        park_engaged = false;
+        park.set_value(park_engaged);
 }
 
-    else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
+    else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)){
         //outtake long goal
         outlong = !outlong;
         bunny_engaged = false;
@@ -287,10 +317,15 @@ void motorControl(void* param){
         intake = false;
         outlow = false;
         outmid = false;
+        trapdoor_engaged = false;
+        trapdoor.set_value(trapdoor_engaged);
+        hood.set_value(false);
+        park_engaged = false;
+        park.set_value(park_engaged);
 }
 
     if(intake==true){
-        park.set_value(false);
+        hood.set_value(true);
         intake_motor.move(127);
         evil_motor.move(-127);
         top_motor.move(127);
@@ -326,10 +361,12 @@ void motorControl(void* param){
             int destination = get_color_destination(last_red, last_blue);
 
             if(destination == 0){
-                trapdoor.set_value(true);
+                trapdoor_engaged = true;
+                trapdoor.set_value(trapdoor_engaged);
             }
             else{
-                trapdoor.set_value(false);
+                trapdoor_engaged = false;
+                trapdoor.set_value(trapdoor_engaged);
             }
     }
 
@@ -343,12 +380,87 @@ void motorControl(void* param){
         evil_motor.move(-127);
         intake_motor.move(127);
         top_motor.move(-127);
+        bool blue_present = detect_blue_optical() && detect_proximity();
+        bool red_present = detect_red_optical() && detect_proximity();
+
+        bool new_last_red = last_red;
+            bool new_last_blue = last_blue;
+            if (red_present) {
+                new_last_red = true;
+                new_last_blue = false;
+            }
+            if (blue_present) {
+                new_last_blue = true;
+                new_last_red = false;
+            }
+
+            // If a change was detected, wait 250ms and re-check before committing the switch
+            if (new_last_red != last_red || new_last_blue != last_blue) {
+                bool blue_confirm = detect_blue_optical();
+                bool red_confirm = detect_red_optical();
+                if (red_confirm) {
+                    last_red = true;
+                    last_blue = false;
+                } else if (blue_confirm) {
+                    last_blue = true;
+                    last_red = false;
+                }
+                // If neither confirms, keep previous state
+            }
+
+            int destination = get_color_destination(last_red, last_blue);
+
+            if(destination == 0){
+                trapdoor_engaged = true;
+                trapdoor.set_value(trapdoor_engaged);
+            }
+            else{
+                trapdoor_engaged = false;
+                trapdoor.set_value(trapdoor_engaged);
+            }
     }
 
     if(outlong==true){
-        intake_motor.move(-127);
-        evil_motor.move(127);
-        top_motor.move(-127);
+        intake_motor.move(127);
+        evil_motor.move(-127);
+        top_motor.move(127);
+        bool blue_present = detect_blue_optical() && detect_proximity();
+        bool red_present = detect_red_optical() && detect_proximity();
+        bool new_last_red = last_red;
+            bool new_last_blue = last_blue;
+            if (red_present) {
+                new_last_red = true;
+                new_last_blue = false;
+            }
+            if (blue_present) {
+                new_last_blue = true;
+                new_last_red = false;
+            }
+
+            // If a change was detected, wait 250ms and re-check before committing the switch
+            if (new_last_red != last_red || new_last_blue != last_blue) {
+                bool blue_confirm = detect_blue_optical();
+                bool red_confirm = detect_red_optical();
+                if (red_confirm) {
+                    last_red = true;
+                    last_blue = false;
+                } else if (blue_confirm) {
+                    last_blue = true;
+                    last_red = false;
+                }
+                // If neither confirms, keep previous state
+            }
+
+            int destination = get_color_destination(last_red, last_blue);
+
+            if(destination == 0){
+                trapdoor_engaged = true;
+                trapdoor.set_value(trapdoor_engaged);
+            }
+            else{
+                trapdoor_engaged = false;
+                trapdoor.set_value(trapdoor_engaged);
+            }
     }
 
     if(outlong==false && intake==false && outlow==false && outmid==false){
@@ -359,7 +471,7 @@ void motorControl(void* param){
         bunny.set_value(bunny_engaged);
     }
 
-    pros::delay(20);
+    pros::delay(10);
 
     }
     trapdoor.set_value(false);
@@ -421,13 +533,17 @@ void autonMotor(void* param){
 void initialize() {
     pros::lcd::initialize();
     chassis.calibrate();
-    // check angle of potentionmeter and assign team color. 
-    if(sensor.get_value()>=3700){
-        teamColor = 1; //Red
+    // check potentiometer raw value and assign team color using midpoint
+    int pot_raw = sensor.get_value();
+    int pot_mid = (POT_MIN_READING + POT_MAX_READING) / 2;
+    if (pot_raw > pot_mid) {
+        teamColor = 1; // Red
+        pros::lcd::print(5, "Team: Red");
+    } else {
+        teamColor = 2; // Blue
+        pros::lcd::print(5, "Team: Blue");
     }
-    else{
-        teamColor = 2; //Blue
-    }
+    pros::lcd::print(3, "Pot raw: %d", pot_raw);
     pros::delay(1500);
 }
 
@@ -443,6 +559,7 @@ void opcontrol(){
     parkTaskPtr = new pros::Task(togglePark, NULL, "Park Task");
     hoodTaskPtr = new pros::Task(toggleHood, NULL, "Hood Task");
     dpTaskPtr = new pros::Task(toggleDoublePark, NULL, "Double Park Task");
+    trapdoorTaskPtr = new pros::Task(toggleTrapdoor, NULL, "Trapdoor Task");
 }
 
 void autonomous(){
