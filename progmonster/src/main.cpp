@@ -8,7 +8,7 @@
 // Potentiometer ADI raw range (adjust if your sensor reports a different span)
 #define POT_MIN_READING 0
 #define POT_MAX_READING 4095
-
+ASSET (LongGoalManeuver1_txt);
 
 // MotorGroup: negative numbers are okay here to indicate reversed motors inside the group
 pros::MotorGroup left_motors({-21, 20, -16}, pros::MotorGearset::blue);
@@ -565,27 +565,49 @@ void opcontrol(){
 void autonomous(){
     autonRunning = true;
 
+
+    int a = -1;
+    int b = -1;
+
+
     //ROUGH AWP
     /*
-    chassis.setPose(a*55, b*17, 180);
+    chassis.setPose(a*55, 17, 180);
+    convState(0);
     chassis.turnToPoint(a*55, b*47, 1500);
     chassis.moveToPoint(a*55, b*47, 1000);
 
-    chassis.turnToPoint(a*65, b*47, 700);
-    chassis.moveToPoint(a*65, b*47, 1000);
+    chassis.turnToPoint(a*60, b*47, 700);   
+    scraper.set_value(true);
+    chassis.moveToPoint(a*60, b*47, 1000);
+    pros::delay(2000);
+
 
     chassis.moveToPoint(a*26, b*47, 500, {.forwards=false});
+    convState(3);
+    scraper.set_value(false);
+    pros::delay(2000); //outtake all long goal
+    convState(0);
+    chassis.follow(LongGoalManeuver1_txt, 15, 1000);
 
-    chassis.follow(LongGoalManeuver1_txt, 15, 2000);
 
-    chassis.moveToPoint(a*65, b*47, 1000);
-    chassis.turnToPoint(a*47, b*-47, 700);
-    chassis.moveToPoint(a*10, b*-11, 1500, {.forwards=false});
+
+
+    chassis.moveToPoint(a*22, b*22, 1000);
+    chassis.turnToPoint(a*12, b*-12, 700);
+    chassis.moveToPoint(a*12, b*-12, 500);
+    convState(2);
+    pros::delay(100);
+    convState(-1);
+
+    //chassis.moveToPoint(a*10, b*-11, 1500, {.forwards=false});
+
+    chassis.turnToPoint(a*47, b*-47, 700);    
     chassis.moveToPoint(a*47, b*-47, 500);
     chassis.moveToPoint(a*65, b*-47, 1000);
     chassis.moveToPoint(a*26, b*-47, 1000, {.forwards=false});
-*/
-//ROUGH AWP
+    */
+    //ROUGH AWP
 
     //80 skills
     /*chassis.setPose(-50, -17, 180);
