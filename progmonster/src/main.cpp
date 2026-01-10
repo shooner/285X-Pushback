@@ -19,11 +19,11 @@ pros::Motor intake_motor(3, pros::MotorGearset::green);
 pros::Motor evil_motor(9, pros::MotorGearset::blue);
 pros::Motor top_motor(10, pros::MotorGearset::blue);
 
-pros::adi::Port trapdoor('H', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port trapdoor('D', pros::E_ADI_DIGITAL_OUT);
 pros::adi::Port bunny('C', pros::E_ADI_DIGITAL_OUT);
 pros::adi::Port scraper('F', pros::E_ADI_DIGITAL_OUT);
-pros::adi::Port park('D', pros::E_ADI_DIGITAL_OUT);
-pros::adi::Port hood('G', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port park('B', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port hood('A', pros::E_ADI_DIGITAL_OUT);
 
 pros::Optical optical_sensor(OPTICAL_PORT);
 pros::Optical dp_sensor(DOUBLE_PARK_MACRO);
@@ -44,7 +44,6 @@ ASSET(secondcurve48_txt);
 
 // ---------- State ----------
 int aut_height = -1; // conveyor command for auton thread
-int teamColor = 2; // 1 = RED, 2 = BLUE
 bool bunny_engaged = false;
 bool dp_macro_active = false;
 bool trapdoor_engaged = false;
@@ -54,7 +53,7 @@ bool park_engaged = false;
 volatile bool opRunning = false;
 volatile bool autonRunning = false;
 
-bool colorSort = true;
+int teamColor = 0; // 0 = OFF, 1 = RED, 2 = BLUE
 
 // Task pointers so we can remove tasks if needed
 pros::Task* motorControlTaskPtr = nullptr;
@@ -67,6 +66,7 @@ pros::Task* hoodTaskPtr = nullptr;
 pros::Task* trapdoorTaskPtr = nullptr;
 pros::Task* convTaskPtr = nullptr;
 pros::Task* dpTaskPtr = nullptr;
+pros::Task* toggleColorSortTaskPtr = nullptr;
 
 // ---------- LEMLib objects ----------
 lemlib::Drivetrain drivetrain(&left_motors,
@@ -140,7 +140,8 @@ static int get_color_destination(bool last_red, bool last_blue) {
         if (last_red) return 0;
         if (last_blue) return 1;
         return 0;
-    } else {
+    } 
+    else if(teamColor==1){
         if (last_blue) return 0;
         if (last_red) return 1;
         return 0;
@@ -154,13 +155,16 @@ static bool detect_double_park_macro(){
 
 void toggleColorSort(void* param) {
     while (opRunning){
-        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-            colorSort = !colorSort;
-            if(colorSort){
-            controller.print(0,0, "ColorSort: ON");
-            }
-            else{
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+            teamColor = (teamColor + 1) % 3; // cycles through 0, 1, 2
+            if(teamColor == 0){
             controller.print(0,0, "ColorSort: OFF");
+            }
+            else if(teamColor == 1){
+            controller.print(0,0, "TEAM RED");
+            }
+            else if(teamColor == 2){
+            controller.print(0,0, "TEAM BLUE");
             }
             pros::delay(200);
             
@@ -185,7 +189,7 @@ void toggleScraper(void* param) {
 
 void toggleBunnyEars(void* param) {
     while (opRunning){
-        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
             bunny_engaged = !bunny_engaged;
             bunny.set_value(bunny_engaged);
             pros::delay(200);
@@ -348,7 +352,7 @@ void motorControl(void* param){
         intake_motor.move(127);
         evil_motor.move(-127);
         top_motor.move(127);
-        if(colorSort == true){
+        if(teamColor != 0){
         bool blue_present = detect_blue_optical() && detect_proximity();
         bool red_present = detect_red_optical() && detect_proximity();
 
@@ -400,7 +404,7 @@ void motorControl(void* param){
         evil_motor.move(-127);
         intake_motor.move(127);
         top_motor.move(-127);
-        if(colorSort){
+        if(teamColor != 0){
         bool blue_present = detect_blue_optical() && detect_proximity();
         bool red_present = detect_red_optical() && detect_proximity();
 
@@ -446,7 +450,7 @@ void motorControl(void* param){
         intake_motor.move(127);
         evil_motor.move(-127);
         top_motor.move(127);
-        if(colorSort){
+        if(teamColor != 0){
         bool blue_present = detect_blue_optical() && detect_proximity();
         bool red_present = detect_red_optical() && detect_proximity();
         bool new_last_red = last_red;
@@ -557,17 +561,6 @@ void autonMotor(void* param){
 void initialize() {
     pros::lcd::initialize();
     chassis.calibrate();
-    // check potentiometer raw value and assign team color using midpoint
-    int pot_raw = sensor.get_value();
-    int pot_mid = (POT_MIN_READING + POT_MAX_READING) / 2;
-    if (pot_raw > pot_mid) {
-        teamColor = 1; // Red
-        pros::lcd::print(5, "Team: Red");
-    } else {
-        teamColor = 2; // Blue
-        pros::lcd::print(5, "Team: Blue");
-    }
-    pros::lcd::print(3, "Pot raw: %d", pot_raw);
     pros::delay(1500);
 }
 
@@ -584,6 +577,7 @@ void opcontrol(){
     hoodTaskPtr = new pros::Task(toggleHood, NULL, "Hood Task");
     dpTaskPtr = new pros::Task(toggleDoublePark, NULL, "Double Park Task");
     trapdoorTaskPtr = new pros::Task(toggleTrapdoor, NULL, "Trapdoor Task");
+    toggleColorSortTaskPtr = new pros::Task(toggleColorSort, NULL, "Color Sort Toggle Task");
 }
 
 void autonomous(){
