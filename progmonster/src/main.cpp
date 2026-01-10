@@ -20,8 +20,8 @@ pros::Motor evil_motor(9, pros::MotorGearset::blue);
 pros::Motor top_motor(10, pros::MotorGearset::blue);
 
 pros::adi::Port trapdoor('H', pros::E_ADI_DIGITAL_OUT);
-pros::adi::Port bunny('A', pros::E_ADI_DIGITAL_OUT);
-pros::adi::Port scraper('B', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port bunny('C', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port scraper('F', pros::E_ADI_DIGITAL_OUT);
 pros::adi::Port park('D', pros::E_ADI_DIGITAL_OUT);
 pros::adi::Port hood('G', pros::E_ADI_DIGITAL_OUT);
 
@@ -53,6 +53,8 @@ bool park_engaged = false;
 // Flags used to coordinate tasks and safe shutdown between modes
 volatile bool opRunning = false;
 volatile bool autonRunning = false;
+
+bool colorSort = true;
 
 // Task pointers so we can remove tasks if needed
 pros::Task* motorControlTaskPtr = nullptr;
@@ -148,6 +150,23 @@ static int get_color_destination(bool last_red, bool last_blue) {
 static bool detect_double_park_macro(){
     double hue = dp_sensor.get_hue();
     return ((hue >= 0 && hue <= 15)||(hue>=190&&hue<=260)) && (dp_sensor.get_proximity() > 100);
+}
+
+void toggleColorSort(void* param) {
+    while (opRunning){
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+            colorSort = !colorSort;
+            if(colorSort){
+            controller.print(0,0, "ColorSort: ON");
+            }
+            else{
+            controller.print(0,0, "ColorSort: OFF");
+            }
+            pros::delay(200);
+            
+        }
+        pros::delay(20);
+    }
 }
 
 void toggleScraper(void* param) {
@@ -329,7 +348,7 @@ void motorControl(void* param){
         intake_motor.move(127);
         evil_motor.move(-127);
         top_motor.move(127);
-
+        if(colorSort == true){
         bool blue_present = detect_blue_optical() && detect_proximity();
         bool red_present = detect_red_optical() && detect_proximity();
 
@@ -369,6 +388,7 @@ void motorControl(void* param){
                 trapdoor.set_value(trapdoor_engaged);
             }
     }
+}
 
     if(outlow==true){
         evil_motor.move(127);
@@ -380,6 +400,7 @@ void motorControl(void* param){
         evil_motor.move(-127);
         intake_motor.move(127);
         top_motor.move(-127);
+        if(colorSort){
         bool blue_present = detect_blue_optical() && detect_proximity();
         bool red_present = detect_red_optical() && detect_proximity();
 
@@ -418,12 +439,14 @@ void motorControl(void* param){
                 trapdoor_engaged = false;
                 trapdoor.set_value(trapdoor_engaged);
             }
+        }
     }
 
     if(outlong==true){
         intake_motor.move(127);
         evil_motor.move(-127);
         top_motor.move(127);
+        if(colorSort){
         bool blue_present = detect_blue_optical() && detect_proximity();
         bool red_present = detect_red_optical() && detect_proximity();
         bool new_last_red = last_red;
@@ -463,6 +486,7 @@ void motorControl(void* param){
             }
     }
 
+    }
     if(outlong==false && intake==false && outlow==false && outmid==false){
         intake_motor.move(0);
         evil_motor.move(0);
