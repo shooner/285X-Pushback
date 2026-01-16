@@ -31,11 +31,10 @@ pros::Optical dp_sensor(DOUBLE_PARK_MACRO);
 pros::ADIAnalogIn sensor (POTENTIOMETER_PORT);
 
 // Rotations / IMU
-pros::Rotation vertical(-13);
+pros::Rotation vertical(-2);
 // Replace negative port by positive with reversed flag
 pros::Rotation horizontal(12);
 pros::Imu imu(17);
-
 ASSET(firstcurve_txt);
 ASSET(secondcurve_txt);
 ASSET(thirdcurve_txt);
@@ -77,27 +76,27 @@ lemlib::Drivetrain drivetrain(&left_motors,
                               400,
                               2);
 
-lemlib::TrackingWheel vertical_wheel(&vertical, lemlib::Omniwheel::NEW_2, -4);
+lemlib::TrackingWheel vertical_wheel(&vertical, lemlib::Omniwheel::NEW_2, .85);
 
 lemlib::OdomSensors sensors(&vertical_wheel,
                             nullptr,
                             nullptr,
                             nullptr,
-                            nullptr);
+                            &imu);
     
 
 lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
                                               0, // integral gain (kI)
                                               3, // derivative gain (kD)
-                                              0, // anti windup
-                                              0, // small error range, in inches
-                                              0, // small error range timeout, in milliseconds
-                                              0, // large error range, in inches
-                                              0, // large error range timeout, in milliseconds
-                                              0 // maximum acceleration (slew)
+                                              3, // anti windup
+                                              1, // small error range, in inches
+                                              100, // small error range timeout, in milliseconds
+                                              3, // large error range, in inches
+                                              500, // large error range timeout, in milliseconds
+                                              20 // maximum acceleration (slew)
 );
 lemlib::ControllerSettings angular_controller(20, // proportional gain (kP)
-                                              0,    // integral gain (kI)
+                                              -1,    // integral gain (kI)
                                               5, // derivative gain (kD)
                                               3, // anti windup
                                               1, // small  error range, in inches
@@ -598,7 +597,7 @@ void autonomous(){
 
     chassis.setPose(0, 0, 0);
     // turn to face heading 90 with a very long timeout
-    chassis.moveToPoint(0, 48, 100000);
+    chassis.moveToPoint(0, 12, 100000);
 
     //ROUGH AWP
     /*
@@ -702,7 +701,7 @@ void autonomous(){
 */
 
     // 75 skills
-    chassis.setPose(-50, -17, 180);
+    /*chassis.setPose(-50, -17, 180);
     chassis.moveToPoint(-50, -47, 1500);
     chassis.turnToHeading(270, 700);
     scraper.set_value(true);
@@ -762,10 +761,9 @@ void autonomous(){
     convState(-1);
     scraper.set_value(false);
     chassis.follow(fourthcurve_txt, 10, 4000);
-
+*/
     /*
     // 48 skills
-    /*
     chassis.setPose(-50, -17, 180);
     chassis.moveToPoint(-50, -47, 1500);
     chassis.turnToHeading(270, 700);
@@ -796,7 +794,8 @@ void autonomous(){
     scraper.set_value(false);
     chassis.turnToHeading(0,700);
     chassis.follow(secondcurve48_txt, 10, 4000);
-*/
+    */
+
     autonRunning = false;
     while (true) {
         pros::delay(50);
