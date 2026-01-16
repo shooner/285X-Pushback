@@ -76,14 +76,14 @@ lemlib::Drivetrain drivetrain(&left_motors,
                               400,
                               2);
 
-lemlib::TrackingWheel vertical_wheel(&vertical, lemlib::Omniwheel::NEW_2, 2.5);
+lemlib::TrackingWheel vertical_wheel(&vertical, lemlib::Omniwheel::NEW_2, -4);
 
 lemlib::OdomSensors sensors(&vertical_wheel,
                             nullptr,
                             nullptr,
                             nullptr,
-                            &imu);
-
+                            nullptr);
+    
 
 lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
                                               0, // integral gain (kI)
@@ -95,14 +95,14 @@ lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
                                               0, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
-lemlib::ControllerSettings angular_controller(10, // proportional gain (kP)
-                                              0, // integral gain (kI)
-                                              120, // derivative gain (kD)
-                                              0, // anti windup
-                                              0, // small error range, in inches
-                                              0, // small error range timeout, in milliseconds
-                                              0, // large error range, in inches
-                                              0, // large error range timeout, in milliseconds
+lemlib::ControllerSettings angular_controller(20, // proportional gain (kP)
+                                              0,    // integral gain (kI)
+                                              5, // derivative gain (kD)
+                                              3, // anti windup
+                                              1, // small  error range, in inches
+                                              100, // small error range timeout, in milliseconds
+                                              3, // large error range, in inches
+                                              500, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
 lemlib::ExpoDriveCurve throttle_curve(3, 10, 1.019);
@@ -595,6 +595,10 @@ void autonomous(){
     int b = -1;
 
 
+    chassis.setPose(0, 0, 0);
+    // turn to face heading 90 with a very long timeout
+    chassis.moveToPoint(0, 48, 100000);
+
     //ROUGH AWP
     /*
     chassis.setPose(a*55, 17, 180);
@@ -758,6 +762,7 @@ void autonomous(){
     scraper.set_value(false);
     chassis.follow(fourthcurve_txt, 10, 4000);
 */
+    /*
     // 48 skills
     chassis.setPose(-50, -17, 180);
     chassis.moveToPoint(-50, -47, 1500);
@@ -789,6 +794,7 @@ void autonomous(){
     scraper.set_value(false);
     chassis.turnToHeading(0,700);
     chassis.follow(secondcurve48_txt, 10, 4000);
+    */
 
     autonRunning = false;
     while (true) {
