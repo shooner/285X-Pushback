@@ -697,7 +697,7 @@ void autonomous(){
 */
 
     // 75 skills
-    /*chassis.setPose(-50, -17, 180);
+    chassis.setPose(-50, -17, 180);
     chassis.moveToPoint(-50, -47, 1500);
     chassis.turnToHeading(270, 700);
     scraper.set_value(true);
@@ -757,8 +757,10 @@ void autonomous(){
     convState(-1);
     scraper.set_value(false);
     chassis.follow(fourthcurve_txt, 10, 4000);
-*/
+
+    
     // 48 skills
+    /*
     chassis.setPose(-50, -17, 180);
     chassis.moveToPoint(-50, -47, 1500);
     chassis.turnToHeading(270, 700);
@@ -789,7 +791,7 @@ void autonomous(){
     scraper.set_value(false);
     chassis.turnToHeading(0,700);
     chassis.follow(secondcurve48_txt, 10, 4000);
-
+*/
     autonRunning = false;
     while (true) {
         pros::delay(50);
