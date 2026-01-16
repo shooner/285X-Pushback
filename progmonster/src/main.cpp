@@ -49,6 +49,7 @@ bool bunny_engaged = false;
 bool dp_macro_active = false;
 bool trapdoor_engaged = true;
 bool park_engaged = false;
+bool scraper_engaged = false;
 
 // Flags used to coordinate tasks and safe shutdown between modes
 volatile bool opRunning = false;
@@ -177,7 +178,6 @@ void toggleColorSort(void* param) {
 }
 
 void toggleScraper(void* param) {
-    bool scraper_engaged = false;
     while (opRunning){
         if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
             scraper_engaged = !scraper_engaged;
@@ -599,7 +599,29 @@ void autonomous(){
     chassis.setPose(0, 0, 0);
     // turn to face heading 90 with a very long timeout
     chassis.moveToPoint(0, 48, 100000);
+    
+    //bracket match auton
+    chassis.setPose(a*50, b*17, 180);
+    chassis.moveToPoint(a*50, b*47, 1500);
+    chassis.turnToHeading(270, 700);
+    chassis.moveToPoint(a*57, b*47, 1000);
+    convState(0); //intake 
+    pros::delay(2700);
+    convState(-1);
+    chassis.moveToPoint(a*33, b*47, 1000, {.forwards=false});
+    scraper_engaged = true;
+    scraper.set_value(scraper_engaged); //true is up and false is down the evil solenoid
+    convState(3); //outtake long goal
+    pros::delay(2000);
+    convState(-1);
+    chassis.turnToHeading(180, 700);
+    chassis.moveToPoint(a*33, b*35, 1000, {.forwards=false});
+    bunny_engaged = true;
+    bunny.set_value(bunny_engaged);
+    chassis.turnToHeading(270, 700);
+    chassis.moveToPoint(a*17, b*35, 1000, {.forwards=false});
 
+    
     //ROUGH AWP
     /*
     chassis.setPose(a*55, 17, 180);
