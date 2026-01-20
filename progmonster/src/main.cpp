@@ -41,6 +41,7 @@ ASSET(thirdcurve_txt);
 ASSET(fourthcurve_txt);
 ASSET(secondcurve70_txt);
 ASSET(secondcurve48_txt);
+ASSET(bottom_left_curve_txt);
 
 // ---------- State ----------
 int aut_height = -1; // conveyor command for auton thread
@@ -796,7 +797,7 @@ void autonomous(){
     autonIdle(nullptr);
 
     chassis.moveToPoint(33, -47, 800);
-
+    
 
 
 
