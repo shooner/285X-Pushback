@@ -598,6 +598,7 @@ void initialize() {
     }
     pros::lcd::print(3, "Pot raw: %d", pot_raw);
     pros::delay(20);
+    scraper.set_value(true);
 }
 
 
@@ -752,19 +753,21 @@ void autonomous(){
 
     // 75 skills                                                                                                                                                                                                                                                                            l,,,, us
     chassis.setPose(-50, -17, 180);
+    trapdoor.set_value(true);
     chassis.moveToPoint(-50, -47, 1500);
     chassis.turnToHeading(270, 700);
     scraper.set_value(false);
-    chassis.moveToPoint(-68, -47, 1000);
     autonIntake(nullptr);
-    pros::delay(700); //intake all blocks
+    chassis.moveToPoint(-68, -47, 1000);
+    pros::delay(1200); //intake all blocks
     chassis.moveToPoint(-50, -47, 500, {.forwards=false});
     chassis.moveToPoint(-68, -47, 1000);
+    pros::delay(1200);
 
-    pros::delay(700);
+
+    chassis.moveToPoint(-50, -47, 500, {.forwards=false});
     autonIdle(nullptr);
     scraper.set_value(true);
-    chassis.moveToPoint(-50, -47, 500, {.forwards=false});
     chassis.turnToHeading(180, 700);
     chassis.moveToPoint(-50, -62, 1000);
     chassis.turnToHeading(90, 700);
@@ -778,14 +781,23 @@ void autonomous(){
     pros::delay(2000); //outtake all long goal
     autonIntake(nullptr);
 
+    scraper.set_value(false);
+
     chassis.moveToPoint(68, -47, 800);
-    pros::delay(700);
+    pros::delay(1200);
     chassis.moveToPoint(50, -47, 500, {.forwards=false});
     chassis.moveToPoint(68, -47, 800);
-    pros::delay(700); //intake all blocks
+    pros::delay(1200); //intake all blocks
 
     chassis.moveToPoint(33, -47, 800, {.forwards=false});
+    scraper.set_value(true);
     autonLongGoal(nullptr);
+    pros::delay(2000); //outtake all long goal
+    autonIdle(nullptr);
+
+    chassis.moveToPoint(33, -47, 800);
+
+
 
 
 
