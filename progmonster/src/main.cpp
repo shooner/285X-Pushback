@@ -526,24 +526,31 @@ void autonIntake(void* param){
     intake_motor.move(127);
     evil_motor.move(-127);
     top_motor.move(127);
+    hood.set_value(true);
+    trapdoor.set_value(true);
 }
 
 void autonCenterLower(void* param){
     evil_motor.move(127);
     intake_motor.move(-127);
     top_motor.move(-127);
+    trapdoor.set_value(true);
+
 }
 
 void autonCenterUpper(void* param){
     evil_motor.move(-127);
     intake_motor.move(127);
     top_motor.move(-127);
+    trapdoor.set_value(true);
 }
 
 void autonLongGoal(void* param){
-    intake_motor.move(-127);
-    evil_motor.move(127);
-    top_motor.move(-127);
+    intake_motor.move(127);
+    evil_motor.move(-127);
+    top_motor.move(127);
+    hood.set_value(false);
+    trapdoor.set_value(true);
 }
 
 void autonIdle(void* param){
@@ -625,10 +632,31 @@ void autonomous(){
     int a = -1;
     int b = -1;
 
+    chassis.setPose(0,0,180);
+    chassis.moveToPoint(0,-29, 1000, {.maxSpeed = 80});
+    scraper.set_value(false); //scraper down
+    chassis.turnToHeading(270, 700); //turn to scraper
+    autonIntake(nullptr);
+    chassis.moveToPoint(-999, -29, 1000); //intake while moving into the thingy
+    chassis.waitUntilDone();
+    chassis.resetLocalPosition();
+    chassis.moveToPoint(25, 0, 1000, {.forwards=false}); //move to long goal
+    autonLongGoal(nullptr);
+    scraper.set_value(true); //scraper up
+    pros::delay(2000);
+    autonIdle(nullptr);
+    chassis.resetLocalPosition();
+
+    chassis.moveToPoint(-8, 0, 1000, {.forwards=false}); //back away from long goal
+    chassis.resetLocalPosition();
+    chassis.turnToHeading(90, 700); //hit a right hander
+    chassis.moveToPoint(0, 16, 1000); //pre position to park on side
+    chassis.resetLocalPosition();
+    chassis.turnToHeading(-90, 700); //hit another left hander
+    chassis.moveToPoint(-22, 0, 1000); //move to position to park from side
 
 
-    
-    
+
     //bracket match auton
     /*chassis.setPose(a*50, b*17, 180);
     chassis.moveToPoint(a*50, b*47, 1500);
@@ -752,34 +780,40 @@ void autonomous(){
     chassis.follow(fourthcurve_txt, 10, 4000);
 */
 
-    // 75 skills                                                                                                                                                                                                                                                                            l,,,, us
+    // 75 skills             
+    
+    /*
     chassis.setPose(-50, -17, 180);
     trapdoor.set_value(true);
     chassis.moveToPoint(-50, -47, 1500);
     chassis.turnToHeading(270, 700);
-    scraper.set_value(false);
+    scraper.set_value(false); //scraper down
     autonIntake(nullptr);
-    chassis.moveToPoint(-68, -47, 1000);
-    pros::delay(1200); //intake all blocks
+    chassis.moveToPoint(-68, -47, 1000); //move into the scraper
+
+    //chassis.setPose(-68, -47, 270);
+    pros::delay(2000); //intake all blocks
     chassis.moveToPoint(-50, -47, 500, {.forwards=false});
-    chassis.moveToPoint(-68, -47, 1000);
-    pros::delay(1200);
+    chassis.moveToPoint(-68, -47, 1000); //move into the scraper
+    //chassis.setPose(-68, -47, 270);
+    pros::delay(2000);
 
 
     chassis.moveToPoint(-50, -47, 500, {.forwards=false});
-    autonIdle(nullptr);
     scraper.set_value(true);
-    chassis.turnToHeading(180, 700);
-    chassis.moveToPoint(-50, -62, 1000);
+    chassis.turnToHeading(0, 700);
+    chassis.moveToPoint(-50, -57, 1000, {.forwards = false, .maxSpeed = 60});
+    chassis.setPose(50, -57, 0);
+
     chassis.turnToHeading(90, 700);
 
-    chassis.moveToPoint(50, -62, 2000);
+    chassis.moveToPoint(50, -57, 2000, {.maxSpeed = 50});
     chassis.turnToHeading(0, 700);
     chassis.moveToPoint(50, -47, 1000);
     chassis.turnToHeading(90, 700);
     chassis.moveToPoint(33, -47, 700, {.forwards=false});
     autonLongGoal(nullptr);
-    pros::delay(2000); //outtake all long goal
+    pros::delay(5000); //outtake all long goal
     autonIntake(nullptr);
 
     scraper.set_value(false);
@@ -800,7 +834,7 @@ void autonomous(){
     chassis.follow(bottom_left_curve_txt, 10, 1000);
 
     chassis.turnToHeading(0, 700);
-    
+    */
 
 
 
