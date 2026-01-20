@@ -783,7 +783,7 @@ void autonomous(){
     autonIntake(nullptr);
 
     scraper.set_value(false);
-
+    
     chassis.moveToPoint(68, -47, 800);
     pros::delay(1200);
     chassis.moveToPoint(50, -47, 500, {.forwards=false});
@@ -796,8 +796,12 @@ void autonomous(){
     pros::delay(2000); //outtake all long goal
     autonIdle(nullptr);
 
-    chassis.moveToPoint(33, -47, 800);
+    chassis.moveToPoint(47, -47, 800);
+    chassis.follow(bottom_left_curve_txt, 10, 1000);
+
+    chassis.turnToHeading(0, 700);
     
+
 
 
 
@@ -827,7 +831,7 @@ void autonomous(){
     pros::delay(2000); //outtake all long goal
     autonIdle(nullptr);
     scraper.set_value(true);
-    chassis.turnToHeading(0,700);uuuuuuuu
+    chassis.turnToHeading(0,700);
     chassis.follow(secondcurve70_txt, 10, 4000);
     chassis.setPose(63, 19.7, 90);
     chassis.turnToPoint(50, 47, 700);
