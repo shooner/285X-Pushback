@@ -31,10 +31,10 @@ pros::Optical dp_sensor(DOUBLE_PARK_MACRO);
 pros::ADIAnalogIn sensor (POTENTIOMETER_PORT);
 
 // Rotations / IMU
-pros::Rotation vertical(-2);
+pros::Rotation vertical(-6);
 // Replace negative port by positive with reversed flag
 pros::Rotation horizontal(12);
-pros::Imu imu(17);
+pros::Imu imu(14);
 ASSET(firstcurve_txt);
 ASSET(secondcurve_txt);
 ASSET(thirdcurve_txt);
@@ -96,9 +96,9 @@ lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
                                               500, // large error range timeout, in milliseconds
                                               20 // maximum acceleration (slew)
 );
-lemlib::ControllerSettings angular_controller(20, // proportional gain (kP)
-                                              -1,    // integral gain (kI)
-                                              5, // derivative gain (kD)
+lemlib::ControllerSettings angular_controller(9, // proportional gain (kP)
+                                              0,    // integral gain (kI)
+                                              65, // derivative gain (kD)
                                               3, // anti windup
                                               1, // small  error range, in inches
                                               100, // small error range timeout, in milliseconds
@@ -521,6 +521,36 @@ void convState(int state){
     //3 = long goal
 }
 
+void autonIntake(void* param){
+    intake_motor.move(127);
+    evil_motor.move(-127);
+    top_motor.move(127);
+}
+
+void autonCenterLower(void* param){
+    evil_motor.move(127);
+    intake_motor.move(-127);
+    top_motor.move(-127);
+}
+
+void autonCenterUpper(void* param){
+    evil_motor.move(-127);
+    intake_motor.move(127);
+    top_motor.move(-127);
+}
+
+void autonLongGoal(void* param){
+    intake_motor.move(-127);
+    evil_motor.move(127);
+    top_motor.move(-127);
+}
+
+void autonIdle(void* param){
+    intake_motor.move(0);
+    evil_motor.move(0);
+    top_motor.move(0);
+}
+
 void autonMotor(void* param){
     while(autonRunning){
         if(aut_height==0){ //intake
@@ -555,7 +585,7 @@ void autonMotor(void* param){
 void initialize() {
     pros::lcd::initialize();
     chassis.calibrate();
-    pros::delay(500);
+    pros::delay(20);
     sensor.calibrate();
     int pot_raw = sensor.get_value();
     int pot_mid = (POT_MIN_READING + POT_MAX_READING) / 2;
@@ -567,7 +597,7 @@ void initialize() {
         controller.print(0,0, "TEAM BLUE");
     }
     pros::lcd::print(3, "Pot raw: %d", pot_raw);
-    pros::delay(1500);
+    pros::delay(20);
 }
 
 
@@ -590,14 +620,12 @@ void opcontrol(){
 void autonomous(){
     autonRunning = true;
 
-
     int a = -1;
     int b = -1;
 
 
-    chassis.setPose(0, 0, 0);
-    // turn to face heading 90 with a very long timeout
-    chassis.moveToPoint(0, 48, 100000);
+
+    
     
     //bracket match auton
     /*chassis.setPose(a*50, b*17, 180);
@@ -722,15 +750,50 @@ void autonomous(){
     chassis.follow(fourthcurve_txt, 10, 4000);
 */
 
-    // 75 skills
+    // 75 skills                                                                                                                                                                                                                                                                            l,,,, us
     chassis.setPose(-50, -17, 180);
     chassis.moveToPoint(-50, -47, 1500);
     chassis.turnToHeading(270, 700);
+    scraper.set_value(false);
+    chassis.moveToPoint(-68, -47, 1000);
+    autonIntake(nullptr);
+    pros::delay(700); //intake all blocks
+    chassis.moveToPoint(-50, -47, 500, {.forwards=false});
+    chassis.moveToPoint(-68, -47, 1000);
+
+    pros::delay(700);
+    autonIdle(nullptr);
     scraper.set_value(true);
-    chassis.moveToPoint(-58, -47, 1000);
-    convState(0);
-    pros::delay(2700); //intake all blocks
-    convState(-1);
+    chassis.moveToPoint(-50, -47, 500, {.forwards=false});
+    chassis.turnToHeading(180, 700);
+    chassis.moveToPoint(-50, -60, 1000);
+    chassis.turnToHeading(90, 700);
+
+    chassis.moveToPoint(50, -60, 2000);
+    chassis.turnToHeading(0, 700);
+    chassis.moveToPoint(50, -47, 1000);
+    chassis.turnToHeading(90, 700);
+    chassis.moveToPoint(33, -47, 700, {.forwards=false});
+    autonLongGoal(nullptr);
+    pros::delay(2000); //outtake all long goal
+    autonIntake(nullptr);
+
+    chassis.moveToPoint(68, -47, 800);
+    pros::delay(700);
+    chassis.moveToPoint(50, -47, 500, {.forwards=false});
+    chassis.moveToPoint(68, -47, 800);
+    pros::delay(700); //intake all blocks
+
+    chassis.moveToPoint(33, -47, 800, {.forwards=false});
+    autonLongGoal(nullptr);
+
+
+
+
+
+
+
+    /*
     chassis.moveToPoint(-50, -47, 500, {.forwards=false});
     scraper.set_value(false);
     chassis.turnToHeading(0,700);
@@ -738,20 +801,20 @@ void autonomous(){
     chassis.setPose(40, -47, 180);
     chassis.turnToHeading(90, 700);
     chassis.moveToPoint(33, -47, 700, {.forwards=false});
-    convState(3);
+    autonLongGoal(nullptr);
     pros::delay(2000); //outtake all long goal
-    convState(-1);
+    autonIdle(nullptr);
     scraper.set_value(true);
     chassis.moveToPoint(58, -47, 800);
-    convState(0);
+    autonIntake(nullptr);
     pros::delay(2700); //intake all blocks
-    convState(-1);
+    autonIdle(nullptr);
     chassis.moveToPoint(33, -47, 800, {.forwards=false});
-    convState(3);
+    autonLongGoal(nullptr);
     pros::delay(2000); //outtake all long goal
-    convState(-1);
-    scraper.set_value(false);
-    chassis.turnToHeading(0,700);
+    autonIdle(nullptr);
+    scraper.set_value(true);
+    chassis.turnToHeading(0,700);uuuuuuuu
     chassis.follow(secondcurve70_txt, 10, 4000);
     chassis.setPose(63, 19.7, 90);
     chassis.turnToPoint(50, 47, 700);
@@ -759,31 +822,31 @@ void autonomous(){
     scraper.set_value(true);
     chassis.turnToHeading(90, 700);
     chassis.moveToPoint(58, 47, 800);
-    convState(0);
+    autonIntake(nullptr);
     pros::delay(2700); //intake all blocks
-    convState(-1);
+    autonIdle(nullptr);
     chassis.moveToPoint(50, 47, 800, {.forwards=false});
-    scraper.set_value(false);
+    scraper.set_value(true);
     chassis.turnToHeading(180, 700);
     chassis.follow(thirdcurve_txt, 10, 4000);
     chassis.setPose(-50, 47, 0);
     chassis.turnToHeading(270, 700);
     chassis.moveToPoint(-33, 47, 800, {.forwards=false});
-    convState(3);
+    autonLongGoal(nullptr);
     pros::delay(2000); //outtake all long goal
-    convState(-1);
-    scraper.set_value(true);
+    autonIdle(nullptr);
+    scraper.set_value(false);
     chassis.moveToPoint(-58, 47, 1000);
-    convState(0);
+    autonIntake(nullptr);
     pros::delay(2700); //intake all blocks
-    convState(-1);
+    autonIdle(nullptr);
     chassis.moveToPoint(-33, 47, 700, {.forwards=false});
-    convState(3);
+    autonLongGoal(nullptr);
     pros::delay(2000); //outtake all long goal
-    convState(-1);
+    autonIdle(nullptr);
     scraper.set_value(false);
     chassis.follow(fourthcurve_txt, 10, 4000);
-
+    */
     /*
     // 48 skills
     chassis.setPose(-50, -17, 180);
