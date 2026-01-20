@@ -766,10 +766,10 @@ void autonomous(){
     scraper.set_value(true);
     chassis.moveToPoint(-50, -47, 500, {.forwards=false});
     chassis.turnToHeading(180, 700);
-    chassis.moveToPoint(-50, -60, 1000);
+    chassis.moveToPoint(-50, -62, 1000);
     chassis.turnToHeading(90, 700);
 
-    chassis.moveToPoint(50, -60, 2000);
+    chassis.moveToPoint(50, -62, 2000);
     chassis.turnToHeading(0, 700);
     chassis.moveToPoint(50, -47, 1000);
     chassis.turnToHeading(90, 700);
