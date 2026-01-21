@@ -96,9 +96,9 @@ lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
                                               500, // large error range timeout, in milliseconds
                                               20 // maximum acceleration (slew)
 );
-lemlib::ControllerSettings angular_controller(20, // proportional gain (kP)
+lemlib::ControllerSettings angular_controller(2, // proportional gain (kP)
                                               -1,    // integral gain (kI)
-                                              5, // derivative gain (kD)
+                                              12, // derivative gain (kD)
                                               3, // anti windup
                                               1, // small  error range, in inches
                                               100, // small error range timeout, in milliseconds
@@ -595,10 +595,6 @@ void autonomous(){
     int b = -1;
 
 
-    chassis.setPose(0, 0, 0);
-    // turn to face heading 90 with a very long timeout
-    chassis.moveToPoint(0, 48, 100000);
-    
     //bracket match auton
     /*chassis.setPose(a*50, b*17, 180);
     chassis.moveToPoint(a*50, b*47, 1500);
@@ -783,6 +779,7 @@ void autonomous(){
     convState(-1);
     scraper.set_value(false);
     chassis.follow(fourthcurve_txt, 10, 4000);
+
 
     /*
     // 48 skills
