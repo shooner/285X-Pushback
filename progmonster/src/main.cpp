@@ -42,14 +42,15 @@ ASSET(fourthcurve_txt);
 ASSET(secondcurve70_txt);
 ASSET(secondcurve48_txt);
 ASSET(bottom_left_curve_txt);
+ASSET(alignWithPark_txt);
 
 // ---------- State ----------
 int aut_height = -1; // conveyor command for auton thread
 bool bunny_engaged = false;
 bool dp_macro_active = false;
-bool trapdoor_engaged = true;
+bool trapdoor_engaged = false;
 bool park_engaged = false;
-bool scraper_engaged = false;
+bool scraper_engaged = true;
 
 // Flags used to coordinate tasks and safe shutdown between modes
 volatile bool opRunning = false;
@@ -187,7 +188,7 @@ void toggleScraper(void* param) {
         pros::delay(20);
     }
     // on exit, retract scraper for safety
-    scraper.set_value(false);
+    scraper.set_value(true);
 }
 
 void toggleBunnyEars(void* param) {
@@ -633,17 +634,19 @@ void autonomous(){
     int b = -1;
 
     chassis.setPose(0,0,180);
-    chassis.moveToPoint(0,-29, 1000, {.maxSpeed = 80});
+    chassis.moveToPoint(0,-27.5, 1000, {.maxSpeed = 80});
     scraper.set_value(false); //scraper down
     chassis.turnToHeading(270, 700); //turn to scraper
     autonIntake(nullptr);
-    chassis.moveToPoint(-999, -29, 1000); //intake while moving into the thingy
+    chassis.moveToPoint(-500, -29, 2700, {.maxSpeed = 60}); //intake while moving into the thingy
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
     chassis.moveToPoint(25, 0, 1000, {.forwards=false}); //move to long goal
+    chassis.waitUntilDone();
     autonLongGoal(nullptr);
     scraper.set_value(true); //scraper up
-    pros::delay(2000);
+    chassis.moveToPoint(50, 0, 2700, {.forwards=false}); //push into long goal
+    chassis.waitUntilDone();
     autonIdle(nullptr);
     chassis.resetLocalPosition();
 
@@ -652,10 +655,20 @@ void autonomous(){
     chassis.turnToHeading(90, 700); //hit a right hander
     chassis.moveToPoint(0, 16, 1000); //pre position to park on side
     chassis.resetLocalPosition();
-    chassis.turnToHeading(-90, 700); //hit another left hander
+    chassis.turnToHeading(-90, 700); //hit a left hander
     chassis.moveToPoint(-22, 0, 1000); //move to position to park from side
 
-
+    chassis.resetLocalPosition();
+    //follows curve that i havent uploaded yet to go from pre pos to park alignment
+    //just kidding no pure pursuit
+    chassis.turnToPoint(-24, 5, 700);
+    chassis.moveToPoint(-24, 5, 1000); //angle yourself i guess
+    chassis.turnToPoint(-28.3, 45, 700);
+    autonIntake(nullptr);
+    chassis.moveToPoint(-28.3, 45, 4000); //park
+    chassis.moveToPoint(-28.3, 38, 1000, {.forwards=false}); //back out a bit
+    chassis.waitUntilDone();   
+    chassis.moveToPoint(-28.3, 53, 5000); //park again
 
     //bracket match auton
     /*chassis.setPose(a*50, b*17, 180);
