@@ -51,6 +51,10 @@ bool dp_macro_active = false;
 bool trapdoor_engaged = true;
 bool park_engaged = false;
 bool scraper_engaged = false;
+bool hood_engaged = true;
+bool last_blue = false;
+bool last_red = false;
+bool isIntaking = false;
 
 // Flags used to coordinate tasks and safe shutdown between modes
 volatile bool opRunning = false;
@@ -216,7 +220,6 @@ void togglePark(void* param) {
 }
 
 void toggleHood(void* param) {
-    bool hood_engaged = false;
     while (opRunning){
         if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
             hood_engaged = !hood_engaged;
@@ -225,7 +228,7 @@ void toggleHood(void* param) {
         }
         pros::delay(20);
     }
-    hood.set_value(false);
+    hood.set_value(true);
 }
 
 void toggleTrapdoor(void* param) {
@@ -274,8 +277,6 @@ void motorControl(void* param){
     bool outmid = false;
     bool outlong = false;
 
-    bool last_blue = false;
-    bool last_red = false;
     bool was_macro_active = false;
 
     while(opRunning){
@@ -340,13 +341,14 @@ void motorControl(void* param){
         outmid = false;
         trapdoor_engaged = false;
         trapdoor.set_value(trapdoor_engaged);
-        hood.set_value(false);
+        hood.set_value(true);
         park_engaged = false;
         park.set_value(park_engaged);
 }
 
     if(intake==true){
-        hood.set_value(true);
+        hood_engaged = false;
+        hood.set_value(hood_engaged);
         intake_motor.move(127);
         evil_motor.move(-127);
         top_motor.move(127);
@@ -527,9 +529,60 @@ void autonIntake(void* param){
     intake_motor.move(127);
     evil_motor.move(-127);
     top_motor.move(127);
-    hood.set_value(true);
+    hood_engaged = false;
+    hood.set_value(hood_engaged);
     trapdoor.set_value(false);
 }
+
+/*void awpIntake(void* param){
+    intake_motor.move(127);
+    evil_motor.move(-127);
+    top_motor.move(127);
+    hood_engaged = false;
+    hood.set_value(hood_engaged);
+
+    while(isIntaking = true){ //colorsort when bot is intaking
+    bool blue_present = detect_blue_optical() && detect_proximity();
+    bool red_present = detect_red_optical() && detect_proximity();
+
+    bool new_last_red = last_red;
+    bool new_last_blue = last_blue;
+    if (red_present) {
+        new_last_red = true;
+        new_last_blue = false;
+    }
+    if (blue_present) {
+        new_last_blue = true;
+        new_last_red = false;
+    }
+
+    // If a change was detected, wait 250ms and re-check before committing the switch
+    if (new_last_red != last_red || new_last_blue != last_blue) {
+        bool blue_confirm = detect_blue_optical();
+        bool red_confirm = detect_red_optical();
+        if (red_confirm) {
+            last_red = true;
+            last_blue = false;
+        } else if (blue_confirm) {
+            last_blue = true;
+            last_red = false;
+        }
+        // If neither confirms, keep previous state
+    }
+
+    int destination = get_color_destination(last_red, last_blue);
+
+    if(destination == 0){
+        trapdoor_engaged = true;
+        trapdoor.set_value(trapdoor_engaged);
+    }
+    else{
+        trapdoor_engaged = false;
+        trapdoor.set_value(trapdoor_engaged);
+            }
+        }
+    }
+        */
 
 void autonCenterLower(void* param){
     evil_motor.move(127);
@@ -550,7 +603,8 @@ void autonLongGoal(void* param){
     intake_motor.move(127);
     evil_motor.move(-127);
     top_motor.move(127);
-    hood.set_value(false);
+    hood_engaged = true;
+    hood.set_value(hood_engaged);
     trapdoor.set_value(false);
 }
 
@@ -558,36 +612,6 @@ void autonIdle(void* param){
     intake_motor.move(0);
     evil_motor.move(0);
     top_motor.move(0);
-}
-
-void autonMotor(void* param){
-    while(autonRunning){
-        if(aut_height==0){ //intake
-            intake_motor.move(127);
-            evil_motor.move(-127);
-            top_motor.move(127);
-        }
-        else if(aut_height==1){ //outtake center lower
-            evil_motor.move(127);
-            intake_motor.move(-127);
-            top_motor.move(-127);
-        }
-        else if(aut_height ==2){ //outtake center upper
-            evil_motor.move(-127);
-            intake_motor.move(127);
-            top_motor.move(-127);
-        }
-        else if(aut_height==3){ //outtake long goal
-            intake_motor.move(-127);
-            evil_motor.move(127);
-            top_motor.move(-127);
-        }
-        else if(aut_height ==-1){ //idle
-            intake_motor.move(0);
-            evil_motor.move(0);
-            top_motor.move(0);
-        }
-    }
 }
 
 
@@ -634,56 +658,70 @@ void autonomous(){
     int b = -1;
 
     //AWP
-    /*
+    
     chassis.setPose(0,0,180);
-    chassis.moveToPoint(0,-27.5, 1000, {.maxSpeed = 80});
+    chassis.moveToPoint(0,-29, 1000);
     scraper.set_value(true); //scraper down
     chassis.turnToHeading(270, 700); //turn to scraper
+    //isIntaking = true;
     autonIntake(nullptr);
-    chassis.moveToPoint(-500, -29, 2700, {.maxSpeed = 60}); //intake while moving into the thingy
+    chassis.moveToPoint(-50, -29, 1300); //intake while moving into the thingy
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
     chassis.moveToPoint(27, 0, 1000, {.forwards=false}); //move to long goal
     chassis.waitUntilDone();
     autonLongGoal(nullptr);
     scraper.set_value(false); //scraper up
-    pros::delay(3000);
+    chassis.moveToPoint(50, 0, 2000, {.forwards=false}); //push into long goal
     chassis.waitUntilDone();
     autonIdle(nullptr);
+    //isIntaking = false;
     chassis.resetLocalPosition();
-    chassis.moveToPoint(-8, 0, 1000, {.forwards=false}); //back away from long goal
+    chassis.waitUntilDone();
+    chassis.moveToPoint(-11, 0, 1000); //back away from long goal
 
-    chassis.turnToPoint(8, 22, 700); //turn to three red stuff
+    chassis.turnToPoint(1.3, 16.8, 700); //turn to three red stuff
+    chassis.moveToPoint(1.3, 16.8, 2000, {.maxSpeed = 80}); //move to near three red stuff
+    //scraper.set_value(true); //scraper down
+    //no one cares about isIntake here cause all the blocks are one color
     autonIntake(nullptr);
-    chassis.moveToPoint(8, 22, 2000, {.maxSpeed=60}); //move to intake sum red stuff
+    chassis.moveToPoint(5.5, 25, 2000, {.maxSpeed = 80}); //move to intake sum red stuff
     chassis.waitUntilDone();
-    chassis.turnToPoint(8, 72, 700); //turn to face the red blocks on the opposite side
-    chassis.moveToPoint(8, 72, 3000, {.maxSpeed=60}); //move to intake red blocks on opposite side
+    chassis.turnToPoint(5.5, 60, 700); //turn to face the red blocks on the opposite side
+    //scraper.set_value(false); //scraper up
+    chassis.moveToPoint(5.5, 60, 4000, {.maxSpeed = 80}); //move to intake red blocks on opposite side
     chassis.waitUntilDone();
-    chassis.turnToHeading(315, 700); //turn to have back facing center goal
-    chassis.moveToPoint(17.7, 58, 1500, {.forwards = false}); //back up to center goal
+    //scraper.set_value(true); //scraper down
+    chassis.moveToPoint(5.5, 72, 1000, {.maxSpeed = 80}); //move to intake sum red stuff
+    chassis.waitUntilDone();
+    chassis.turnToHeading(325, 700); //turn to have back facing center goal
+    chassis.moveToPoint(14.7, 63.5, 1500, {.forwards = false}); //back up to center goal
     chassis.waitUntilDone();
     autonCenterUpper(nullptr);
     pros::delay(3000);
 
     chassis.resetLocalPosition();
-    chassis.turnToPoint(-28, 33, 700); //turn to move idk
-    chassis.moveToPoint(-28, 33, 3000); //move go in front of drop loader
+    //scraper is already down from three red blocks, no need to 
+    scraper.set_value(true); //scraper down
+    chassis.turnToPoint(-32, 36, 700); //turn to move idk
+    chassis.moveToPoint(-32, 36, 3000); //move go in front of drop loader
     chassis.turnToHeading(270, 700); //turn to drop loader
-    chassis.moveToPoint(-42, 33, 1000); //move to drop loader
+    chassis.moveToPoint(-46, 36, 1000); //move to drop loader
+    //isIntaking = true;
     autonIntake(nullptr);
-    chassis.moveToPoint(-70, 33, 3000, {.maxSpeed=60}); //intake while moving into the thingy
+    chassis.moveToPoint(-70, 36, 1300); //intake while moving into the thingy
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
+    //isIntaking = false;
 
-    chassis.moveToPoint(24, 0, 1500, {.forwards = false}); //move to long goal
+    chassis.moveToPoint(29, 0, 1500, {.forwards = false}); //move to long goal
     chassis.waitUntilDone();
     autonLongGoal(nullptr);
     scraper.set_value(false); //scraper up
     chassis.moveToPoint(50, 0, 3000, {.forwards=false}); //push into long goal
     chassis.waitUntilDone();
     autonIdle(nullptr);
-*/
+
 
     //32
     /*
@@ -859,7 +897,7 @@ void autonomous(){
     */
 
     //75 eeee
-    
+    /*
     chassis.setPose(0,0,180);
     chassis.moveToPoint(0,-27.5, 1000, {.maxSpeed = 80});
     scraper.set_value(true); //scraper down
@@ -958,7 +996,7 @@ void autonomous(){
 
     chassis.turnToPoint(-31, -48, 700);
     chassis.moveToPoint(-31, -48, 6000, {.minSpeed = 127}); //park
-
+*/
 
     autonRunning = false;
     while (true) {
