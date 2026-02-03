@@ -975,12 +975,12 @@ void autonomous(){
     chassis.moveToPoint(12, 0, 1000, {.forwards=false}); //move out of scraper
     scraper.set_value(false); //scraper up
 
-    chassis.turnToPoint(12, -14, 700); //turn to move to the side of long goal
-    chassis.moveToPoint(12, -14, 1000); //at the point to move parallel to the long goal
+    chassis.turnToPoint(12, -15, 700); //turn to move to the side of long goal
+    chassis.moveToPoint(12, -15, 1000); //at the point to move parallel to the long goal
     autonIdle(nullptr);
 
-    chassis.turnToPoint(110, -14, 700); //turn to move across long goal
-    chassis.moveToPoint(110, -14, 3500, {.maxSpeed = 60}); //move across long goal
+    chassis.turnToPoint(110, -15, 700); //turn to move across long goal
+    chassis.moveToPoint(110, -15, 3500, {.maxSpeed = 60}); //move across long goal
     chassis.waitUntilDone();
     chassis.turnToHeading(0, 1000);
     chassis.waitUntilDone();
@@ -996,7 +996,7 @@ void autonomous(){
     autonIdle(nullptr);
 
     chassis.resetLocalPosition();
-    chassis.moveToPoint(27, 0, 1000); //move to drop loader
+    chassis.moveToPoint(27, 0, 1000, {.maxSpeed = 60}); //move to drop loader
     autonIntake(nullptr);
     chassis.moveToPoint(50, 0, 3000, {.maxSpeed = 60}); //intake while moving into the thingy
     chassis.waitUntilDone();
