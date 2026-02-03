@@ -171,10 +171,10 @@ void toggleColorSort(void* param) {
             trapdoor.set_value(trapdoor_engaged);
             }
             else if(teamColor == 1){
-            controller.print(0,0, "TEAM RED");
+            controller.print(0,0, "TEAM BLUE");
             }
             else if(teamColor == 2){
-            controller.print(0,0, "TEAM BLUE");
+            controller.print(0,0, "TEAM RED");
             }
             pros::delay(200);
             
@@ -652,10 +652,10 @@ void initialize() {
     int pot_mid = (POT_MIN_READING + POT_MAX_READING) / 2;
     if (pot_raw > pot_mid) {
         teamColor = 1; // Red
-        controller.print(0,0, "TEAM RED");
+        controller.print(0,0, "TEAM BLUE");
     } else {
         teamColor = 2; // Blue
-        controller.print(0,0, "TEAM BLUE");
+        controller.print(0,0, "TEAM RED");
     }
     pros::lcd::print(3, "Pot raw: %d", pot_raw);
     pros::delay(20);
