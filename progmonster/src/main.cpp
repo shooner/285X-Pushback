@@ -686,7 +686,7 @@ void autonomous(){
     int b = 1; // positive if right side auton
 
     //short auton wing
-    chassis.setPose(0,0,180);
+    /*chassis.setPose(0,0,180);
     chassis.moveToPoint(0, -29, 1500);
     chassis.turnToPoint(27.7, -5, 700);
     autonIntake(nullptr);
@@ -700,7 +700,7 @@ void autonomous(){
     chassis.waitUntilDone();
     /*isIntaking = true;
     awpIntake(nullptr);*/
-    autonIntake(nullptr);
+ /*   autonIntake(nullptr);
     chassis.moveToPoint(-50, -32, 1300); //intake while moving into the thingy
     chassis.resetLocalPosition();
     //stopIntake();
@@ -719,7 +719,7 @@ void autonomous(){
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
     chassis.moveToPoint(20.7, -9.8, 2000, {.forwards = false});
-
+*/
 
     //AWP
 /*
@@ -963,7 +963,7 @@ void autonomous(){
     */
 
     //75 eeee
-    /*
+    
     chassis.setPose(0,0,180);
     chassis.moveToPoint(0,-27.5, 1000, {.maxSpeed = 80});
     scraper.set_value(true); //scraper down
@@ -1062,7 +1062,6 @@ void autonomous(){
 
     chassis.turnToPoint(-31, -48, 700);
     chassis.moveToPoint(-31, -48, 6000, {.minSpeed = 127}); //park
-*/
 
     autonRunning = false;
     while (true) {
