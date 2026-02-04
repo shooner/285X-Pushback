@@ -654,7 +654,7 @@ void autonomous(){
 
  //   awpIntakeTaskPtr = new pros::Task(awpIntake, NULL, "Auton Control Task");
 
-
+/*
     //viggy auton
     chassis.setPose(0,0,180);
     bunny_engaged = true;//bunny ears up
@@ -697,7 +697,7 @@ void autonomous(){
     bunny.set_value(bunny_engaged);
     chassis.moveToPoint(20.7, 12, 2000, {.forwards = false});
 
-
+*/
     //AWP
 /*
     chassis.setPose(0,0,angle);
@@ -811,12 +811,12 @@ void autonomous(){
 */
 
     //48
-    /*chassis.setPose(0,0,180);
+    chassis.setPose(0,0,180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
     chassis.moveToPoint(0,-29, 1000, {.maxSpeed = 80});
-    scraper.set_value(true); //scraper down
     chassis.turnToHeading(270, 700); //turn to scraper
+    scraper.set_value(true); //scraper down
     autonIntake(nullptr);
     chassis.moveToPoint(-500, -29, 3000, {.maxSpeed = 60}); //intake while moving into the thingy
     chassis.waitUntilDone();
@@ -870,7 +870,7 @@ void autonomous(){
     chassis.moveToPoint(-93, 21.7, 1000);
     chassis.turnToPoint(-94, 54, 700);
     chassis.moveToPoint(-94, 54, 6000, {.minSpeed = 127}); //park
-*/
+
 
     //59
     /*
