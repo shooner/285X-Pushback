@@ -656,21 +656,29 @@ void autonomous(){
 
 
     //viggy auton
-    /*chassis.setPose(0,0,180);
+    chassis.setPose(0,0,180);
+    bunny_engaged = true;//bunny ears up
+    bunny.set_value(bunny_engaged);
     chassis.moveToPoint(0, -29, 1500);
     chassis.turnToPoint(27.7, -5, 700);
     autonIntake(nullptr);
     chassis.moveToPoint(27.7, -5, 3000, {.maxSpeed = 60});
     chassis.waitUntilDone();
     chassis.turnToPoint(4, -32, 700);
-    autonIdle(nullptr);
     chassis.moveToPoint(4, -32, 2000);
     scraper.set_value(true); //scraper down
-    chassis.turnToHeading(270, 700);
+    chassis.turnToPoint(-50, -32, 700); //turn to scraper
     chassis.waitUntilDone();
     //awpIntake(nullptr);
     autonIntake(nullptr);
-    chassis.moveToPoint(-50, -32, 1300); //intake while moving into the thingy
+    right_motors.move(80);
+    left_motors.move(80);
+    pros::delay(700);
+    right_motors.move(30);
+    left_motors.move(30);
+    pros::delay(700);
+    right_motors.move(0);
+    left_motors.move(0);
     chassis.resetLocalPosition();
     chassis.moveToPoint(23, 0, 1000, {.forwards=false}); //move to long goal
     chassis.waitUntilDone();
@@ -680,14 +688,15 @@ void autonomous(){
     pros::delay(2000);
     chassis.waitUntilDone();
     autonIdle(nullptr);
+    chassis.resetLocalPosition();
     chassis.moveToPoint(-10,0,1000); //back out of long goal
-    chassis.turnToHeading(315, 700);
-    chassis.moveToPoint(2.6, -10, 1000, {.forwards = false});
+    chassis.turnToHeading(225, 700);
+    chassis.moveToPoint(2.6, 12, 1000, {.forwards = false});
     chassis.turnToHeading(270, 700);
     bunny_engaged = false;
     bunny.set_value(bunny_engaged);
-    chassis.moveToPoint(20.7, -9.8, 2000, {.forwards = false});
-*/
+    chassis.moveToPoint(20.7, 12, 2000, {.forwards = false});
+
 
     //AWP
 /*
@@ -802,7 +811,7 @@ void autonomous(){
 */
 
     //48
-    chassis.setPose(0,0,180);
+    /*chassis.setPose(0,0,180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
     chassis.moveToPoint(0,-29, 1000, {.maxSpeed = 80});
@@ -861,7 +870,7 @@ void autonomous(){
     chassis.moveToPoint(-93, 21.7, 1000);
     chassis.turnToPoint(-94, 54, 700);
     chassis.moveToPoint(-94, 54, 6000, {.minSpeed = 127}); //park
-
+*/
 
     //59
     /*
