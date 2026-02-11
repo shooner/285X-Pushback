@@ -30,10 +30,7 @@ pros::Optical dp_sensor(DOUBLE_PARK_MACRO);
 
 pros::ADIAnalogIn sensor (POTENTIOMETER_PORT);
 
-// Rotations / IMU
-pros::Rotation vertical(-17);
-// Replace negative port by positive with reversed flag
-pros::Rotation horizontal(12);
+// IMU for heading
 pros::Imu imu(14);
 ASSET(firstcurve_txt);
 ASSET(secondcurve_txt);
@@ -84,9 +81,9 @@ lemlib::Drivetrain drivetrain(&left_motors,
                               400,
                               2);
 
-lemlib::TrackingWheel vertical_wheel(&vertical, lemlib::Omniwheel::NEW_2, .85);
-
-lemlib::OdomSensors sensors(&vertical_wheel,
+// OdomSensors using IMU for heading
+// Internal motor encoders are configured separately in initialize()
+lemlib::OdomSensors sensors(nullptr,
                             nullptr,
                             nullptr,
                             nullptr,
@@ -612,6 +609,22 @@ void autonBunny(void* param){
 
 void initialize() {
     pros::lcd::initialize();
+    
+    // Initialize motor encoders for position tracking
+    pros::Motor left_motor_1(21);
+    pros::Motor left_motor_2(20);
+    pros::Motor left_motor_3(16);
+    pros::Motor right_motor_1(8);
+    pros::Motor right_motor_2(11);
+    pros::Motor right_motor_3(7);
+    
+    left_motor_1.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    left_motor_2.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    left_motor_3.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    right_motor_1.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    right_motor_2.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    right_motor_3.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    
     chassis.calibrate();
     pros::delay(20);
     sensor.calibrate();
@@ -652,10 +665,10 @@ void autonomous(){
     int a = 1; // positive if right side auton
     int b = 1; // positive if right side auton
 
-    /*
-    chassis.setPose(0,0,180);
-    chassis.moveToPoint(0,-1,1500);
-*/
+    
+    chassis.setPose(0,0,0);
+    chassis.moveToPoint(0,12,1500);
+
  //   awpIntakeTaskPtr = new pros::Task(awpIntake, NULL, "Auton Control Task");
 
 
@@ -668,7 +681,7 @@ void autonomous(){
     chassis.waitUntilDone();
     autonIdle(nullptr);
 */
-
+/*
     //viggy auton
     chassis.setPose(0,0,180);
     bunny_engaged = true;//bunny ears up
@@ -711,6 +724,7 @@ void autonomous(){
     bunny.set_value(bunny_engaged);
     chassis.moveToPoint(18.7, 9, 2000, {.forwards = false});
 
+*/
 
     //AWP
 /*
