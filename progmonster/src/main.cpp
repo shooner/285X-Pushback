@@ -402,8 +402,8 @@ void motorControl(void* param){
     }
 
     if(outmid==true){
-        evil_motor.move(-60);
-        intake_motor.move(60);
+        evil_motor.move(-120);
+        intake_motor.move(120);
         top_motor.move(-60);
         if(teamColor != 0){
         bool blue_present = detect_blue_optical() && detect_proximity();
