@@ -399,8 +399,8 @@ void motorControl(void* param){
     }
 
     if(outmid==true){
-        evil_motor.move(-60);
-        intake_motor.move(60);
+        evil_motor.move(-127);
+        intake_motor.move(127);
         top_motor.move(-60);
         if(teamColor != 0){
         bool blue_present = detect_blue_optical() && detect_proximity();
@@ -667,7 +667,8 @@ void autonomous(){
 
     
     chassis.setPose(0,0,0);
-    chassis.moveToPoint(0,12,1500);
+    chassis.moveToPoint(0,24,1500);
+
 
  //   awpIntakeTaskPtr = new pros::Task(awpIntake, NULL, "Auton Control Task");
 
