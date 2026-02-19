@@ -31,9 +31,13 @@ pros::Optical dp_sensor(DOUBLE_PARK_MACRO);
 pros::ADIAnalogIn sensor (POTENTIOMETER_PORT);
 
 // Rotations / IMU
+<<<<<<< Updated upstream
 pros::Rotation vertical(-17);
 // Replace negative port by positive with reversed flag
 pros::Rotation horizontal(12);
+=======
+//pros::Rotation vertical(-6);
+>>>>>>> Stashed changes
 pros::Imu imu(14);
 ASSET(firstcurve_txt);
 ASSET(secondcurve_txt);
@@ -84,9 +88,9 @@ lemlib::Drivetrain drivetrain(&left_motors,
                               400,
                               2);
 
-lemlib::TrackingWheel vertical_wheel(&vertical, lemlib::Omniwheel::NEW_2, .85);
+//lemlib::TrackingWheel vertical_wheel(&vertical, lemlib::Omniwheel::NEW_2, .85);
 
-lemlib::OdomSensors sensors(&vertical_wheel,
+lemlib::OdomSensors sensors(nullptr,
                             nullptr,
                             nullptr,
                             nullptr,
@@ -402,8 +406,13 @@ void motorControl(void* param){
     }
 
     if(outmid==true){
+<<<<<<< Updated upstream
         evil_motor.move(-120);
         intake_motor.move(120);
+=======
+        evil_motor.move(-127);
+        intake_motor.move(127);
+>>>>>>> Stashed changes
         top_motor.move(-60);
         if(teamColor != 0){
         bool blue_present = detect_blue_optical() && detect_proximity();
@@ -612,6 +621,21 @@ void autonBunny(void* param){
 
 void initialize() {
     pros::lcd::initialize();
+
+    pros::Motor left_motor_1(21);
+    pros::Motor left_motor_2(20);
+    pros::Motor left_motor_3(16);
+    pros::Motor right_motor_1(8);
+    pros::Motor right_motor_2(11);
+    pros::Motor right_motor_3(7);
+    
+    left_motor_1.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    left_motor_2.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    left_motor_3.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    right_motor_1.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    right_motor_2.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    right_motor_3.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+
     chassis.calibrate();
     pros::delay(20);
     sensor.calibrate();
