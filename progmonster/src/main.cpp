@@ -61,7 +61,7 @@ bool last_red = false;
 volatile bool opRunning = false;
 volatile bool autonRunning = false;
 
-int teamColor = 0; // 0 = OFF, 1 = RED, 2 = BLUE
+int teamColor = 0; // 0 = OFF, 1 = BLUE, 2 = RED
 
 // Task pointers so we can remove tasks if needed
 pros::Task* motorControlTaskPtr = nullptr;
@@ -146,11 +146,11 @@ static bool detect_proximity(){
 }
 
 static int get_color_destination(bool last_red, bool last_blue) {
-    if (teamColor == 2) { // TEAM BLUE: keep blue, eject red
+    if (teamColor == 2) { // TEAM RED
         if (last_blue) return 0; // keep
         if (last_red) return 1;  // eject
         return 0;
-    } else if (teamColor == 1) { // TEAM RED: keep red, eject blue
+    } else if (teamColor == 1) { // TEAM BLUE: keep red, eject blue
         if (last_red) return 0;  // keep
         if (last_blue) return 1; // eject
         return 0;
@@ -635,10 +635,10 @@ void initialize() {
     int pot_raw = sensor.get_value();
     int pot_mid = (POT_MIN_READING + POT_MAX_READING) / 2;
     if (pot_raw > pot_mid) {
-        teamColor = 1; // Red
+        teamColor = 1; // Blue
         controller.print(0,0, "TEAM BLUE");
     } else {
-        teamColor = 2; // Blue
+        teamColor = 2; // Red
         controller.print(0,0, "TEAM RED");
     }
     pros::lcd::print(3, "Pot raw: %d", pot_raw);
