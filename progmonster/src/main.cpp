@@ -30,10 +30,7 @@ pros::Optical dp_sensor(DOUBLE_PARK_MACRO);
 
 pros::ADIAnalogIn sensor (POTENTIOMETER_PORT);
 
-// Rotations / IMU
-pros::Rotation vertical(-17);
-// Replace negative port by positive with reversed flag
-pros::Rotation horizontal(12);
+// IMU for heading
 pros::Imu imu(14);
 ASSET(firstcurve_txt);
 ASSET(secondcurve_txt);
@@ -84,9 +81,9 @@ lemlib::Drivetrain drivetrain(&left_motors,
                               400,
                               2);
 
-lemlib::TrackingWheel vertical_wheel(&vertical, lemlib::Omniwheel::NEW_2, .85);
-
-lemlib::OdomSensors sensors(&vertical_wheel,
+// OdomSensors using IMU for heading
+// Internal motor encoders are configured separately in initialize()
+lemlib::OdomSensors sensors(nullptr,
                             nullptr,
                             nullptr,
                             nullptr,
@@ -103,7 +100,7 @@ lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
                                               500, // large error range timeout, in milliseconds
                                               20 // maximum acceleration (slew)
 );
-lemlib::ControllerSettings angular_controller(9, // proportional gain (kP)
+lemlib::ControllerSettings angular_controller(7, // proportional gain (kP)
                                               0,    // integral gain (kI)
                                               65, // derivative gain (kD)
                                               3, // anti windup
@@ -402,8 +399,8 @@ void motorControl(void* param){
     }
 
     if(outmid==true){
-        evil_motor.move(-60);
-        intake_motor.move(60);
+        evil_motor.move(-127);
+        intake_motor.move(127);
         top_motor.move(-60);
         if(teamColor != 0){
         bool blue_present = detect_blue_optical() && detect_proximity();
@@ -612,6 +609,22 @@ void autonBunny(void* param){
 
 void initialize() {
     pros::lcd::initialize();
+
+    // Initialize motor encoders for position tracking
+    pros::Motor left_motor_1(21);
+    pros::Motor left_motor_2(20);
+    pros::Motor left_motor_3(16);
+    pros::Motor right_motor_1(8);
+    pros::Motor right_motor_2(11);
+    pros::Motor right_motor_3(7);
+    
+    left_motor_1.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    left_motor_2.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    left_motor_3.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    right_motor_1.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    right_motor_2.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    right_motor_3.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+    
     chassis.calibrate();
     pros::delay(20);
     sensor.calibrate();
@@ -652,10 +665,7 @@ void autonomous(){
     int a = 1; // positive if right side auton
     int b = 1; // positive if right side auton
 
-    /*
-    chassis.setPose(0,0,180);
-    chassis.moveToPoint(0,-1,1500);
-*/
+    
  //   awpIntakeTaskPtr = new pros::Task(awpIntake, NULL, "Auton Control Task");
 
 
@@ -668,7 +678,7 @@ void autonomous(){
     chassis.waitUntilDone();
     autonIdle(nullptr);
 */
-
+/*
     //viggy auton
     chassis.setPose(0,0,180);
     bunny_engaged = true;//bunny ears up
@@ -711,6 +721,7 @@ void autonomous(){
     bunny.set_value(bunny_engaged);
     chassis.moveToPoint(18.7, 9, 2000, {.forwards = false});
 
+*/
 
     //AWP
 /*
@@ -824,45 +835,54 @@ void autonomous(){
 */
 
     //48
-    /*
+    
+
     chassis.setPose(0,0,180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
-    chassis.moveToPoint(0,-24, 1000, {.maxSpeed = 80});
+    chassis.moveToPoint(0,-23, 1000, {.maxSpeed = 80});
     chassis.turnToHeading(270, 700); //turn to scraper
     scraper.set_value(true); //scraper down
     autonIntake(nullptr);
-    chassis.moveToPoint(-500, -24, 3000); //intake while moving into the thingy
+    chassis.moveToPoint(-500, -23, 3000, {.maxSpeed = 60}); //intake while moving into the thingy
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
     chassis.moveToPoint(12, 0, 1000, {.forwards=false}); //move out of scraper
     scraper.set_value(false); //scraper up
 
-    chassis.turnToPoint(12, 17, 700); //turn to move to the side of long goal
-    chassis.moveToPoint(12, 17, 1000); //at the point to move parallel to the long goal
+    chassis.turnToHeading(0, 700);
+    chassis.moveToPoint(12, 15, 1000); //at the point to move parallel to the long goal
     autonIdle(nullptr);
 
     //motto ganbare lydia!!!
-    chassis.turnToPoint(98, 17, 700); //turn to move across long goal
-    chassis.moveToPoint(98, 17, 3500, {.maxSpeed = 60}); //move across long goal
+    chassis.turnToPoint(85, 15, 700); //turn to move across long goal
+    chassis.moveToPoint(85, 15, 3500, {.maxSpeed = 60}); //move across long goal
     chassis.waitUntilDone();//wait until done 
     chassis.turnToHeading(180, 1000);
     chassis.waitUntilDone();
-    chassis.moveToPoint(98, 6.5, 1000);
+    right_motors.move(70);
+    left_motors.move(70);
+    pros::delay(1000);
+    right_motors.move(35);
+    left_motors.move(35);
+    pros::delay(700);
+    right_motors.move(0);
+    left_motors.move(0);
+    chassis.resetLocalPosition();
+    chassis.moveToPoint(0,12, 1500, {.forwards = false});
     chassis.turnToHeading(90, 700);
-    chassis.waitUntilDone();
-    chassis.moveToPoint(88, 6.5, 2000, {.forwards=false}); //move to long goal
+    chassis.moveToPoint(-20, 12, 1000, {.forwards = false});
     chassis.waitUntilDone();
     autonLongGoal(nullptr);
     scraper.set_value(true); //scraper down
-    chassis.moveToPoint(50, 6.5, 3000, {.forwards=false}); //push into long goal
+    chassis.moveToPoint(-50, 12, 3000, {.forwards=false}); //push into long goal
     chassis.waitUntilDone();
     autonIdle(nullptr);
 
     chassis.resetLocalPosition();
-    chassis.moveToPoint(27, 2, 1000, {.maxSpeed = 60}); //move to drop loader
+    chassis.moveToPoint(27, 0, 1000, {.maxSpeed = 60}); //move to drop loader
     autonIntake(nullptr);
-    chassis.moveToPoint(50, 2, 3000, {.maxSpeed = 60}); //intake while moving into the thingy
+    chassis.moveToPoint(50, 0, 3000, {.maxSpeed = 60}); //intake while moving into the thingy
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
     right_motors.move(-80);
@@ -877,7 +897,7 @@ void autonomous(){
     chassis.waitUntilDone();
     autonLongGoal(nullptr);
     scraper.set_value(false); //scraper up
-    chassis.moveToPoint(-50, 1, 2700, {.forwards=false}); //push into long goal
+    chassis.moveToPoint(-50, 0, 2700, {.forwards=false}); //push into long goal
     chassis.waitUntilDone();
     autonIdle(nullptr);
     
@@ -893,7 +913,7 @@ void autonomous(){
     chassis.turnToPoint(-94, 54, 700);
     chassis.moveToPoint(-94, 54, 6000, {.minSpeed = 127}); //park
 
-*/
+
     //59
     /*
     chassis.setPose(0,0,180);
