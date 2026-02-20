@@ -923,7 +923,7 @@ void autonomous(){
     chassis.setPose(0,0,180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
-    chassis.moveToPoint(0,-23, 1000, {.maxSpeed = 80});
+    chassis.moveToPoint(0,-24, 1000, {.maxSpeed = 80});
     chassis.turnToHeading(270, 700); //turn to scraper
     scraper.set_value(true); //scraper down
     autonIntake(nullptr);
@@ -988,14 +988,14 @@ void autonomous(){
     chassis.moveToPoint(12, 0, 1000); //move out of long goal
 
     chassis.turnToPoint(12, 103, 700); //turn to move to other side of field
-    chassis.moveToPoint(12, 103, 5000, {.maxSpeed = 60}); //move to other side of field
+    chassis.moveToPoint(12, 103, 5000, {.maxSpeed = 100}); //move to other side of field
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
     chassis.moveToPoint(0,-11, 1500, {.forwards = false});
     chassis.turnToHeading(90,700);
     autonIntake(nullptr);
     scraper.set_value(true); //scraper down
-    chassis.moveToPoint(500, -11, 3000, {.maxSpeed = 60}); //intake while moving into the thingy
+    chassis.moveToPoint(500, -11, 3000, {.maxSpeed = 100}); //intake while moving into the thingy
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
     chassis.moveToPoint(-24, 0, 1500, {.forwards=false}); //move to long goal
@@ -1006,14 +1006,13 @@ void autonomous(){
     chassis.waitUntilDone();
     autonIdle(nullptr);
     chassis.resetLocalPosition();
-
     chassis.moveToPoint(10, 0, 1000); //move out of long goal
     chassis.turnToHeading(180, 700);
-    chassis.moveToPoint(10, -15, 1500);
-    chassis.turnToPoint(-76, -15, 700);
-    chassis.moveToPoint(-76,-15,3000, {.maxSpeed = 80});
-    chassis.turnToHeading(220, 700);
-    chassis.moveToPoint(-76, -40, 4000, {.minSpeed = 127});
+    chassis.moveToPoint(10, -12, 1500);
+    chassis.turnToPoint(-82, -14, 700);
+    chassis.moveToPoint(-82,-12,10000, {.maxSpeed = 80});
+    chassis.turnToHeading(232, 2000);
+    chassis.moveToPoint(-100, -60, 10000, {.minSpeed = 127});//change this to just using motoros
 
     
 
