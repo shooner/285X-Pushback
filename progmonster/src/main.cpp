@@ -927,7 +927,7 @@ void autonomous(){
     chassis.turnToHeading(270, 700); //turn to scraper
     scraper.set_value(true); //scraper down
     autonIntake(nullptr);
-    chassis.moveToPoint(-500, -23, 3000, {.maxSpeed = 60}); //intake while moving into the thingy
+    chassis.moveToPoint(-500, -24, 3000, {.maxSpeed = 60}); //intake while moving into the thingy
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
     chassis.moveToPoint(12, 0, 1000, {.forwards=false}); //move out of scraper
@@ -968,14 +968,7 @@ void autonomous(){
     chassis.moveToPoint(50, 0, 3000, {.maxSpeed = 60}); //intake while moving into the thingy
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
-    right_motors.move(-80);
-    left_motors.move(-80);
-    pros::delay(700);
-    right_motors.move(-30);
-    left_motors.move(-30);
-    pros::delay(700);
-    right_motors.move(0);
-    left_motors.move(0);
+    chassis.moveToPoint(-24, 0, 1000, {.forwards=false}); //move to long gogal
 
     chassis.waitUntilDone();
     autonLongGoal(nullptr);
@@ -988,8 +981,9 @@ void autonomous(){
     chassis.moveToPoint(12, 0, 1000); //move out of long goal
 
     chassis.turnToPoint(12, 103, 700); //turn to move to other side of field
-    chassis.moveToPoint(12, 103, 5000, {.maxSpeed = 100}); //move to other side of field
+    chassis.moveToPoint(12, 103, 5000, {.maxSpeed = 80}); //move to other side of field
     chassis.waitUntilDone();
+    pros::delay(1000);
     chassis.resetLocalPosition();
     chassis.moveToPoint(0,-11, 1500, {.forwards = false});
     chassis.turnToHeading(90,700);
@@ -998,7 +992,7 @@ void autonomous(){
     chassis.moveToPoint(500, -11, 3000, {.maxSpeed = 100}); //intake while moving into the thingy
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
-    chassis.moveToPoint(-24, 0, 1500, {.forwards=false}); //move to long goal
+    chassis.moveToPoint(-24, 0, 1500, {.forwards=false, .maxSpeed = 80}); //move to long goal
     chassis.waitUntilDone();
     scraper.set_value(false); //scraper up
     autonLongGoal(nullptr);
@@ -1008,13 +1002,20 @@ void autonomous(){
     chassis.resetLocalPosition();
     chassis.moveToPoint(10, 0, 1000); //move out of long goal
     chassis.turnToHeading(180, 700);
-    chassis.moveToPoint(10, -12, 1500);
-    chassis.turnToPoint(-82, -14, 700);
-    chassis.moveToPoint(-82,-12,10000, {.maxSpeed = 80});
+    chassis.moveToPoint(10, -16, 1500);
+    chassis.turnToPoint(-82, -16, 700);
+    chassis.moveToPoint(-82,-16,4000, {.maxSpeed = 80});
     chassis.turnToHeading(232, 2000);
-    chassis.moveToPoint(-100, -60, 10000, {.minSpeed = 127});//change this to just using motoros
+    right_motors.move(50);
+    left_motors.move(50);
+    pros::delay(700);
+    chassis.turnToHeading(180, 700);
+    right_motors.move(127);
+    left_motors.move(127);
+    pros::delay(4000);
+    right_motors.move(0);
+    left_motors.move(0);
 
-    
 
     //75 eeee
     /*
