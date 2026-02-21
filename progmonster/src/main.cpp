@@ -919,7 +919,7 @@ void autonomous(){
 */
 
     //59
-    
+    /*
     chassis.setPose(0,0,180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
@@ -939,7 +939,7 @@ void autonomous(){
 
     //motto ganbare lydia!!!
     chassis.turnToPoint(85, 15, 700); //turn to move across long goal
-    chassis.moveToPoint(85, 15, 3500, {.maxSpeed = 60}); //move across long goal
+    chassis.moveToPoint(85, 15, 3500, {.maxSpeed = 100}); //move across long goal
     chassis.waitUntilDone();//wait until done 
     chassis.turnToHeading(180, 1000);
     chassis.waitUntilDone();
@@ -976,12 +976,12 @@ void autonomous(){
     chassis.moveToPoint(-50, 0, 2700, {.forwards=false}); //push into long goal
     chassis.waitUntilDone();
     autonIdle(nullptr);
-    
     chassis.resetLocalPosition();
+
     chassis.moveToPoint(12, 0, 1000); //move out of long goal
 
     chassis.turnToPoint(12, 103, 700); //turn to move to other side of field
-    chassis.moveToPoint(12, 103, 5000, {.maxSpeed = 80}); //move to other side of field
+    chassis.moveToPoint(12, 103, 5000, {.maxSpeed = 50}); //move to other side of field
     chassis.waitUntilDone();
     pros::delay(1000);
     chassis.resetLocalPosition();
@@ -1000,21 +1000,50 @@ void autonomous(){
     chassis.waitUntilDone();
     autonIdle(nullptr);
     chassis.resetLocalPosition();
+    */
+//TESTTING PURTPOSE
+    /*chassis.setPose(0,0,90);
     chassis.moveToPoint(10, 0, 1000); //move out of long goal
     chassis.turnToHeading(180, 700);
     chassis.moveToPoint(10, -16, 1500);
-    chassis.turnToPoint(-82, -16, 700);
-    chassis.moveToPoint(-82,-16,4000, {.maxSpeed = 80});
-    chassis.turnToHeading(232, 2000);
-    right_motors.move(50);
-    left_motors.move(50);
-    pros::delay(700);
-    chassis.turnToHeading(180, 700);
-    right_motors.move(127);
-    left_motors.move(127);
-    pros::delay(4000);
-    right_motors.move(0);
-    left_motors.move(0);
+    chassis.turnToPoint(-75, -16, 700);
+    chassis.moveToPoint(-75,-16,5000, {.maxSpeed = 60});
+    chassis.turnToPoint(-83, -18, 700);
+    chassis.moveToPoint(-83, -18,1000);
+    chassis.turnToPoint(-84, -60, 700);
+    chassis.moveToPoint(-84, -60, 6000, {.minSpeed = 127});*/
+
+
+    //right half awp
+    chassis.setPose(0,0,180);
+    chassis.moveToPoint(a*0,b*-24, 1000);
+    scraper.set_value(true); //scraper down
+    chassis.turnToHeading(270, 700); //turn to scraper
+    autonIntake(nullptr);
+    chassis.moveToPoint(a*-50, b*-24, 1300); //intake while moving into the thingy
+    chassis.waitUntilDone();
+    chassis.resetLocalPosition();
+    chassis.moveToPoint(a*27, b*0, 1000, {.forwards=false}); //move to long goal
+    chassis.waitUntilDone();
+    autonLongGoal(nullptr);
+    scraper.set_value(false); //scraper up
+    chassis.moveToPoint(a*50, b*0, 2000, {.forwards=false}); //push into long goal
+    chassis.waitUntilDone();
+    autonIdle(nullptr);
+    //stopIntake();
+    chassis.resetLocalPosition();
+    chassis.waitUntilDone();
+    chassis.moveToPoint(a*-11, b*0, 1000); //back away from long goal
+
+    chassis.turnToPoint(a*3, b*16.8, 700); //turn to three red stuff
+    chassis.moveToPoint(a*3, b*16.8, 3000, {.maxSpeed = 50}); //move to near three red stufhe blocks are one color
+    chassis.waitUntilDone();
+    scraper.set_value(true); //scraper down
+    chassis.turnToPoint(a*22, b*35, 700); //turn to three red stuff
+    chassis.moveToPoint(a*22, b*35, 3000, {.maxSpeed = 50}); //move to near three red stufhe blocks are one color
+    autonCenterLower(nullptr);
+    //autonIntake(nullptr);
+
 
 
     //75 eeee
