@@ -932,7 +932,7 @@ void autonomous(){
 */
 
     //59
-    
+    /*
     chassis.setPose(0,0,180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
@@ -1013,9 +1013,9 @@ void autonomous(){
     chassis.waitUntilDone();
     autonIdle(nullptr);
     chassis.resetLocalPosition();
-
-chassis.setPose(0,0,90);
-    autonIntake(nullptr);
+    */
+//TESTTING PURTPOSE
+    /*chassis.setPose(0,0,90);
     chassis.moveToPoint(10, 0, 1000); //move out of long goal
     chassis.turnToHeading(180, 700);
     chassis.moveToPoint(10, -16, 1500);
