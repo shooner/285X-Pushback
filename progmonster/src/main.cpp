@@ -925,7 +925,7 @@ pros::delay(700);
     chassis.turnToHeading(270, 700); //turn to scraper
     scraper.set_value(true); //scraper down
     autonIntake(nullptr);
-    chassis.moveToPoint(-500, -24, 2500, {.maxSpeed = 60}); //intake while moving into the thingy
+    chassis.moveToPoint(-500, -24, 2800, {.maxSpeed = 60}); //intake while moving into the thingy
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
     chassis.moveToPoint(12, 0, 1000, {.forwards=false}); //move out of scraper
@@ -933,11 +933,11 @@ pros::delay(700);
     autonIdle(nullptr);
 
     chassis.turnToHeading(0, 850);
-    chassis.moveToPoint(12, 10, 1000); //at the point to move parallel to the long goal
+    chassis.moveToPoint(12, 9, 1000); //at the point to move parallel to the long goal
 
     //motto ganbare lydia!!!
     chassis.turnToHeading(90,700); //turn to move across long goal
-    chassis.moveToPoint(85, 10, 3500, {.maxSpeed = 80}); //move across long goal
+    chassis.moveToPoint(85, 12, 3500, {.maxSpeed = 80}); //move across long goal
     chassis.waitUntilDone();//wait until done 
     chassis.turnToHeading(180, 1000);
     chassis.moveToPoint(85, 5, 1000); //move in front of long goal
@@ -946,7 +946,7 @@ pros::delay(700);
     chassis.waitUntilDone();
     autonLongGoal(nullptr);
     scraper.set_value(true); //scraper down
-    chassis.moveToPoint(20, 5, 2500, {.forwards=false}); //push into long goal
+    chassis.moveToPoint(20, 5, 2200, {.forwards=false}); //push into long goal
     chassis.waitUntilDone();
     autonIdle(nullptr);
 
@@ -985,12 +985,12 @@ pros::delay(700);
     scraper.set_value(false); //scraper up
 
     chassis.turnToHeading(180, 700);
-    chassis.moveToPoint(-12, -11, 1000); //at the point to move parallel to the long goal
+    chassis.moveToPoint(-12, -9, 1000); //at the point to move parallel to the long goal
     autonIdle(nullptr);
 
     //motto ganbare lydia!!!
     chassis.turnToHeading(270, 700); //turn to move across long goal
-    chassis.moveToPoint(-85, -11, 3500, {.maxSpeed = 80}); //move across long goal
+    chassis.moveToPoint(-85, -12, 3500, {.maxSpeed = 80}); //move across long goal
     chassis.waitUntilDone();//wait until done 
     chassis.turnToHeading(0, 700);
     chassis.moveToPoint(-85,-5, 1500);
