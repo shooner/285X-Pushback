@@ -639,7 +639,10 @@ void autonomous(){
      //elim auto
     /*
     chassis.setPose(0,0,180);
+    bunny_engaged = true;
+    bunny.set_value(true); //bunny ears up
     chassis.moveToPoint(a*0,b*-24, 1000);
+    scraper_engaged = true;
     scraper.set_value(true); //scraper down
     chassis.turnToHeading(270, 700); //turn to scraper
     autonIntake(nullptr);
@@ -649,6 +652,7 @@ void autonomous(){
     chassis.moveToPoint(a*27, b*0, 1000, {.forwards=false}); //move to long goal
     chassis.waitUntilDone();
     autonLongGoal(nullptr);
+    scraper_engaged = false;
     scraper.set_value(false); //scraper up
     chassis.moveToPoint(a*50, b*0, 1500, {.forwards=false}); //push into long goal
     chassis.waitUntilDone();
@@ -661,6 +665,7 @@ void autonomous(){
     chassis.turnToPoint(a*3, b*16.8, 700); //turn to three red stuff
     chassis.moveToPoint(a*3, b*16.8, 3000, {.maxSpeed = 50}); //move to near three red stufhe blocks are one color
     chassis.waitUntilDone();
+    scraper_engaged = true;
     scraper.set_value(true); //scraper down
     pros::delay(1000);
     chassis.turnToPoint(a*13, b*28, 700); //turn to three red stuff
@@ -670,7 +675,11 @@ void autonomous(){
 
     chassis.moveToPoint(-3.9, 8.2, 1000); //back out of center lower, get ready to turn to wing
     chassis.turnToHeading(270, 700);
-    //chassis.moveToPoint(15.5, 8.2, )
+    chassis.moveToPoint(5.7, 8.2, 1000, {.forwards = false}); //move to side of long goal
+    chassis.waitUntilDone();
+    bunny_engaged = false;
+    bunny.set_value(false); //bunny ears down
+    chassis.moveToPoint(15.5, 8.2, 1000, {.forwards = false}); //wing!
 */
 
     //alt AWP
@@ -720,6 +729,7 @@ void autonomous(){
 */
 
     //real awp 
+    /*
     chassis.setPose(0,0,180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
@@ -749,7 +759,7 @@ void autonomous(){
     chassis.waitUntilDone();
     chassis.moveToPoint(a*2.5, b*21.3, 1200, {.maxSpeed = 50}); //move to near three red blocks
     pros::delay(800);
-    chassis.turnToPoint(a*5.5, b*25, 500); //turn to three red stuff
+    chassis.turnToPoint(a*5.5, b*25, 500); //turn to three red 
     chassis.moveToPoint(a*5.5, b*25, 1700, {.maxSpeed = 50}); //move to near three red blocks
     chassis.waitUntilDone();
     autonCenterLower(nullptr);
@@ -769,7 +779,7 @@ void autonomous(){
     chassis.moveToPoint(5, 80, 1000, {.forwards=false}); //move into long goal
     chassis.waitUntilDone();
     autonLongGoal(nullptr);
-    
+    */
 
     //park and clear
     /*
@@ -907,7 +917,7 @@ pros::delay(700);
 */
 
     //75 eeee
-    /*
+    
     chassis.setPose(0,0,180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
@@ -1017,7 +1027,7 @@ pros::delay(700);
     chassis.waitUntilDone();
     scraper.set_value(true); //scraper down
     chassis.moveToPoint(-38, -60, 3000); //park
-*/
+
 
     // 82
     /*
@@ -1069,13 +1079,13 @@ pros::delay(700);
     autonIdle(nullptr);
     chassis.resetLocalPosition();
     */
-   /*
-
+   
+/*
     chassis.setPose(0,0,90);
     chassis.moveToPoint(12, 0, 1000); //move out of long goal
-    chassis.turnToPoint(0, 13, 700);
+    chassis.turnToPoint(3, 13, 700);
     autonIntake(nullptr);
-    chassis.moveToPoint(0, 13, 1000, {.maxSpeed = 50}); //at point to scraper down the four blocks
+    chassis.moveToPoint(3, 13, 1000, {.maxSpeed = 50}); //at point to scraper down the four blocks
     chassis.waitUntilDone();
     scraper.set_value(true); //scraper down
     chassis.moveToPoint(-5, 20, 1000, {.maxSpeed = 50}); //move to intake the four blocks
@@ -1154,8 +1164,8 @@ pros::delay(700);
     chassis.waitUntilDone();
     scraper.set_value(true); //scraper down
     chassis.moveToPoint(-38, -60, 3000); //park
-*/
 
+*/
     //93 yeah no
     /*
     chassis.setPose(0, 0, 180);
