@@ -398,7 +398,7 @@ void motorControl(void* param){
 
     if(outlow==true){
         evil_motor.move(127);
-        intake_motor.move(-127);
+        intake_motor.move(-110);
         top_motor.move(-127);
     }
 
@@ -636,8 +636,8 @@ void autonomous(){
     int b = 1; // positive if right side auton
 
     
-     //right half awp
-     /*
+     //elim auto
+    /*
     chassis.setPose(0,0,180);
     chassis.moveToPoint(a*0,b*-24, 1000);
     scraper.set_value(true); //scraper down
@@ -667,17 +667,20 @@ void autonomous(){
     chassis.moveToPoint(a*13, b*28, 3000, {.maxSpeed = 50}); //move to near three red stufhe blocks are one color
     scraper.set_value(false); //scraper up
     autonCenterLower(nullptr);
+
+    chassis.moveToPoint(-3.9, 8.2, 1000); //back out of center lower, get ready to turn to wing
+    chassis.turnToHeading(270, 700);
+    //chassis.moveToPoint(15.5, 8.2, )
 */
 
     //alt AWP
-    
     /*
     chassis.setPose(0,0,180);
     chassis.moveToPoint(a*0,b*-26, 1000);
     scraper.set_value(true); //scraper down
     chassis.turnToHeading(270, 500); //turn to scraper
     autonIntake(nullptr);
-    chassis.moveToPoint(a*-50, b*-26, 1300, {.maxSpeed = 60}); //intake while moving into the thingy
+    chassis.moveToPoint(a*-50, b*-26, 1300, {.maxSpeed = 60}); //intake while moving into the loader
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
     chassis.moveToPoint(a*27, b*0, 700, {.forwards=false}); //move to long goal
@@ -693,12 +696,12 @@ void autonomous(){
 
     autonIntake(nullptr);
     chassis.turnToPoint(a*3, b*16.8, 500); //turn to three red stuff
-    chassis.moveToPoint(a*3, b*16.8, 3000, {.maxSpeed = 50}); //move to near three red stufhe blocks are one color
+    chassis.moveToPoint(a*3, b*16.8, 3000, {.maxSpeed = 50}); //move to near three red blocks are one color
     chassis.waitUntilDone();
     scraper.set_value(true); //scraper down
     pros::delay(1000);
     chassis.turnToPoint(a*13, b*28, 700); //turn to three red stuff
-    chassis.moveToPoint(a*13, b*28, 2500, {.maxSpeed = 50}); //move to near three red stufhe blocks are one color
+    chassis.moveToPoint(a*13, b*28, 2500, {.maxSpeed = 50}); //move to near three red blocks are one color
     scraper.set_value(false); //scraper up
     autonCenterLower(nullptr);
     pros::delay(1500);
@@ -715,9 +718,8 @@ void autonomous(){
     chassis.moveToPoint(13, 54, 1000, {.forwards = false}); //move to center upper
     slowAutonLongGoal(nullptr);
 */
-    //real awp 
 
-    /*
+    //real awp 
     chassis.setPose(0,0,180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
@@ -725,7 +727,7 @@ void autonomous(){
     scraper.set_value(true); //scraper down
     chassis.turnToHeading(270, 500); //turn to scraper
     autonIntake(nullptr);
-    chassis.moveToPoint(a*-50, b*-24, 1100, {.maxSpeed = 60}); //intake while moving into the thingy
+    chassis.moveToPoint(a*-50, b*-24, 1100, {.maxSpeed = 60}); //intake while moving into the loader
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
     chassis.moveToPoint(a*27, b*0, 700, {.forwards=false, .minSpeed = 127}); //move to long goal
@@ -745,10 +747,10 @@ void autonomous(){
     left_motors.move(0);
     right_motors.move(0);
     chassis.waitUntilDone();
-    chassis.moveToPoint(a*2.5, b*21.3, 1200, {.maxSpeed = 50}); //move to near three red stufhe blocks are one color
+    chassis.moveToPoint(a*2.5, b*21.3, 1200, {.maxSpeed = 50}); //move to near three red blocks
     pros::delay(800);
     chassis.turnToPoint(a*5.5, b*25, 500); //turn to three red stuff
-    chassis.moveToPoint(a*5.5, b*25, 1700, {.maxSpeed = 50}); //move to near three red stufhe blocks are one color
+    chassis.moveToPoint(a*5.5, b*25, 1700, {.maxSpeed = 50}); //move to near three red blocks
     chassis.waitUntilDone();
     autonCenterLower(nullptr);
     pros::delay(1000);
@@ -759,7 +761,7 @@ void autonomous(){
     chassis.moveToPoint(-2, 52, 1000); //move to three red dblocks   
     chassis.waitUntilDone();
     scraper.set_value(true); //scraper down
-    chassis.moveToPoint(-2, 58, 2000); //move to three red blocks on other side and intake them hopefully
+    chassis.moveToPoint(-2, 58, 2000); //move to three red blocks on other side and intake them
     chassis.waitUntilDone();
     chassis.turnToPoint(-17, 80, 500); //turn to long goal
     chassis.moveToPoint(-17, 80, 1000); //move to front of long goal
@@ -768,7 +770,7 @@ void autonomous(){
     chassis.waitUntilDone();
     autonLongGoal(nullptr);
     
-*/
+
     //park and clear
     /*
     right_motors.move(-60);
@@ -905,7 +907,7 @@ pros::delay(700);
 */
 
     //75 eeee
-    
+    /*
     chassis.setPose(0,0,180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
@@ -918,23 +920,23 @@ pros::delay(700);
     chassis.resetLocalPosition();
     chassis.moveToPoint(12, 0, 1000, {.forwards=false}); //move out of scraper
     scraper.set_value(false); //scraper up
+    autonIdle(nullptr);
 
     chassis.turnToHeading(0, 850);
-    chassis.moveToPoint(12, 9, 1000); //at the point to move parallel to the long goal
-    autonIdle(nullptr);
+    chassis.moveToPoint(12, 10, 1000); //at the point to move parallel to the long goal
 
     //motto ganbare lydia!!!
     chassis.turnToHeading(90,700); //turn to move across long goal
-    chassis.moveToPoint(85, 9, 3500, {.maxSpeed = 80}); //move across long goal
+    chassis.moveToPoint(85, 10, 3500, {.maxSpeed = 80}); //move across long goal
     chassis.waitUntilDone();//wait until done 
     chassis.turnToHeading(180, 1000);
-    chassis.moveToPoint(85, 2, 1000); //move in front of long goal
+    chassis.moveToPoint(85, 5, 1000); //move in front of long goal
     chassis.turnToHeading(90, 700);
-    chassis.moveToPoint(65, 2, 1000, {.forwards = false});
+    chassis.moveToPoint(65, 5, 1000, {.forwards = false});
     chassis.waitUntilDone();
     autonLongGoal(nullptr);
     scraper.set_value(true); //scraper down
-    chassis.moveToPoint(20, 2, 2500, {.forwards=false}); //push into long goal
+    chassis.moveToPoint(20, 5, 2500, {.forwards=false}); //push into long goal
     chassis.waitUntilDone();
     autonIdle(nullptr);
 
@@ -973,27 +975,27 @@ pros::delay(700);
     scraper.set_value(false); //scraper up
 
     chassis.turnToHeading(180, 700);
-    chassis.moveToPoint(-12, -9, 1000); //at the point to move parallel to the long goal
+    chassis.moveToPoint(-12, -11, 1000); //at the point to move parallel to the long goal
     autonIdle(nullptr);
 
     //motto ganbare lydia!!!
     chassis.turnToHeading(270, 700); //turn to move across long goal
-    chassis.moveToPoint(-85, -9, 3500, {.maxSpeed = 80}); //move across long goal
+    chassis.moveToPoint(-85, -11, 3500, {.maxSpeed = 80}); //move across long goal
     chassis.waitUntilDone();//wait until done 
     chassis.turnToHeading(0, 700);
-    chassis.moveToPoint(-85,-2, 1500);
+    chassis.moveToPoint(-85,-5, 1500);
     chassis.turnToHeading(270, 700);
-    chassis.moveToPoint(-65, -2, 1000, {.forwards = false});
+    chassis.moveToPoint(-65, -5, 1000, {.forwards = false});
     chassis.waitUntilDone();
     autonLongGoal(nullptr);
     scraper.set_value(true); //scraper down
-    chassis.moveToPoint(-20, -2, 2500, {.forwards=false}); //push into long goal
+    chassis.moveToPoint(-20, -5, 2500, {.forwards=false}); //push into long goal
     chassis.waitUntilDone();
     autonIdle(nullptr);
     chassis.resetLocalPosition();
-    chassis.moveToPoint(-27, 0, 1000, {.maxSpeed = 60}); //move to drop loader
+    chassis.moveToPoint(-27, -1, 1000, {.maxSpeed = 60}); //move to drop loader
     autonIntake(nullptr);
-    chassis.moveToPoint(-50, 0, 2500, {.maxSpeed = 60}); //intake while moving into the thingy
+    chassis.moveToPoint(-50, -1, 2500, {.maxSpeed = 60}); //intake while moving into the thingy
     chassis.waitUntilDone();
     chassis.resetLocalPosition();
     chassis.moveToPoint(24, 0, 1000, {.forwards=false}); //move to long gogal
@@ -1011,12 +1013,150 @@ pros::delay(700);
     chassis.moveToPoint(-28.5, -16.8, 1500);
     autonIntake(nullptr);
     chassis.turnToPoint(-38, -60, 700);
+    chassis.moveToPoint(-34, -50, 3000);
+    chassis.waitUntilDone();
     scraper.set_value(true); //scraper down
-    chassis.moveToPoint(-38, -60, 6000); //park
+    chassis.moveToPoint(-38, -60, 3000); //park
+*/
 
-    
+    // 82
+    /*
+    chassis.setPose(0,0,180);
+    bunny_engaged = true;
+    bunny.set_value(bunny_engaged);
+    chassis.moveToPoint(0,-24, 1000, {.maxSpeed = 80});
+    chassis.turnToHeading(270, 700); //turn to scraper
+    scraper.set_value(true); //scraper down
+    autonIntake(nullptr);
+    chassis.moveToPoint(-500, -24, 2500, {.maxSpeed = 60}); //intake while moving into the thingy
+    chassis.waitUntilDone();
+    chassis.resetLocalPosition();
+    chassis.moveToPoint(12, 0, 1000, {.forwards=false}); //move out of scraper
+    scraper.set_value(false); //scraper up
+    autonIdle(nullptr);
 
-    //93
+    chassis.turnToHeading(0, 850);
+    chassis.moveToPoint(12, 10, 1000); //at the point to move parallel to the long goal
+
+    //motto ganbare lydia!!!
+    chassis.turnToHeading(90,700); //turn to move across long goal
+    chassis.moveToPoint(85, 10, 3500, {.maxSpeed = 80}); //move across long goal
+    chassis.waitUntilDone();//wait until done 
+    chassis.turnToHeading(180, 1000);
+    chassis.moveToPoint(85, 5, 1000); //move in front of long goal
+    chassis.turnToHeading(90, 700);
+    chassis.moveToPoint(65, 5, 1000, {.forwards = false});
+    chassis.waitUntilDone();
+    autonLongGoal(nullptr);
+    scraper.set_value(true); //scraper down
+    chassis.moveToPoint(20, 5, 2500, {.forwards=false}); //push into long goal
+    chassis.waitUntilDone();
+    autonIdle(nullptr);
+
+    chassis.resetLocalPosition();
+    chassis.moveToPoint(27, 0, 1000, {.maxSpeed = 60}); //move to drop loader
+    autonIntake(nullptr);
+    chassis.moveToPoint(50, 0, 2500, {.maxSpeed = 60}); //intake while moving into the thingy
+    chassis.waitUntilDone();
+    chassis.resetLocalPosition();
+    chassis.moveToPoint(-24, 0, 1000, {.forwards=false}); //move to long gogal
+
+    chassis.waitUntilDone();
+    autonLongGoal(nullptr);
+    scraper.set_value(false); //scraper up
+    chassis.moveToPoint(-50, 0, 2500, {.forwards=false}); //push into long goal
+    chassis.waitUntilDone();
+    autonIdle(nullptr);
+    chassis.resetLocalPosition();
+    */
+   /*
+
+    chassis.setPose(0,0,90);
+    chassis.moveToPoint(12, 0, 1000); //move out of long goal
+    chassis.turnToPoint(0, 13, 700);
+    autonIntake(nullptr);
+    chassis.moveToPoint(0, 13, 1000, {.maxSpeed = 50}); //at point to scraper down the four blocks
+    chassis.waitUntilDone();
+    scraper.set_value(true); //scraper down
+    chassis.moveToPoint(-5, 20, 1000, {.maxSpeed = 50}); //move to intake the four blocks
+    chassis.turnToPoint(-8, 59.4, 700);
+    chassis.waitUntilDone();
+    scraper.set_value(false); //scraper up
+    chassis.moveToPoint(-8, 59.4, 2500, {.maxSpeed = 50}); //at point to scraper down the four blocks
+    chassis.waitUntilDone();
+    scraper.set_value(true); //scraper down
+    chassis.moveToPoint(-8.8, 70.8, 1500, {.maxSpeed = 50}); //move to intake the four blocks
+    chassis.turnToHeading(40, 700); //turn to align scoring with center lower
+    chassis.moveToPoint(-20.4, 58.9, 1000, {.forwards = false, .maxSpeed = 50}); //move to align with center lower
+    chassis.waitUntilDone();
+    autonCenterLower(nullptr);
+    pros::delay(2000);
+    scraper.set_value(false); //scraper up
+    autonIdle(nullptr);
+    chassis.turnToPoint(12.1, 99.7, 700);
+    chassis.moveToPoint(12.1, 99.7, 2000); //move to in front of wall reset
+    chassis.turnToHeading(180, 700);
+    chassis.moveToPoint(12.1, 109.5, 1000, {.forwards = false}); //move to wall to reset
+    chassis.resetLocalPosition();
+    scraper.set_value(true); //scraper down
+    chassis.moveToPoint(0, -15.5, 1500);
+    chassis.turnToHeading(90, 700); //turn to drop loader
+    autonIntake(nullptr);
+    chassis.moveToPoint(500, -15.5, 2500, {.maxSpeed = 60}); //intake while moving into drop loader
+    chassis.waitUntilDone();
+    autonIdle(nullptr);
+    chassis.resetLocalPosition();
+
+    chassis.moveToPoint(-12, 0, 1500, {.forwards=false}); //move out of drop loader
+    chassis.waitUntilDone();
+    scraper.set_value(false); //scraper up
+
+    chassis.turnToHeading(180, 700);
+    chassis.moveToPoint(-12, -11, 1000); //at the point to move parallel to the long goal
+    autonIdle(nullptr);
+
+    //motto ganbare lydia!!!
+    chassis.turnToHeading(270, 700); //turn to move across long goal
+    chassis.moveToPoint(-85, -11, 3500, {.maxSpeed = 80}); //move across long goal
+    chassis.waitUntilDone();//wait until done 
+    chassis.turnToHeading(0, 700);
+    chassis.moveToPoint(-85,-5, 1500);
+    chassis.turnToHeading(270, 700);
+    chassis.moveToPoint(-65, -5, 1000, {.forwards = false});
+    chassis.waitUntilDone();
+    autonLongGoal(nullptr);
+    scraper.set_value(true); //scraper down
+    chassis.moveToPoint(-20, -5, 2500, {.forwards=false}); //push into long goal
+    chassis.waitUntilDone();
+    autonIdle(nullptr);
+    chassis.resetLocalPosition();
+    chassis.moveToPoint(-27, -1, 1000, {.maxSpeed = 60}); //move to drop loader
+    autonIntake(nullptr);
+    chassis.moveToPoint(-50, -1, 2500, {.maxSpeed = 60}); //intake while moving into the thingy
+    chassis.waitUntilDone();
+    chassis.resetLocalPosition();
+    chassis.moveToPoint(24, 0, 1000, {.forwards=false}); //move to long gogal
+
+    chassis.waitUntilDone();
+    autonLongGoal(nullptr);
+    scraper.set_value(false); //scraper up
+    chassis.moveToPoint(50, 0, 2500, {.forwards=false}); //push into long goal
+    chassis.waitUntilDone();
+    autonIdle(nullptr);
+    chassis.resetLocalPosition();
+
+    chassis.moveToPoint(-10, 0, 1000); //move out of long goal
+    chassis.turnToPoint(-28.5, -16.8, 700);
+    chassis.moveToPoint(-28.5, -16.8, 1500);
+    autonIntake(nullptr);
+    chassis.turnToPoint(-38, -60, 700);
+    chassis.moveToPoint(-34, -50, 3000);
+    chassis.waitUntilDone();
+    scraper.set_value(true); //scraper down
+    chassis.moveToPoint(-38, -60, 3000); //park
+*/
+
+    //93 yeah no
     /*
     chassis.setPose(0, 0, 180);
     autonIntake(nullptr);
@@ -1035,6 +1175,8 @@ pros::delay(700);
 
 
 */
+
+
 
     autonRunning = false;
     while (true) {
