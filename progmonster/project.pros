@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "progvictims",
+    "project_name": "WorldsRefactoring",
     "target": "v5",
     "templates": {
       "LemLib": {
@@ -635,8 +635,9 @@
       }
     },
     "upload_options": {
-      "slot": 5,
-      "icon": "X"
+      "slot": 1,
+      "icon": "X",
+      "description": "MCL & WRLDSRF"
     },
     "use_early_access": false
   }
