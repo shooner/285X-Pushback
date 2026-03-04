@@ -10,6 +10,7 @@ pros::Task* hoodTaskPtr = nullptr;
 pros::Task* trapdoorTaskPtr = nullptr;
 pros::Task* dpTaskPtr = nullptr;
 pros::Task* toggleColorSortTaskPtr = nullptr;
+pros::Task* mclTaskPtr = nullptr;
 
 void initialize() {
     pros::lcd::initialize();
@@ -37,6 +38,8 @@ void initialize() {
     pros::lcd::print(3, "Pot raw: %d", pot_raw);
     pros::delay(20);
     scraper.set_value(false);
+
+    mcl::initialize_filter_from_chassis(3.0f);
 }
 
 void disabled() {}
@@ -45,6 +48,7 @@ void competition_initialize() {}
 
 void autonomous() {
     autonRunning = true;
+    mcl::initialize_filter_from_chassis(2.5f);
 
     int a = 1; // positive if right side auton
     int b = 1; // positive if right side auton
@@ -110,6 +114,7 @@ void opcontrol() {
     dpTaskPtr = new pros::Task(toggleDoublePark, NULL, "Double Park Task");
     trapdoorTaskPtr = new pros::Task(toggleTrapdoor, NULL, "Trapdoor Task");
     toggleColorSortTaskPtr = new pros::Task(toggleColorSort, NULL, "Color Sort Toggle Task");
+    mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, "MCL Runtime Task");
 
     // Keep the main task alive
     while (true) {
