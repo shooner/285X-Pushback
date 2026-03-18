@@ -321,6 +321,29 @@ void autonIntake(void* param){
     trapdoor.set_value(false);
 }
 
+void autonColorSort(void* param){
+    while(autoSort){
+        bool blue_present = detect_blue_optical() && detect_proximity();
+        bool red_present = detect_red_optical() && detect_proximity();
+        bool new_last_red = last_red;
+        bool new_last_blue = last_blue;
+        if (red_present) { new_last_red = true; new_last_blue = false; }
+            if (blue_present) { new_last_blue = true; new_last_red = false; }
+                if (new_last_red != last_red || new_last_blue != last_blue) {
+                    bool blue_confirm = detect_blue_optical();
+                    bool red_confirm = detect_red_optical();
+                    if (red_confirm) { last_red = true; last_blue = false; }
+                    else if (blue_confirm) { last_blue = true; last_red = false; }
+                }
+                int destination = get_color_destination(last_red, last_blue);
+                trapdoor_engaged = (destination == 0);
+                trapdoor.set_value(trapdoor_engaged);
+
+                pros::delay(20);
+    }
+
+}
+
 void autonCenterLower(void* param){
     evil_motor.move(127);
     intake_motor.move(-127);

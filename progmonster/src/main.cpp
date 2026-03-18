@@ -11,6 +11,7 @@ pros::Task* trapdoorTaskPtr = nullptr;
 pros::Task* dpTaskPtr = nullptr;
 pros::Task* toggleColorSortTaskPtr = nullptr;
 pros::Task* mclTaskPtr = nullptr;
+pros::Task* autonColorSortTaskPtr = nullptr;
 
 void initialize() {
     pros::lcd::initialize();
@@ -49,11 +50,15 @@ void competition_initialize() {}
 void autonomous() {
     autonRunning = true;
     mcl::initialize_filter_from_chassis(2.5f);
+    autonColorSortTaskPtr = new pros::Task(autonColorSort, NULL, "Auton Color Sort Task");
 
     int a = 1; // positive if right side auton
     int b = 1; // positive if right side auton
 
+    
+
     // --- ELIM AUTO ---
+    /*
     chassis.setPose(0, 0, 180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
@@ -95,6 +100,8 @@ void autonomous() {
     bunny_engaged = false;
     bunny.set_value(false); 
     chassis.moveToPoint(0, -13.5, 1000, {.forwards = false}); 
+    */
+
 }
 
 void opcontrol() {
