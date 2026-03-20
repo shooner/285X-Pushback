@@ -189,6 +189,8 @@ void motorControl(void* param){
             trapdoor.set_value(trapdoor_engaged);
             park_engaged = false;
             park.set_value(park_engaged);
+            lift_intake_engaged = !lift_intake_engaged;
+            lift_intake.set_value(lift_intake_engaged); //lift intake when outtaking center lower
         }
         else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
             outmid = !outmid;
@@ -246,7 +248,7 @@ void motorControl(void* param){
         if(outmid==true){
             evil_motor.move(-127);
             intake_motor.move(127);
-            top_motor.move(-60);
+            top_motor.move(-45);
             if(teamColor != 0){
                 bool blue_present = detect_blue_optical() && detect_proximity();
                 bool red_present = detect_red_optical() && detect_proximity();
