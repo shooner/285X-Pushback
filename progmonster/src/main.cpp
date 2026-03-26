@@ -1,5 +1,5 @@
 #include "main.h"
-
+                                                     
 // Task pointers for management
 pros::Task* motorControlTaskPtr = nullptr;
 pros::Task* driveTaskPtr = nullptr;
@@ -16,10 +16,6 @@ pros::Task* autonColorSortTaskPtr = nullptr;
 void initialize() {
     pros::lcd::initialize();
 
-    // Configure motor encoder units
-    left_motors.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
-    right_motors.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
-    
     // Calibrate Chassis and Potentiometer
     chassis.calibrate();
     pros::delay(20);
@@ -60,8 +56,8 @@ void autonomous() {
     left_motors.move(0);
     right_motors.move(0);
     
-    autonRunning = false;
 
+    //autonRunning = false;
 
 
 
@@ -111,6 +107,8 @@ void autonomous() {
     bunny.set_value(false); 
     chassis.moveToPoint(0, -13.5, 1000, {.forwards = false}); 
     */
+    
+    autonRunning = false;
 
 }
 
