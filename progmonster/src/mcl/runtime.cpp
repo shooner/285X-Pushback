@@ -20,9 +20,9 @@ std::vector<DistanceSensorConfig> sensor_configs = {
     // Configure these entries when hardware is installed.
     // offset_x_in / offset_y_in are in inches from robot center.
     // heading_deg is sensor facing direction in robot frame.
-    {0, 0.0f, 0.0f, 0.0f, 8, 2.0f, 110.0f, false},
-    {0, 0.0f, 0.0f, 0.0f, 8, 2.0f, 110.0f, false},
-    {0, 0.0f, 0.0f, 0.0f, 8, 2.0f, 110.0f, false},
+    {6, 0.0f, 5.25f, 0.0f, 8, 2.0f, 110.0f, true},       // Front sensor on port 6: centered (0), 5.25" forward
+    {11, -2.5f, 2.25f, 90.0f, 8, 2.0f, 110.0f, true},    // Right sensor on port 11: 2.5" left, 2.25" forward
+    {0, 0.0f, 0.0f, 0.0f, 8, 2.0f, 110.0f, false},       // Unused
 };
 
 std::vector<std::unique_ptr<pros::Distance>> distance_sensors;
@@ -155,7 +155,7 @@ void mclRuntime(void* param) {
         initialize_filter_from_chassis(3.0f);
     }
 
-    while (opRunning) {
+    while (opRunning || autonRunning) {
         step_filter_once();
         pros::delay(20);
     }

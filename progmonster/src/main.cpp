@@ -49,11 +49,22 @@ void competition_initialize() {}
 
 void autonomous() {
     autonRunning = true;
-    mcl::initialize_filter_from_chassis(2.5f);
-    autonColorSortTaskPtr = new pros::Task(autonColorSort, NULL, "Auton Color Sort Task");
+    opRunning = false;
+    
+    // Very simple test - just spin motors
+    left_motors.move(50);
+    right_motors.move(50);
+    
+    pros::delay(2000);
+    
+    left_motors.move(0);
+    right_motors.move(0);
+    
+    autonRunning = false;
+}
+    autonRunning = false;
 
-    int a = 1; // positive if right side auton
-    int b = 1; // positive if right side auton
+
 
     
 

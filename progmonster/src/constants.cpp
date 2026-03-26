@@ -17,12 +17,12 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
 // ============================================
 // ADI PORT DEFINITIONS (Pneumatics & Servos)
 // ============================================
-pros::adi::Port trapdoor('D', pros::E_ADI_DIGITAL_OUT);
-pros::adi::Port bunny('C', pros::E_ADI_DIGITAL_OUT);
-pros::adi::Port scraper('F', pros::E_ADI_DIGITAL_OUT);
-pros::adi::Port park('B', pros::E_ADI_DIGITAL_OUT);
-pros::adi::Port hood('A', pros::E_ADI_DIGITAL_OUT);
-pros::adi::Port lift_intake('E', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port trapdoor('G', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port bunny('F', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port scraper('A', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port park('E', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port hood('H', pros::E_ADI_DIGITAL_OUT);
+pros::adi::Port lift_intake('D', pros::E_ADI_DIGITAL_OUT);
 
 // ============================================
 // SENSOR DEFINITIONS
@@ -30,13 +30,15 @@ pros::adi::Port lift_intake('E', pros::E_ADI_DIGITAL_OUT);
 pros::Optical optical_sensor(OPTICAL_PORT);
 pros::Optical dp_sensor(DOUBLE_PARK_MACRO);
 pros::ADIAnalogIn sensor(POTENTIOMETER_PORT);
-pros::Imu imu(14);
+pros::Imu imu(8);
+pros::Rotation vertical_tracker(17);
 
 // ============================================
 // LEMLIB DRIVETRAIN & CHASSIS CONFIGURATION
 // ============================================
 lemlib::Drivetrain drivetrain(&left_motors, &right_motors, 13, lemlib::Omniwheel::OLD_325, 400, 2);
-lemlib::OdomSensors sensors(nullptr, nullptr, nullptr, nullptr, &imu);
+lemlib::TrackingWheel vertical_tracking_wheel(&vertical_tracker, lemlib::Omniwheel::NEW_2, -0.75);
+lemlib::OdomSensors sensors(nullptr, nullptr, &vertical_tracking_wheel, nullptr, &imu);
 lemlib::ControllerSettings lateral_controller(10, 0, 3, 3, 1, 100, 3, 500, 20);
 lemlib::ControllerSettings angular_controller(7, 0, 65, 3, 1, 100, 3, 500, 0);
 lemlib::ExpoDriveCurve throttle_curve(3, 10, 1.019);

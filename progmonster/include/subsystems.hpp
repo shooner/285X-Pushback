@@ -38,6 +38,7 @@ extern pros::Optical optical_sensor;
 extern pros::Optical dp_sensor;
 extern pros::ADIAnalogIn sensor;
 extern pros::Imu imu;
+extern pros::Rotation vertical_tracker;
 extern lemlib::Chassis chassis;
 
 // State Variables
