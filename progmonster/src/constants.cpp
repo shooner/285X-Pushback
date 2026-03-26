@@ -3,8 +3,8 @@
 // ============================================
 // MOTOR DEFINITIONS
 // ============================================
-pros::MotorGroup left_motors({-21, 20, -16}, pros::MotorGearset::blue);
-pros::MotorGroup right_motors({8, -11, 7}, pros::MotorGearset::blue);
+pros::MotorGroup left_motors({-15, 14, -13}, pros::MotorGearset::blue);
+pros::MotorGroup right_motors({16, -19, 20}, pros::MotorGearset::blue);
 pros::Motor intake_motor(5, pros::MotorGearset::green);
 pros::Motor evil_motor(9, pros::MotorGearset::blue);
 pros::Motor top_motor(10, pros::MotorGearset::blue);
