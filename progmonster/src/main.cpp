@@ -61,8 +61,7 @@ void autonomous() {
     right_motors.move(0);
     
     autonRunning = false;
-}
-    autonRunning = false;
+
 
 
 
