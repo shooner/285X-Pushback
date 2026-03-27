@@ -4,7 +4,7 @@
 #include "mcl/runtime.hpp"
 
 // Constants & Macros
-#define OPTICAL_PORT 19
+#define OPTICAL_PORT 7
 #define DOUBLE_PARK_MACRO 15
 #define POTENTIOMETER_PORT 'E'
 #define POT_MIN_READING 0

@@ -25,11 +25,11 @@ void initialize() {
     int pot_raw = sensor.get_value();
     int pot_mid = (POT_MIN_READING + POT_MAX_READING) / 2;
     if (pot_raw > pot_mid) {
-        teamColor = 1; // Blue
-        controller.print(0, 0, "TEAM BLUE");
-    } else {
-        teamColor = 2; // Red
+        teamColor = 1; // Red
         controller.print(0, 0, "TEAM RED");
+    } else {
+        teamColor = 2; // Blue
+        controller.print(0, 0, "TEAM BLUE");
     }
 
     pros::lcd::print(3, "Pot raw: %d", pot_raw);

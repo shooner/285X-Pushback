@@ -32,6 +32,8 @@ pros::Optical dp_sensor(DOUBLE_PARK_MACRO);
 pros::ADIAnalogIn sensor(POTENTIOMETER_PORT);
 pros::Imu imu(8);
 pros::Rotation vertical_tracker(17);
+pros::Distance front_distance_sensor(6);
+pros::Distance right_distance_sensor(11);
 
 // ============================================
 // LEMLIB DRIVETRAIN & CHASSIS CONFIGURATION
@@ -63,4 +65,4 @@ bool lift_intake_engaged = false; //false = up
 // Game state
 volatile bool opRunning = false;
 volatile bool autonRunning = false;
-int teamColor = 0;
+int teamColor = 0; // 1 = red, 2 = blue

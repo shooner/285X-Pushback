@@ -21,11 +21,11 @@ bool detect_proximity(){
 }
 
 int get_color_destination(bool last_red, bool last_blue) {
-    if (teamColor == 2) { // TEAM RED
+    if (teamColor == 2) { // TEAM BLUE
         if (last_blue) return 0; // keep
         if (last_red) return 1;  // eject
         return 0;
-    } else if (teamColor == 1) { // TEAM BLUE: keep red, eject blue
+    } else if (teamColor == 1) { // TEAM RED: keep red, eject blue
         if (last_red) return 0;  // keep
         if (last_blue) return 1; // eject
         return 0;
@@ -46,14 +46,14 @@ void toggleColorSort(void* param) {
             teamColor = (teamColor + 1) % 3; // cycles through 0, 1, 2
             if(teamColor == 0){
                 controller.print(0,0, "ColorSort: OFF");
-                trapdoor_engaged = false;
+                trapdoor_engaged = true;
                 trapdoor.set_value(trapdoor_engaged);
             }
             else if(teamColor == 1){
-                controller.print(0,0, "TEAM BLUE");
+                controller.print(0,0, "TEAM RED");
             }
             else if(teamColor == 2){
-                controller.print(0,0, "TEAM RED");
+                controller.print(0,0, "TEAM BLUE");
             }
             pros::delay(200);
         }
@@ -118,7 +118,7 @@ void toggleTrapdoor(void* param) {
         }
         pros::delay(20);
     }
-    trapdoor.set_value(false);
+    trapdoor.set_value(true);
 }
 
 void toggleDoublePark(void* param) {
@@ -156,7 +156,7 @@ void motorControl(void* param){
     while(opRunning){
         if (dp_macro_active) {
             was_macro_active = true;
-            trapdoor_engaged = false;
+            trapdoor_engaged = true;
             trapdoor.set_value(trapdoor_engaged);
             pros::delay(20);
             continue;
@@ -185,7 +185,7 @@ void motorControl(void* param){
             intake = false;
             outmid = false;
             outlong = false;
-            trapdoor_engaged = false;
+            trapdoor_engaged = true;
             trapdoor.set_value(trapdoor_engaged);
             park_engaged = false;
             park.set_value(park_engaged);
@@ -197,7 +197,7 @@ void motorControl(void* param){
             intake = false;
             outlow = false;
             outlong = false;
-            trapdoor_engaged = false;
+            trapdoor_engaged = true;
             trapdoor.set_value(trapdoor_engaged);
             park_engaged = false;
             park.set_value(park_engaged);
@@ -207,7 +207,7 @@ void motorControl(void* param){
             intake = false;
             outlow = false;
             outmid = false;
-            trapdoor_engaged = false;
+            trapdoor_engaged = true;
             trapdoor.set_value(trapdoor_engaged);
             hood.set_value(true);
             park_engaged = false;
@@ -298,7 +298,7 @@ void motorControl(void* param){
         }
         pros::delay(10);
     }
-    trapdoor.set_value(false);
+    trapdoor.set_value(true);
 }
 
 void drive(void* param) {
@@ -320,7 +320,7 @@ void autonIntake(void* param){
     top_motor.move(127);
     hood_engaged = false;
     hood.set_value(hood_engaged);
-    trapdoor.set_value(false);
+    trapdoor.set_value(true);
 }
 
 void autonColorSort(void* param){
@@ -350,14 +350,16 @@ void autonCenterLower(void* param){
     evil_motor.move(127);
     intake_motor.move(-127);
     top_motor.move(-127);
-    trapdoor.set_value(false);
+    trapdoor_engaged = true;
+    trapdoor.set_value(true);
 }
 
 void autonCenterUpper(void* param){
     evil_motor.move(-127);
     intake_motor.move(127);
     top_motor.move(-127);
-    trapdoor.set_value(false);
+    trapdoor_engaged = true;
+    trapdoor.set_value(true);
 }
 
 void autonLongGoal(void* param){
@@ -366,7 +368,8 @@ void autonLongGoal(void* param){
     top_motor.move(127);
     hood_engaged = true;
     hood.set_value(hood_engaged);
-    trapdoor.set_value(false);
+    trapdoor_engaged = true;
+    trapdoor.set_value(true);
 }
 
 void slowAutonLongGoal(void* param){
@@ -375,7 +378,8 @@ void slowAutonLongGoal(void* param){
     top_motor.move(100);
     hood_engaged = true;
     hood.set_value(hood_engaged);
-    trapdoor.set_value(false);
+    trapdoor_engaged = true;
+    trapdoor.set_value(true);
 }
 
 void autonIdle(void* param){
