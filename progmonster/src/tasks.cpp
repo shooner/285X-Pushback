@@ -94,7 +94,7 @@ void togglePark(void* param) {
         }
         pros::delay(20);
     }
-    park.set_value(false);
+    park.set_value(true);
 }
 
 void toggleHood(void* param) {
@@ -137,8 +137,8 @@ void toggleDoublePark(void* param) {
             evil_motor.move(0);
             top_motor.move(0);
             pros::delay(50);
-            park.set_value(true);
-            park_engaged = true;
+            park.set_value(false);
+            park_engaged = false;
             dp_macro_active = false;
             pros::lcd::print(5, "Double Park Engaged");
         }
@@ -177,8 +177,8 @@ void motorControl(void* param){
             outlow = false;
             outmid = false;
             outlong = false;
-            park.set_value(false);
-            park_engaged = false;
+            park.set_value(true);
+            park_engaged = true;
         }
         else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
             outlow = !outlow;
@@ -187,7 +187,7 @@ void motorControl(void* param){
             outlong = false;
             trapdoor_engaged = true;
             trapdoor.set_value(trapdoor_engaged);
-            park_engaged = false;
+            park_engaged = true;
             park.set_value(park_engaged);
             lift_intake_engaged = !lift_intake_engaged;
             lift_intake.set_value(lift_intake_engaged); //lift intake when outtaking center lower
@@ -199,7 +199,7 @@ void motorControl(void* param){
             outlong = false;
             trapdoor_engaged = true;
             trapdoor.set_value(trapdoor_engaged);
-            park_engaged = false;
+            park_engaged = true;
             park.set_value(park_engaged);
         }
         else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)){
@@ -210,7 +210,7 @@ void motorControl(void* param){
             trapdoor_engaged = true;
             trapdoor.set_value(trapdoor_engaged);
             hood.set_value(true);
-            park_engaged = false;
+            park_engaged = true;
             park.set_value(park_engaged);
         }
 
