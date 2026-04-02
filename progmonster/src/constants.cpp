@@ -54,13 +54,13 @@ lemlib::Chassis chassis(drivetrain, lateral_controller, angular_controller, sens
 bool bunny_engaged = false;
 bool dp_macro_active = false;
 bool trapdoor_engaged = true;
-bool park_engaged = true;
+bool park_engaged = false;
 bool scraper_engaged = false;
 bool hood_engaged = true;
 bool last_blue = false;
 bool last_red = false;
 bool autoSort = false;
-bool lift_intake_engaged = false; //false = up
+bool lift_intake_engaged = true; //true = up
 
 // Game state
 volatile bool opRunning = false;

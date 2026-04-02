@@ -47,24 +47,18 @@ void autonomous() {
     autonRunning = true;
     opRunning = false;
     
-    // Very simple test - just spin motors
-    left_motors.move(50);
-    right_motors.move(50);
+    int a = 1;
+    int b = 1;
     
-    pros::delay(2000);
-    
-    left_motors.move(0);
-    right_motors.move(0);
     
 
-    //autonRunning = false;
 
 
 
     
 
     // --- ELIM AUTO ---
-    /*
+    
     chassis.setPose(0, 0, 180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
@@ -106,7 +100,7 @@ void autonomous() {
     bunny_engaged = false;
     bunny.set_value(false); 
     chassis.moveToPoint(0, -13.5, 1000, {.forwards = false}); 
-    */
+    
     
     autonRunning = false;
 
