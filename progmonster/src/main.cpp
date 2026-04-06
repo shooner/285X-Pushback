@@ -36,7 +36,7 @@ void initialize() {
     pros::delay(20);
     scraper.set_value(false);
 
-    mcl::initialize_filter_from_chassis(3.0f);
+    //mcl::initialize_filter_from_chassis(3.0f);
 }
 
 void disabled() {}
@@ -52,13 +52,14 @@ void autonomous() {
     
     
 
+    chassis.setPose(42,37,180);
 
-
+    chassis.moveToPoint(42, 0, 1000);
 
     
 
     // --- ELIM AUTO ---
-    
+    /*
     chassis.setPose(0, 0, 180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged);
@@ -100,7 +101,7 @@ void autonomous() {
     bunny_engaged = false;
     bunny.set_value(false); 
     chassis.moveToPoint(0, -13.5, 1000, {.forwards = false}); 
-    
+    */
     
     autonRunning = false;
 
