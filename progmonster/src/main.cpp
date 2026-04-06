@@ -47,34 +47,16 @@ void autonomous() {
     autonRunning = true;
     opRunning = false;
     
-    // DIAGNOSTIC: Test motor directions
-    // Left motors forward (should move bot forward-left)
-    left_motors.move(50);
-    right_motors.move(0);
-    pros::delay(500);
-    left_motors.move(0);
-    
-    // Right motors forward (should move bot forward-right)
-    left_motors.move(0);
-    right_motors.move(50);
-    pros::delay(500);
-    right_motors.move(0);
-    
-    // Both forward (should move bot straight)
-    left_motors.move(50);
-    right_motors.move(50);
-    pros::delay(1000);
-    left_motors.move(0);
-    right_motors.move(0);
-    
     mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, "MCL Runtime Task");
     
-
-    chassis.setPose(42,37,180);
-    chassis.turnToPoint(42, 0, 500);
-    chassis.moveToPoint(42, 0, 1000);
-
+    int a = 1;
+    int b = 1;
     
+
+    chassis.setPose(23, 0, 90);
+    chassis.turnToPoint(30, 0, 500);
+    chassis.moveToPoint(30, 0, 1000);
+
 
     // --- ELIM AUTO ---
     /*
@@ -120,6 +102,8 @@ void autonomous() {
     bunny.set_value(false); 
     chassis.moveToPoint(0, -13.5, 1000, {.forwards = false}); 
     */
+    
+
     
     autonRunning = false;
 
