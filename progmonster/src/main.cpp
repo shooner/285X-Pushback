@@ -47,13 +47,31 @@ void autonomous() {
     autonRunning = true;
     opRunning = false;
     
-    int a = 1;
-    int b = 1;
+    // DIAGNOSTIC: Test motor directions
+    // Left motors forward (should move bot forward-left)
+    left_motors.move(50);
+    right_motors.move(0);
+    pros::delay(500);
+    left_motors.move(0);
     
+    // Right motors forward (should move bot forward-right)
+    left_motors.move(0);
+    right_motors.move(50);
+    pros::delay(500);
+    right_motors.move(0);
+    
+    // Both forward (should move bot straight)
+    left_motors.move(50);
+    right_motors.move(50);
+    pros::delay(1000);
+    left_motors.move(0);
+    right_motors.move(0);
+    
+    mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, "MCL Runtime Task");
     
 
     chassis.setPose(42,37,180);
-
+    chassis.turnToPoint(42, 0, 500);
     chassis.moveToPoint(42, 0, 1000);
 
     
