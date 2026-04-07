@@ -53,10 +53,9 @@ void autonomous() {
     int b = 1;
     
 
-    chassis.setPose(23, 0, 90);
-    chassis.turnToPoint(30, 0, 500);
-    chassis.moveToPoint(30, 0, 1000);
-
+    chassis.setPose(31, -36, 270);
+    chassis.moveToPoint(-16, -36, 10000);
+    
 
     // --- ELIM AUTO ---
     /*
