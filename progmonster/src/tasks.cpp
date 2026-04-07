@@ -75,11 +75,8 @@ void toggleScraper(void* param) {
 
 void toggleBunnyEars(void* param) {
     while (opRunning){
-        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
-            bunny_engaged = !bunny_engaged;
-            bunny.set_value(bunny_engaged);
-            pros::delay(200);
-        }
+        bunny_engaged = controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
+        bunny.set_value(bunny_engaged);
         pros::delay(20);
     }
     bunny.set_value(false);
