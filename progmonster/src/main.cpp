@@ -44,17 +44,18 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
+    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
     autonRunning = true;
     opRunning = false;
     
-    mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, "MCL Runtime Task");
+    //mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, "MCL Runtime Task");
     
     int a = 1;
     int b = 1;
     
 
-    chassis.setPose(31, -36, 270);
-    chassis.moveToPoint(-16, -36, 10000);
+    chassis.setPose(0, 0, 270);
+    chassis.moveToPoint(-12, 0, 10000);
     
 
     // --- ELIM AUTO ---

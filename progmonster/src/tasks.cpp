@@ -75,7 +75,7 @@ void toggleScraper(void* param) {
 
 void toggleBunnyEars(void* param) {
     while (opRunning){
-        bunny_engaged = controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
+        bunny_engaged = controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
         bunny.set_value(bunny_engaged);
         pros::delay(20);
     }
@@ -169,7 +169,7 @@ void motorControl(void* param){
         optical_sensor.set_led_pwm(100);
         pros::lcd::print(2, "Proximity value: %ld \n", optical_sensor.get_proximity());
         
-        if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) {
+        if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
             intake = !intake;
             outlow = false;
             outmid = false;
