@@ -44,7 +44,6 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
     autonRunning = true;
     opRunning = false;
     
@@ -55,7 +54,7 @@ void autonomous() {
     
 
     chassis.setPose(0, 0, 270);
-    chassis.moveToPoint(-12, 0, 10000);
+    moveToPointSmooth(-72, 0, 10000);
     
 
     // --- ELIM AUTO ---
@@ -133,5 +132,3 @@ void opcontrol() {
         pros::delay(20);
     }
 }
-
-#include "subsystems.hpp"

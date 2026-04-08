@@ -391,3 +391,79 @@ void autonBunny(void* param){
     bunny_engaged = !bunny_engaged;
     bunny.set_value(bunny_engaged);
 }
+
+void moveToPointSmooth(float x, float y, int timeout, float maxSpeed) {
+    lemlib::Pose targetPose(x, y, 0);
+    float initialDistance = chassis.getPose().distance(targetPose);
+    
+    // Define many phase thresholds for extremely gradual deceleration
+    float phase2Threshold = initialDistance * 0.85;    // 85%
+    float phase3Threshold = initialDistance * 0.70;    // 70%
+    float phase4Threshold = initialDistance * 0.55;    // 55%
+    float phase5Threshold = initialDistance * 0.40;    // 40%
+    float phase6Threshold = initialDistance * 0.28;    // 28%
+    float phase7Threshold = initialDistance * 0.16;    // 16%
+    float phase8Threshold = initialDistance * 0.08;    // 8%
+    float phase9Threshold = initialDistance * 0.03;    // 3%
+    float phase10Threshold = initialDistance * 0.01;   // 1%
+    
+    long startTime = pros::millis();
+    int lastPhase = -1;
+    
+    while (pros::millis() - startTime < timeout) {
+        float currentDistance = chassis.getPose().distance(targetPose);
+        
+        // Exit if very close to target
+        if (currentDistance < 0.15) {
+            left_motors.move(0);
+            right_motors.move(0);
+            break;
+        }
+        
+        // Determine which phase we're in - extremely gradual deceleration with lower final speeds
+        int phase = 1;
+        float phaseMaxSpeed = maxSpeed;
+        
+        if (currentDistance <= phase10Threshold) {
+            phase = 10;
+            phaseMaxSpeed = 3;
+        } else if (currentDistance <= phase9Threshold) {
+            phase = 9;
+            phaseMaxSpeed = 5;
+        } else if (currentDistance <= phase8Threshold) {
+            phase = 8;
+            phaseMaxSpeed = 8;
+        } else if (currentDistance <= phase7Threshold) {
+            phase = 7;
+            phaseMaxSpeed = 12;
+        } else if (currentDistance <= phase6Threshold) {
+            phase = 6;
+            phaseMaxSpeed = 20;
+        } else if (currentDistance <= phase5Threshold) {
+            phase = 5;
+            phaseMaxSpeed = 35;
+        } else if (currentDistance <= phase4Threshold) {
+            phase = 4;
+            phaseMaxSpeed = 55;
+        } else if (currentDistance <= phase3Threshold) {
+            phase = 3;
+            phaseMaxSpeed = 80;
+        } else if (currentDistance <= phase2Threshold) {
+            phase = 2;
+            phaseMaxSpeed = 110;
+        }
+        
+        // Only change moveToPoint call when phase actually changes
+        if (phase != lastPhase) {
+            lastPhase = phase;
+            long remainingTime = timeout - (pros::millis() - startTime);
+            chassis.moveToPoint(x, y, remainingTime + 500, {.maxSpeed = phaseMaxSpeed});
+        }
+        
+        pros::delay(100);
+    }
+    
+    // Final stop
+    left_motors.move(0);
+    right_motors.move(0);
+}

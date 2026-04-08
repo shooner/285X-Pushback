@@ -76,3 +76,4 @@ void slowAutonLongGoal(void* param);
 void autonIdle(void* param);
 void autonBunny(void* param);
 void autonColorSort(void* param);
+void moveToPointSmooth(float x, float y, int timeout, float maxSpeed = 127);
