@@ -54,7 +54,6 @@ void autonomous() {
     
 
     chassis.setPose(0, 0, 270);
-    moveToPointSmooth(-72, 0, 10000);
     
 
     // --- ELIM AUTO ---
