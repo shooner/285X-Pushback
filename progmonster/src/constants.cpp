@@ -41,8 +41,8 @@ pros::Distance right_distance_sensor(11);
 lemlib::Drivetrain drivetrain(&left_motors, &right_motors, 13, lemlib::Omniwheel::OLD_325, 400, 2);
 lemlib::TrackingWheel vertical_tracking_wheel(&vertical_tracker, lemlib::Omniwheel::NEW_2, -0.75);
 lemlib::OdomSensors sensors(&vertical_tracking_wheel, nullptr, nullptr, nullptr, &imu);
-lemlib::ControllerSettings lateral_controller(40, .33, 245, 3, .5, 50, 3, 800, 5); //ki used to be .33
-lemlib::ControllerSettings angular_controller(2, 0, 20, 3, 1, 100, 3, 500, 0);
+lemlib::ControllerSettings lateral_controller(45, 0, 270, 3, 1, 100, 3, 500, 2); //exit conditions were as follows: .5, 200, 3, 800
+lemlib::ControllerSettings angular_controller(2, 0, 20.19675, 0, 0, 0, 0, 0, 0);
 lemlib::ExpoDriveCurve throttle_curve(3, 10, 1.019);
 lemlib::ExpoDriveCurve steer_curve(3, 10, 1.019);
 lemlib::Chassis chassis(drivetrain, lateral_controller, angular_controller, sensors, &throttle_curve, &steer_curve);

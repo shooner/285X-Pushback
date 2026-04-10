@@ -51,9 +51,27 @@ void autonomous() {
     
     int a = 1;
     int b = 1;
+
     
 
-    chassis.setPose(0, 0, 270);
+    
+
+    
+    chassis.setPose(-49.5, -17, 180);
+    mcl::distance_sensor_configs()[1].enabled = true;  // Disable right
+    mcl::distance_sensor_configs()[0].enabled = true;  // enable front
+    chassis.moveToPoint(-49.5, -47, 2000, {.maxSpeed = 80});
+    chassis.waitUntilDone();
+    chassis.turnToHeading(270, 700);
+    chassis.waitUntilDone();
+    chassis.moveToPoint(-58.5, -47, 1500, {.maxSpeed = 30});
+    mcl::distance_sensor_configs()[1].enabled = true;  // Disable right
+    mcl::distance_sensor_configs()[0].enabled = true;  // enable front
+    chassis.waitUntilDone();
+    pros::delay(1000);
+    chassis.moveToPoint(-29, -47, 2000, {.forwards = false, .maxSpeed = 50});
+    pros::delay(2000);
+    chassis.waitUntilDone();
     
 
     // --- ELIM AUTO ---

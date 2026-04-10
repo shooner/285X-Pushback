@@ -186,8 +186,6 @@ void motorControl(void* param){
             trapdoor.set_value(trapdoor_engaged);
             park_engaged = false;
             park.set_value(park_engaged);
-            lift_intake_engaged = !lift_intake_engaged;
-            lift_intake.set_value(lift_intake_engaged); //lift intake when outtaking center lower
         }
         else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
             outmid = !outmid;
@@ -196,7 +194,7 @@ void motorControl(void* param){
             outlong = false;
             trapdoor_engaged = true;
             trapdoor.set_value(trapdoor_engaged);
-            park_engaged = false;
+            park_engaged = true;
             park.set_value(park_engaged);
         }
         else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)){
@@ -239,12 +237,16 @@ void motorControl(void* param){
         }
 
         if(outlow==true){
+            lift_intake_engaged = false;
+            lift_intake.set_value(lift_intake_engaged);
             evil_motor.move(127);
             intake_motor.move(-87);
             top_motor.move(-127);
         }
 
         if(outmid==true){
+            lift_intake_engaged = false;
+            lift_intake.set_value(lift_intake_engaged);
             evil_motor.move(-80);
             intake_motor.move(80);
             top_motor.move(-45);
@@ -268,6 +270,8 @@ void motorControl(void* param){
         }
 
         if(outlong==true){
+            lift_intake_engaged = false;
+            lift_intake.set_value(lift_intake_engaged);
             intake_motor.move(127);
             evil_motor.move(-127);
             top_motor.move(127);
