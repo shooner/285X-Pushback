@@ -74,19 +74,19 @@ void autonomous() {
 
     // --- ELIM AUTO ---
     
-    chassis.setPose(a*-49.5, b*-17, 180);
+    chassis.setPose(-49.5, -17, 180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged); //bunny up
-    chassis.moveToPoint(a * -49.5, b * -48.5, 1000);
-    
-    /*
+    chassis.moveToPoint(-49.5, -46, 1000, {.maxSpeed = 80});
+    chassis.waitUntilDone();
     scraper.set_value(true); //scraper down
-    chassis.turnToHeading(270, 700); 
+    //chassis.turnToHeading(270, 700); 
     autonIntake(nullptr);
-    chassis.moveToPoint(a * -58.5, b * -48.5, 1200, {.maxSpeed = 45}); 
+    chassis.moveToPoint(-58.5, -47, 1200, {.maxSpeed = 45}); 
     chassis.waitUntilDone();
-    chassis.moveToPoint(a * -31, b * -48.5, 700, {.forwards = false, .maxSpeed = 80}); 
+    chassis.moveToPoint(-31, -47, 700, {.forwards = false, .maxSpeed = 80}); 
     chassis.waitUntilDone();
+/*
     autonLongGoal(nullptr);
     scraper.set_value(false); //scraper up
     pros::delay(2000);
