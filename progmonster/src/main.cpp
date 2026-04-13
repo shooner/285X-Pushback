@@ -19,10 +19,10 @@ void initialize() {
     // Calibrate Chassis and Potentiometer
     chassis.calibrate();
     pros::delay(20);
-    sensor.calibrate();
+    colorSensor.calibrate();
 
     // Team Color Selection via Potentiometer
-    int pot_raw = sensor.get_value();
+    int pot_raw = colorSensor.get_value();
     int pot_mid = (POT_MIN_READING + POT_MAX_READING) / 2;
     if (pot_raw > pot_mid) {
         teamColor = 1; // Red
@@ -48,14 +48,11 @@ void autonomous() {
     opRunning = false;
     
     mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, "MCL Runtime Task");
-    
-    int a = 1;
-    int b = 1;
 
     
 
     
-
+/*
     
     chassis.setPose(-49.5, -17, 180);
     chassis.moveToPoint(-49.5, -47, 2000, {.maxSpeed = 80});
@@ -72,54 +69,58 @@ void autonomous() {
     chassis.turnToHeading(45, 700);
     chassis.moveToPoint(-24, -24, 2000, {.maxSpeed = 60});
 
-
+*/
     
 
     // --- ELIM AUTO ---
-    /*
-    chassis.setPose(0, 0, 180);
+    
+    chassis.setPose(a*-49.5, b*-17, 180);
     bunny_engaged = true;
-    bunny.set_value(bunny_engaged);
-    chassis.moveToPoint(a * 0, b * -25, 1000);
-    scraper.set_value(true); 
-    chassis.turnToHeading(270, 500); 
+    bunny.set_value(bunny_engaged); //bunny up
+    chassis.moveToPoint(a * -49.5, b * -48.5, 1000);
+    
+    /*
+    scraper.set_value(true); //scraper down
+    chassis.turnToHeading(270, 700); 
     autonIntake(nullptr);
-    chassis.moveToPoint(a * -50, b * -25, 1200, {.maxSpeed = 45}); 
+    chassis.moveToPoint(a * -58.5, b * -48.5, 1200, {.maxSpeed = 45}); 
     chassis.waitUntilDone();
-    chassis.resetLocalPosition();
-    chassis.moveToPoint(a * 27, b * 0, 700, {.forwards = false, .maxSpeed = 80}); 
+    chassis.moveToPoint(a * -31, b * -48.5, 700, {.forwards = false, .maxSpeed = 80}); 
     chassis.waitUntilDone();
     autonLongGoal(nullptr);
-    scraper.set_value(false); 
-    chassis.moveToPoint(a * 50, b * 0, 1300, {.forwards = false}); 
-    chassis.waitUntilDone();
-    autonIdle(nullptr);
-    chassis.resetLocalPosition();
-    chassis.waitUntilDone();
+    scraper.set_value(false); //scraper up
+    pros::delay(2000);
 
     autonIntake(nullptr);
     left_motors.move(95);
     right_motors.move(-127);
-    pros::delay(900);
+    pros::delay(700);
     left_motors.move(0);
     right_motors.move(0);
     chassis.waitUntilDone();
-    chassis.moveToPoint(a * 2.5, b * 21.3, 1200, {.maxSpeed = 50}); 
+    chassis.moveToPoint(a * -31, b * -34, 1200, {.maxSpeed = 50}); 
     pros::delay(800);
-    chassis.turnToPoint(a * 6.5, b * 26, 500); 
-    chassis.moveToPoint(a * 6.5, b * 26, 1700, {.maxSpeed = 50}); 
-    autonCenterLower(nullptr);
+    chassis.turnToPoint(a * -14, b * -14.4, 500); 
+    chassis.moveToPoint(a * -14, b * -14.4, 1700, {.maxSpeed = 50}); 
+    if(a==1){
+        autonCenterLower(nullptr);
+    }
+    else if(a==-1){
+        autonCenterUpper(nullptr);
+    }
     pros::delay(1000);
 
-    chassis.moveToPoint(-15, 0, 1000, {.forwards = false}); 
-    chassis.turnToHeading(0, 700);
-    chassis.moveToPoint(-15, -13.5, 1000, {.forwards = false}); 
+    chassis.moveToPoint(a * -43, b * -58, 1000, {.forwards = false}); 
+    chassis.turnToHeading(270, 700);
+    chassis.moveToPoint(a * -28, b * -58, 1000, {.forwards = false}); 
     chassis.waitUntilDone();
-    bunny_engaged = false;
+    bunny_engaged = false; //bunny down
     bunny.set_value(false); 
-    chassis.moveToPoint(0, -13.5, 1000, {.forwards = false}); 
+    chassis.moveToPoint(a * -13, b * -58, 1000, {.forwards = false}); 
     */
 
+
+    /*
     //119
     chassis.setPose(-46,0,270);
     autonIntake(nullptr);
@@ -237,6 +238,7 @@ void autonomous() {
     chassis.turnToPoint(-63, 3.6, 700);
     chassis.moveToPoint(-63, 3.6, 4000, {.minSpeed = 127});
 
+    */
     autonRunning = false;
 
 }

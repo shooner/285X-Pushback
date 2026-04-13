@@ -36,7 +36,7 @@ extern pros::adi::Port hood;
 extern pros::adi::Port lift_intake;
 extern pros::Optical optical_sensor;
 extern pros::Optical dp_sensor;
-extern pros::ADIAnalogIn sensor;
+extern pros::ADIAnalogIn colorSensor;
 extern pros::Imu imu;
 extern pros::Rotation vertical_tracker;
 extern lemlib::Chassis chassis;
@@ -55,6 +55,8 @@ extern bool lift_intake_engaged;
 extern volatile bool opRunning;
 extern volatile bool autonRunning;
 extern int teamColor;
+extern int a; //positive if right, negative if left
+extern int b; //positive if right, negative if left
 
 // Task Functions
 void motorControl(void* param);

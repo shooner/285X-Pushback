@@ -4,7 +4,7 @@
 // MOTOR DEFINITIONS
 // ============================================
 pros::MotorGroup left_motors({-15, 14, -13}, pros::MotorGearset::blue);
-pros::MotorGroup right_motors({16, -19, 20}, pros::MotorGearset::blue);
+pros::MotorGroup right_motors({18, -19, 20}, pros::MotorGearset::blue);
 pros::Motor intake_motor(5, pros::MotorGearset::green);
 pros::Motor evil_motor(9, pros::MotorGearset::blue);
 pros::Motor top_motor(10, pros::MotorGearset::blue);
@@ -29,7 +29,7 @@ pros::adi::Port lift_intake('D', pros::E_ADI_DIGITAL_OUT);
 // ============================================
 pros::Optical optical_sensor(OPTICAL_PORT);
 pros::Optical dp_sensor(DOUBLE_PARK_MACRO);
-pros::ADIAnalogIn sensor(POTENTIOMETER_PORT);
+pros::ADIAnalogIn colorSensor(POTENTIOMETER_PORT);
 pros::Imu imu(8);
 pros::Rotation vertical_tracker(17);
 pros::Distance front_distance_sensor(6);
@@ -66,3 +66,6 @@ bool lift_intake_engaged = true; //true = up
 volatile bool opRunning = false;
 volatile bool autonRunning = false;
 int teamColor = 0; // 1 = red, 2 = blue
+int a = 1; //positive if right side, negative if left side
+int b = 1; //positive if right side, negative if left side
+
