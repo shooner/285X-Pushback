@@ -55,7 +55,8 @@ extern bool lift_intake_engaged;
 extern volatile bool opRunning;
 extern volatile bool autonRunning;
 extern int teamColor;
-extern int autonomousSelection;
+extern int a; //positive if right, negative if left
+extern int b; //positive if right, negative if left
 
 // Task Functions
 void motorControl(void* param);
@@ -77,13 +78,3 @@ void slowAutonLongGoal(void* param);
 void autonIdle(void* param);
 void autonBunny(void* param);
 void autonColorSort(void* param);
-
-void autonSelector(void* param);
-
-void left_4Rush(void* param);
-void right_4Rush(void* param);
-void left_7Rush(void* param);
-void right_7Rush(void* param);
-void right_halfSAWP(void* param);
-void skills(void* param);
-
