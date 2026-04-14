@@ -66,6 +66,5 @@ bool lift_intake_engaged = true; //true = up
 volatile bool opRunning = false;
 volatile bool autonRunning = false;
 int teamColor = 0; // 1 = red, 2 = blue
-int a = 1; //positive if right side, negative if left side
-int b = 1; //positive if right side, negative if left side
+
 
