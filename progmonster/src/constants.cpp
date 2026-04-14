@@ -42,7 +42,7 @@ lemlib::Drivetrain drivetrain(&left_motors, &right_motors, 13, lemlib::Omniwheel
 lemlib::TrackingWheel vertical_tracking_wheel(&vertical_tracker, lemlib::Omniwheel::NEW_2, -0.75);
 lemlib::OdomSensors sensors(&vertical_tracking_wheel, nullptr, nullptr, nullptr, &imu);
 lemlib::ControllerSettings lateral_controller(45, 0, 270, 3, 1, 100, 3, 500, 2); //exit conditions were as follows: .5, 200, 3, 800
-lemlib::ControllerSettings angular_controller(2, 0, 20.19675, 0, 0, 0, 0, 0, 0);
+lemlib::ControllerSettings angular_controller(2, 0.001, 20.19675, 0, 0, 0, 0, 0, 0);
 lemlib::ExpoDriveCurve throttle_curve(3, 10, 1.019);
 lemlib::ExpoDriveCurve steer_curve(3, 10, 1.019);
 lemlib::Chassis chassis(drivetrain, lateral_controller, angular_controller, sensors, &throttle_curve, &steer_curve);

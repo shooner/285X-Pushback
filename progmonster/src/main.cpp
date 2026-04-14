@@ -49,8 +49,9 @@ void autonomous() {
     
     mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, "MCL Runtime Task");
 
-    
-
+//tune pid
+/*chassis.setPose(0,0,0);
+chassis.turnToHeading(90,1000);*/
     
 /*
     
@@ -71,14 +72,47 @@ void autonomous() {
 
 */
     
+    //7 block rush
+    chassis.setPose(-49.5, -17, 180);
+    bunny_engaged = true;
+    bunny.set_value(bunny_engaged); //bunny up
+    chassis.moveToPoint(-49.5, -46, 1000, {.maxSpeed = 80});
+    chassis.turnToPoint(-31.6, -30.4, 700); //turn to three red things
+    chassis.moveToPoint(-31.6, -30.4, 1000, {.maxSpeed = 80}); //move to three red things
+    autonIntake(nullptr);
+    chassis.waitUntilDone();
+    scraper_engaged = true;
+    scraper.set_value(true); //scraper down
+    chassis.moveToPoint(-24.8, -24.2, 1000, {.maxSpeed = 50}); //move to intake three red things 
+    chassis.moveToPoint(-49.5, -46, 1000, {.forwards = false}); //back out to in front of drop loader
+    chassis.turnToHeading(270, 700); //turn to drop loader
+    chassis.moveToPoint(-58.5, -46, 1200, {.maxSpeed = 45}); 
+    pros::delay(1300); //intake 3 red blocks
+    chassis.moveToPoint(-31, -46, 700, {.forwards = false, .maxSpeed = 80}); //move to long goal
+    chassis.waitUntilDone();
+    autonLongGoal(nullptr);
+    pros::delay(2000);
+    scraper_engaged = false;
+    scraper.set_value(false); //scraper up
+    chassis.moveToPoint(-40, -46, 1000); //back out of long goal
+    chassis.turnToPoint(-33, -58, 700);
+    chassis.moveToPoint(-33, -58, 1000); //move to side of long goal
+    chassis.turnToHeading(2270, 700);
+    chassis.moveToPoint(-23.8, -58, 800, {.forwards = false});
+    bunny_engaged = false;
+    bunny.set_value(false); //bnuuy down
+    chassis.moveToPoint(-14, -58, 1000, {.forwards = false}); //wing wing wing
 
-    // --- ELIM AUTO ---
-    
+
+
+    //half sawp
+    /*
     chassis.setPose(-49.5, -17, 180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged); //bunny up
     chassis.moveToPoint(-49.5, -46, 1000, {.maxSpeed = 80});
     chassis.waitUntilDone();
+    scraper_engaged = true;
     scraper.set_value(true); //scraper down
     //chassis.turnToHeading(270, 700); 
     autonIntake(nullptr);
@@ -86,8 +120,9 @@ void autonomous() {
     chassis.waitUntilDone();
     chassis.moveToPoint(-31, -47, 700, {.forwards = false, .maxSpeed = 80}); 
     chassis.waitUntilDone();
-/*
+
     autonLongGoal(nullptr);
+    scraper_engaged = false;
     scraper.set_value(false); //scraper up
     pros::delay(2000);
 
