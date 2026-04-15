@@ -112,11 +112,11 @@ chassis.turnToHeading(90,1000);
     chassis.setPose(-49.5, -17, 180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged); //bunny up
-    chassis.moveToPoint(-49.5, -46, 1000, {.maxSpeed = 80});
+    chassis.moveToPoint(-49.5, -44.5, 1000, {.maxSpeed = 80});
     chassis.waitUntilDone();
     scraper_engaged = true;
     scraper.set_value(true); //scraper down
-    chassis.turnToHeading(270, 700); 
+    chassis.turnToHeading(260, 700); 
     autonIntake(nullptr);
     right_motors.move(70);
     left_motors.move(70);
@@ -128,34 +128,31 @@ chassis.turnToHeading(90,1000);
     left_motors.move(0);
     pros::delay(50);
     chassis.waitUntilDone();
-    chassis.moveToPoint(-20, -46, 700, {.forwards = false, .maxSpeed = 80}); 
+    autonIdle(nullptr);
+    chassis.moveToPoint(-30, -44.5, 1000, {.forwards = false, .maxSpeed = 80}); 
     chassis.waitUntilDone();
 
     autonLongGoal(nullptr);
+    chassis.moveToPoint(0, -44.5, 2700, {.forwards = false, .maxSpeed = 80});
     scraper_engaged = false;
     scraper.set_value(false); //scraper up
-    pros::delay(2000);
-
-    autonIntake(nullptr);
-    left_motors.move(95);
-    right_motors.move(-127);
-    pros::delay(700);
-    left_motors.move(0);
-    right_motors.move(0);
-    chassis.waitUntilDone();
-    chassis.turnToPoint(-40, -34, 700);
-    chassis.moveToPoint(a * -40, b * -34, 1200, {.maxSpeed = 50}); 
-    pros::delay(800);
-    chassis.turnToPoint(a * -14, b * -14.4, 500); 
-    chassis.moveToPoint(a * -14, b * -14.4, 1700, {.maxSpeed = 50}); 
-    if(a==1){
-        autonCenterLower(nullptr);
-    }
-    else if(a==-1){
-        autonCenterUpper(nullptr);
-    }
     pros::delay(1000);
 
+    chassis.moveToPoint(-40, -44.5, 1000, {.forwards = false});
+    chassis.turnToPoint(-31, -34, 700);
+    chassis.waitUntilDone();
+    autonIntake(nullptr);
+    chassis.moveToPoint(-31, -34, 1000, {.maxSpeed = 80});
+    scraper_engaged = true;
+    scraper.set_value(true); //scraper down
+    chassis.moveToPoint(-24, -26, 1000, {.maxSpeed = 50}); //move to intake three red things
+    pros::delay(300);
+    scraper_engaged = false;
+    scraper.set_value(false); //scraper up
+
+    chassis.turnToPoint(a * -14, b * -14.4, 500); 
+    chassis.moveToPoint(a * -14, b * -14.4, 1700, {.maxSpeed = 50}); 
+    autonCenterLower(nullptr);
     chassis.moveToPoint(a * -43, b * -58, 1000, {.forwards = false}); 
     chassis.turnToHeading(270, 700);
     chassis.moveToPoint(a * -28, b * -58, 1000, {.forwards = false}); 

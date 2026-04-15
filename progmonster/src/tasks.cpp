@@ -204,6 +204,7 @@ void motorControl(void* param){
             outmid = false;
             trapdoor_engaged = true;
             trapdoor.set_value(trapdoor_engaged);
+            hood_engaged = true;
             hood.set_value(true);
             park_engaged = false;
             park.set_value(park_engaged);
