@@ -50,9 +50,10 @@ void autonomous() {
     mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, "MCL Runtime Task");
 
 //tune pid
-/*chassis.setPose(0,0,0);
-chassis.turnToHeading(90,1000);*/
-    
+/*
+chassis.setPose(0,0,0);
+chassis.turnToHeading(90,1000);
+    */
 /*
     
     chassis.setPose(-49.5, -17, 180);
@@ -73,6 +74,7 @@ chassis.turnToHeading(90,1000);*/
 */
     
     //7 block rush
+    /*
     chassis.setPose(-49.5, -17, 180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged); //bunny up
@@ -103,10 +105,10 @@ chassis.turnToHeading(90,1000);*/
     bunny.set_value(false); //bnuuy down
     chassis.moveToPoint(-14, -58, 1000, {.forwards = false}); //wing wing wing
 
-
+*/
 
     //half sawp
-    /*
+    
     chassis.setPose(-49.5, -17, 180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged); //bunny up
@@ -114,11 +116,19 @@ chassis.turnToHeading(90,1000);*/
     chassis.waitUntilDone();
     scraper_engaged = true;
     scraper.set_value(true); //scraper down
-    //chassis.turnToHeading(270, 700); 
+    chassis.turnToHeading(270, 700); 
     autonIntake(nullptr);
-    chassis.moveToPoint(-58.5, -47, 1200, {.maxSpeed = 45}); 
+    right_motors.move(70);
+    left_motors.move(70);
+    pros::delay(1000);
+    right_motors.move(45);
+    left_motors.move(45);
+    pros::delay(1000);
+    right_motors.move(0);
+    left_motors.move(0);
+    pros::delay(50);
     chassis.waitUntilDone();
-    chassis.moveToPoint(-31, -47, 700, {.forwards = false, .maxSpeed = 80}); 
+    chassis.moveToPoint(-20, -46, 700, {.forwards = false, .maxSpeed = 80}); 
     chassis.waitUntilDone();
 
     autonLongGoal(nullptr);
@@ -133,7 +143,8 @@ chassis.turnToHeading(90,1000);*/
     left_motors.move(0);
     right_motors.move(0);
     chassis.waitUntilDone();
-    chassis.moveToPoint(a * -31, b * -34, 1200, {.maxSpeed = 50}); 
+    chassis.turnToPoint(-40, -34, 700);
+    chassis.moveToPoint(a * -40, b * -34, 1200, {.maxSpeed = 50}); 
     pros::delay(800);
     chassis.turnToPoint(a * -14, b * -14.4, 500); 
     chassis.moveToPoint(a * -14, b * -14.4, 1700, {.maxSpeed = 50}); 
@@ -152,7 +163,7 @@ chassis.turnToHeading(90,1000);*/
     bunny_engaged = false; //bunny down
     bunny.set_value(false); 
     chassis.moveToPoint(a * -13, b * -58, 1000, {.forwards = false}); 
-    */
+    
 
 
     /*
