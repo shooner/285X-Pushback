@@ -55,50 +55,61 @@ void right_halfSAWP(void* param){
     chassis.waitUntilDone();
     scraper_engaged = true;
     scraper.set_value(true); //scraper down
-    chassis.turnToHeading(260, 700); 
+    chassis.turnToHeading(260, 500); 
     autonIntake(nullptr);
     right_motors.move(70);
     left_motors.move(70);
     pros::delay(1000);
     right_motors.move(45);
     left_motors.move(45);
-    pros::delay(1500);
+    pros::delay(1200);
     right_motors.move(0);
     left_motors.move(0);
     pros::delay(50);
     chassis.waitUntilDone();
-    chassis.moveToPoint(-30, -43.5, 1000, {.forwards = false, .maxSpeed = 80}); 
+    chassis.moveToPoint(-30, -43.5, 1000, {.forwards = false, .maxSpeed = 60}); 
     chassis.waitUntilDone();
     autonIdle(nullptr);
     pros::delay(100);
     autonLongGoal(nullptr);
-    chassis.moveToPoint(0, -43.5, 1500, {.forwards = false});
+    chassis.moveToPoint(0, -43.5, 1300, {.forwards = false});
     scraper_engaged = false;
     scraper.set_value(false); //scraper up
 
     chassis.setPose(-30, -43.5, 270);
     chassis.moveToPoint(-45, -43.5, 1000);
-    chassis.turnToPoint(-32, -24, 700);
-    chassis.waitUntilDone();
     autonIntake(nullptr);
-    chassis.moveToPoint(-32, -24, 1000, {.maxSpeed = 80});
+    chassis.turnToPoint(-24, -10, 700);
+    chassis.moveToPoint(-24, -10, 1500, {.maxSpeed = 80});
+    chassis.turnToPoint(-17, -2, 700);
     chassis.waitUntilDone();
-    scraper_engaged = true;
-    scraper.set_value(true); //scraper down
-    chassis.moveToPoint(-24, -10, 1000, {.maxSpeed = 50}); //move to intake three red things
-    scraper_engaged = false;
-    scraper.set_value(false); //scraper up
-
-    chassis.turnToPoint(-20, -4, 500); 
-    chassis.moveToPoint(-20, -4, 1700, {.maxSpeed = 50}); 
+    chassis.moveToPoint(-17, -2, 1600, {.maxSpeed = 60});
+    chassis.waitUntilDone();
     autonCenterLower(nullptr);
-    chassis.moveToPoint(-47, -56, 1000, {.forwards = false}); 
-    chassis.turnToHeading(270, 700);
-    chassis.moveToPoint(-28, -56, 1000, {.forwards = false}); 
+
+    pros::delay(1500);
+    right_motors.move(-70);
+    left_motors.move(-70);
+    pros::delay(1330);
+    right_motors.move(0);
+    left_motors.move(0);
+    pros::delay(50);
+    chassis.turnToHeading(275, 1000);
     chassis.waitUntilDone();
-    bunny_engaged = false; //bunny down
-    bunny.set_value(false); 
-    chassis.moveToPoint(-13, -56, 1000, {.forwards = false}); 
+    right_motors.move(-70);
+    left_motors.move(-70);
+    pros::delay(550);
+    right_motors.move(0);
+    left_motors.move(0);
+    pros::delay(50);
+    bunny_engaged = false;
+    bunny.set_value(false); //bunny down
+    right_motors.move(-80);
+    left_motors.move(-80);
+    pros::delay(300);
+    right_motors.move(0);
+    left_motors.move(0);
+    pros::delay(5000);
 }
 
 void skills(void* param){

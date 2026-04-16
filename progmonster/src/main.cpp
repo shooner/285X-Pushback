@@ -10,7 +10,7 @@ pros::Task* hoodTaskPtr = nullptr;
 pros::Task* trapdoorTaskPtr = nullptr;
 pros::Task* dpTaskPtr = nullptr;
 pros::Task* toggleColorSortTaskPtr = nullptr;
-pros::Task* mclTaskPtr = nullptr;
+//pros::Task* mclTaskPtr = nullptr;
 pros::Task* autonColorSortTaskPtr = nullptr;
 
 void initialize() {
@@ -79,7 +79,6 @@ void opcontrol() {
     dpTaskPtr = new pros::Task(toggleDoublePark, NULL, "Double Park Task");
     trapdoorTaskPtr = new pros::Task(toggleTrapdoor, NULL, "Trapdoor Task");
     toggleColorSortTaskPtr = new pros::Task(toggleColorSort, NULL, "Color Sort Toggle Task");
-    mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "MCL Runtime Task");
 
     // Keep the main task alive
     while (true) {
