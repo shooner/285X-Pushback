@@ -121,7 +121,6 @@ void toggleTrapdoor(void* param) {
 void toggleDoublePark(void* param) {
     while (opRunning){
         dp_sensor.set_led_pwm(100);
-        pros::lcd::print(3, "Proximity value: %ld \n", dp_sensor.get_proximity());
         if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
             dp_macro_active = true;
             evil_motor.move(127);
@@ -167,7 +166,6 @@ void motorControl(void* param){
             was_macro_active = false;
         }
         optical_sensor.set_led_pwm(100);
-        pros::lcd::print(2, "Proximity value: %ld \n", optical_sensor.get_proximity());
         
         if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
             intake = !intake;

@@ -32,10 +32,9 @@ void initialize() {
         controller.print(0, 0, "TEAM BLUE");
     }
 
-    pros::lcd::print(3, "Pot raw: %d", pot_raw);
     pros::delay(20);
     scraper.set_value(false);
-
+    pros::Task selector(autonSelector);
     //mcl::initialize_filter_from_chassis(3.0f);
 }
 
@@ -46,9 +45,19 @@ void competition_initialize() {}
 void autonomous() {
     autonRunning = true;
     opRunning = false;
-    
-    mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, "MCL Runtime Task");
+    //mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "MCL Runtime Task");
 
+     autonomousSelection = 4;
+
+     switch(autonomousSelection){
+        case 0: left_4Rush(nullptr); break;
+        case 1: right_4Rush(nullptr); break;
+        case 2: left_7Rush(nullptr); break;
+        case 3: right_7Rush(nullptr); break;
+        case 4: right_halfSAWP(nullptr); break;
+        case 5: skills(nullptr); break;
+        default: break;
+    }
     autonRunning = false;
 
 }
@@ -70,7 +79,7 @@ void opcontrol() {
     dpTaskPtr = new pros::Task(toggleDoublePark, NULL, "Double Park Task");
     trapdoorTaskPtr = new pros::Task(toggleTrapdoor, NULL, "Trapdoor Task");
     toggleColorSortTaskPtr = new pros::Task(toggleColorSort, NULL, "Color Sort Toggle Task");
-    mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, "MCL Runtime Task");
+    mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "MCL Runtime Task");
 
     // Keep the main task alive
     while (true) {
