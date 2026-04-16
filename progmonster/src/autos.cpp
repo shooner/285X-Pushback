@@ -51,7 +51,7 @@ void right_halfSAWP(void* param){
     chassis.setPose(-49.5, -17, 180);
     bunny_engaged = true;
     bunny.set_value(bunny_engaged); //bunny up
-    chassis.moveToPoint(-49.5, -44.5, 1000, {.maxSpeed = 80});
+    chassis.moveToPoint(-49.5, -43.5, 1000, {.maxSpeed = 80});
     chassis.waitUntilDone();
     scraper_engaged = true;
     scraper.set_value(true); //scraper down
@@ -62,42 +62,43 @@ void right_halfSAWP(void* param){
     pros::delay(1000);
     right_motors.move(45);
     left_motors.move(45);
-    pros::delay(1000);
+    pros::delay(1500);
     right_motors.move(0);
     left_motors.move(0);
     pros::delay(50);
     chassis.waitUntilDone();
-    chassis.moveToPoint(-30, -44.5, 1000, {.forwards = false, .maxSpeed = 80}); 
+    chassis.moveToPoint(-30, -43.5, 1000, {.forwards = false, .maxSpeed = 80}); 
     chassis.waitUntilDone();
     autonIdle(nullptr);
     pros::delay(100);
     autonLongGoal(nullptr);
-    pros::delay(2700);
+    chassis.moveToPoint(0, -43.5, 1500, {.forwards = false});
     scraper_engaged = false;
     scraper.set_value(false); //scraper up
 
-    chassis.moveToPoint(-55, -44.5, 1000);
-    chassis.turnToPoint(-31, -34, 700);
+    chassis.setPose(-30, -43.5, 270);
+    chassis.moveToPoint(-45, -43.5, 1000);
+    chassis.turnToPoint(-32, -24, 700);
     chassis.waitUntilDone();
     autonIntake(nullptr);
-    chassis.moveToPoint(-31, -34, 1000, {.maxSpeed = 80});
+    chassis.moveToPoint(-32, -24, 1000, {.maxSpeed = 80});
+    chassis.waitUntilDone();
     scraper_engaged = true;
     scraper.set_value(true); //scraper down
-    chassis.moveToPoint(-24, -26, 1000, {.maxSpeed = 50}); //move to intake three red things
-    pros::delay(300);
+    chassis.moveToPoint(-24, -10, 1000, {.maxSpeed = 50}); //move to intake three red things
     scraper_engaged = false;
     scraper.set_value(false); //scraper up
 
-    chassis.turnToPoint(-14, -14.4, 500); 
-    chassis.moveToPoint(-14, -14.4, 1700, {.maxSpeed = 50}); 
+    chassis.turnToPoint(-20, -4, 500); 
+    chassis.moveToPoint(-20, -4, 1700, {.maxSpeed = 50}); 
     autonCenterLower(nullptr);
-    chassis.moveToPoint(-43, -58, 1000, {.forwards = false}); 
+    chassis.moveToPoint(-47, -56, 1000, {.forwards = false}); 
     chassis.turnToHeading(270, 700);
-    chassis.moveToPoint(-28, -58, 1000, {.forwards = false}); 
+    chassis.moveToPoint(-28, -56, 1000, {.forwards = false}); 
     chassis.waitUntilDone();
     bunny_engaged = false; //bunny down
     bunny.set_value(false); 
-    chassis.moveToPoint(-13, -58, 1000, {.forwards = false}); 
+    chassis.moveToPoint(-13, -56, 1000, {.forwards = false}); 
 }
 
 void skills(void* param){
