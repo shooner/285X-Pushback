@@ -67,34 +67,33 @@ void right_halfSAWP(void* param){
     left_motors.move(0);
     pros::delay(50);
     chassis.waitUntilDone();
-    chassis.moveToPoint(-30, -43.5, 1000, {.forwards = false, .maxSpeed = 60}); 
+    chassis.moveToPoint(-30, -44.5, 1000, {.forwards = false, .maxSpeed = 60}); 
     chassis.waitUntilDone();
     autonIdle(nullptr);
     pros::delay(100);
     autonLongGoal(nullptr);
-    chassis.moveToPoint(0, -43.5, 1300, {.forwards = false});
+    chassis.moveToPoint(0, -44.5, 1300, {.forwards = false});
     scraper_engaged = false;
     scraper.set_value(false); //scraper up
 
-    chassis.setPose(-30, -43.5, 270);
-    chassis.moveToPoint(-45, -43.5, 1000);
+    chassis.setPose(-30, -44.5, 270);
+    chassis.moveToPoint(-45, -44.5, 1000);
     autonIntake(nullptr);
-    chassis.turnToPoint(-24, -10, 700);
-    chassis.moveToPoint(-24, -10, 1500, {.maxSpeed = 80});
-    chassis.turnToPoint(-17, -2, 700);
+    chassis.turnToPoint(-22, -10, 700);
+    chassis.moveToPoint(-22, -10, 1500, {.maxSpeed = 80});
+    chassis.turnToPoint(-15, -3, 700);
     chassis.waitUntilDone();
-    chassis.moveToPoint(-17, -2, 1600, {.maxSpeed = 60});
+    chassis.moveToPoint(-15, -3, 1600, {.maxSpeed = 60});
     chassis.waitUntilDone();
     autonCenterLower(nullptr);
 
     pros::delay(1500);
-    right_motors.move(-70);
-    left_motors.move(-70);
-    pros::delay(1330);
-    right_motors.move(0);
-    left_motors.move(0);
-    pros::delay(50);
-    chassis.turnToHeading(275, 1000);
+
+    chassis.setPose(-15, -3, 45);
+    chassis.moveToPoint(-34, -24, 1500, {.forwards = false, .maxSpeed = 80});
+    chassis.turnToHeading(0,700);
+    chassis.moveToPoint(-34, -24, 1000, {.forwards = false});
+    chassis.turnToHeading(270, 1000);
     chassis.waitUntilDone();
     right_motors.move(-70);
     left_motors.move(-70);
@@ -102,14 +101,6 @@ void right_halfSAWP(void* param){
     right_motors.move(0);
     left_motors.move(0);
     pros::delay(50);
-    bunny_engaged = false;
-    bunny.set_value(false); //bunny down
-    right_motors.move(-80);
-    left_motors.move(-80);
-    pros::delay(300);
-    right_motors.move(0);
-    left_motors.move(0);
-    pros::delay(5000);
 }
 
 void skills(void* param){
