@@ -78,8 +78,8 @@ void autonIdle(void* param);
 void autonBunny(void* param);
 void autonColorSort(void* param);
 
-void left_4Rush(void* param);
-void right_4Rush(void* param);
+void moveOut(void* param);
+void left43_Split(void* param);
 void left_7Rush(void* param);
 void right_7Rush(void* param);
 void right_halfSAWP(void* param);

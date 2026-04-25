@@ -1,8 +1,8 @@
 #include "main.h"
 #include "lemlib/api.hpp"
 
-void left_4Rush(void*);
-void right_4Rush(void*);
+void moveOut(void*);
+void left43_Split(void*);
 void left_7Rush(void*);
 void right_7Rush(void*);
 void right_halfSAWP(void*);

@@ -47,11 +47,11 @@ void autonomous() {
     opRunning = false;
     //mclTaskPtr = new pros::Task(mcl::mclRuntime, NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "MCL Runtime Task");
 
-     autonomousSelection = 4;
+     autonomousSelection = 5;
 
      switch(autonomousSelection){
-        case 0: left_4Rush(nullptr); break;
-        case 1: right_4Rush(nullptr); break;
+        case 0: moveOut(nullptr); break;
+        case 1: left43_Split(nullptr); break;
         case 2: left_7Rush(nullptr); break;
         case 3: right_7Rush(nullptr); break;
         case 4: right_halfSAWP(nullptr); break;

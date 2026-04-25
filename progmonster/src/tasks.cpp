@@ -3,12 +3,12 @@
 // ---------- Color / Sensor Helpers ----------
 bool detect_red_optical() {
     double hue = optical_sensor.get_hue();
-    return (hue >= 0 && hue <= 15);
+    return ((hue >= 352 && hue <= 360)||(hue>=0 && hue<=15));
 }
 
 bool detect_blue_optical() {
     double hue = optical_sensor.get_hue();
-    return (hue >= 190 && hue <= 260);
+    return (hue >= 190 && hue <=290);
 }
 
 bool detect_proximity(){
@@ -357,9 +357,9 @@ void autonCenterLower(void* param){
 }
 
 void autonCenterUpper(void* param){
-    evil_motor.move(-127);
+    evil_motor.move(-50);
     intake_motor.move(127);
-    top_motor.move(-127);
+    top_motor.move(-40);
     trapdoor_engaged = true;
     trapdoor.set_value(true);
 }
